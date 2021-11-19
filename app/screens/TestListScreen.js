@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 
 import { AppRegistry, StyleSheet, FlatList, Text, View, Alert, ActivityIndicator, Platform, TouchableOpacity } from 'react-native';
+import MyServerSettings from '../functions/MyServerSettings';
 
 
 
@@ -59,7 +60,7 @@ class TestListScreen extends Component {
 
   loadData = () => {
     this.setState({ loading: true })
-    fetch(MyServerSettings.getPhpTest() + '?res=10&pg=' + this.state.page)
+    fetch(MyServerSettings.getPhp("test.php") + '?res=10&pg=' + this.state.page)
       .then((response) => response.json())
       .then((responseJson) => {
         this.setState({

@@ -9,16 +9,18 @@ import TestPDF from './app/screens/TestPDF';
 import TestNotif from './app/screens/TestNotif';
 import TestNotifScreen from './app/screens/TestNotifScreen';
 import TestService from './app/screens/TestService';
-import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import ScreenTagihan from './app/screens/ScreenTagihan';
+import ScreenInit from './app/screens/ScreenInit';
 
 const Stack = createNativeStackNavigator();
-const Tab=createBottomTabNavigator();
+const Tab = createBottomTabNavigator();
 
 function StackTagihan() {
   return (
     <Stack.Navigator mode="modal" >
+      <Stack.Screen name="Init" component={ScreenInit} options={{ headerShown: false }} />
       <Stack.Screen name="Tagihan" component={ScreenTagihan} />
       <Stack.Screen name="Home" component={MainScreen} />
       <Stack.Screen name="Test List" component={TestListScreen} />
@@ -40,13 +42,13 @@ function StackProfil() {
       }}>
       <Stack.Screen
         name="StackSettings"
-        component={TestNotif}/>
+        component={TestNotif} />
       <Stack.Screen
         name="StackDetails"
-        component={TestNotifScreen}/>
+        component={TestNotifScreen} />
       <Stack.Screen
         name="StackProfile"
-        component={TestService}/>
+        component={TestService} />
     </Stack.Navigator>
   );
 }
@@ -73,7 +75,7 @@ export default function App() {
                 size={size}
               />
             ),
-          }}  />
+          }} />
         <Tab.Screen
           name="TabProfile"
           component={StackProfil}
@@ -90,7 +92,7 @@ export default function App() {
       </Tab.Navigator>
     </NavigationContainer>
   );
-  
+
 }
 
 

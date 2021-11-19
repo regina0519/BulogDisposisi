@@ -1,9 +1,9 @@
 import React, { Component } from 'react';
 import MyFunctions from './../functions/MyFunctions';
 import { AppRegistry, StyleSheet, FlatList, Text, View, Alert, ActivityIndicator, Platform, TouchableOpacity } from 'react-native';
-import DateIndonesia from '../functions/DateIndonesia';
 import moment from 'moment/min/moment-with-locales';
 import MyServerSettings from '../functions/MyServerSettings';
+import Global from '../functions/Global';
 
 
 
@@ -63,7 +63,7 @@ class ScreenTagihan extends Component {
 
   loadData = () => {
     this.setState({ loading: true })
-    fetch(MyServerSettings.getPhpTest() + '?res=10&pg=' + this.state.page)
+    fetch(MyServerSettings.getPhp("test.php") + '?res=10&pg=' + this.state.page)
       .then((response) => response.json())
       .then((responseJson) => {
         this.setState({
@@ -82,9 +82,11 @@ class ScreenTagihan extends Component {
   }
 
   renderDataItem = ({ item, index }) => {
+
     return (
       <TouchableOpacity onPress={() => this.props.navigation.navigate('Detail', { id: item.id })}>
-        <Text>{item.id}</Text>
+        <Text>{Global.getUserKey()}</Text>
+        <Text>{Global.getPassKey()}</Text>
         <Text>{item.data_string}</Text>
         <Text>{MyFunctions.formatMoney(item.data_double)}</Text>
         <Text>{moment(item.data_datetime).locale("id").format("llll")}</Text>
