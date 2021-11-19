@@ -1,19 +1,19 @@
 import React, { Component } from 'react';
 
-import { AppRegistry, StyleSheet, FlatList, Text, View, Alert, ActivityIndicator, Platform, TouchableOpacity} from 'react-native';
+import { AppRegistry, StyleSheet, FlatList, Text, View, Alert, ActivityIndicator, Platform, TouchableOpacity } from 'react-native';
 
 
 
 class TestListScreen extends Component {
-  keyExtractor=(data,index)=>data.id;
+  keyExtractor = (data, index) => data.id;
 
-  constructor(props){
+  constructor(props) {
 
     super(props);
 
-    this.state = { 
+    this.state = {
       loading: true,
-      myData:[],
+      myData: [],
       loadingExtraData: false,
       page: 1
     }
@@ -21,11 +21,11 @@ class TestListScreen extends Component {
 
 
 
-  loadMoreData=()=>{
+  loadMoreData = () => {
     //Alert.alert(this.state.page+'');
     this.setState({
-      page:this.state.page+1
-    },()=>this.loadData())
+      page: this.state.page + 1
+    }, () => this.loadData())
   }
 
   FlatListItemSeparator = () => {
@@ -40,12 +40,12 @@ class TestListScreen extends Component {
     );
   }
 
-  render(){
-    return(
+  render() {
+    return (
       <View style={styles.MainContainer}>
         <FlatList
           data={this.state.myData}
-          style={{width:350, height: 800}}
+          style={{ width: 350, height: 800 }}
           ItemSeparatorComponent={this.FlatListItemSeparator}
           renderItem={this.renderDataItem}
           keyExtractor={this.keyExtractor}
@@ -57,19 +57,19 @@ class TestListScreen extends Component {
     )
   }
 
-  loadData=()=>{
-    this.setState({loading: true})
-    fetch(MyServerSettings.getPhpTest()+ '?res=10&pg='+this.state.page)
+  loadData = () => {
+    this.setState({ loading: true })
+    fetch(MyServerSettings.getPhpTest() + '?res=10&pg=' + this.state.page)
       .then((response) => response.json())
       .then((responseJson) => {
         this.setState({
           loading: false,
-          myData: this.state.page===1?responseJson:[...this.state.myData,...responseJson]
+          myData: this.state.page === 1 ? responseJson : [...this.state.myData, ...responseJson]
         })
       })
       .catch((error) => {
-        console.log('Error selecting random data: '+ error)
-        this.setState({loading:false})
+        console.log('Error selecting random data: ' + error)
+        this.setState({ loading: false })
       });
   }
 
@@ -77,9 +77,9 @@ class TestListScreen extends Component {
     this.loadData()
   }
 
-  renderDataItem=({item,index})=>{
+  renderDataItem = ({ item, index }) => {
     return (
-      <TouchableOpacity onPress={() => this.props.navigation.navigate('Detail',{id:item.id})}>
+      <TouchableOpacity onPress={() => this.props.navigation.navigate('Detail', { id: item.id })}>
         <Text>{item.id}</Text>
         <Text>{item.data_string}</Text>
         <Text>{item.data_double}</Text>
@@ -89,28 +89,28 @@ class TestListScreen extends Component {
   }
 }
 
-  
+
 
 const styles = StyleSheet.create({
 
-  MainContainer :{
+  MainContainer: {
     justifyContent: 'center',
-    flex:1,
+    flex: 1,
     margin: 10,
     paddingTop: (Platform.OS === 'ios') ? 20 : 0,
   },
-  
+
   FlatListItemStyle: {
     padding: 10,
     fontSize: 18,
     height: 44,
   },
 
-  ActivityIndicator:{
-    position:'absolute',
-    width:'100%'
+  ActivityIndicator: {
+    position: 'absolute',
+    width: '100%'
   }
-  
+
 });
 
 AppRegistry.registerComponent('TestListScreen', () => TestListScreen);
