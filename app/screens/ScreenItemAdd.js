@@ -10,7 +10,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 
 
 
-class ScreenTagihanDetailAdd extends Component {
+class ScreenItemAdd extends Component {
 
     constructor(props) {
 
@@ -20,18 +20,15 @@ class ScreenTagihanDetailAdd extends Component {
             loading: false,
             myParentData: props.route.params.myParentData,
             myData: [{
-                'id_det_item': '',
-                'id_tagihan': '',
                 'id_item': '',
-                'qty': '0',
-                'harga': '0',
-                'ket_det_item': '',
                 'nm_item': '',
                 'satuan': '',
-                'harga_patokan': '',
+                'harga_patokan': '0',
                 'ket_item': ''
-            }]
+            }],
+            myResult: []
         }
+
 
     }
 
@@ -42,40 +39,44 @@ class ScreenTagihanDetailAdd extends Component {
         return (
 
             <View style={styles.MainContainer}>
-                <View style={styles.ItemLookup}>
-                    <Text style={{ textAlign: 'center' }}>{this.state.myData[0]['nm_item']}</Text>
-                    <Button
-                        title={'Cari Item'}
-                        onPress={() => this.props.navigation.navigate('Item', { myParentData: this.state.myData })}
-                    />
-                </View>
                 <TextInput
-                    value={this.state.myData[0]['qty']}
-                    onChangeText={(qty) => {
+                    value={this.state.myData[0]['nm_item']}
+                    onChangeText={(nm_item) => {
                         let arr = this.state.myData;
-                        arr[0]['qty'] = qty;
+                        arr[0]['nm_item'] = nm_item;
                         this.setState({ myData: arr });
                     }}
-                    placeholder={'Jumlah'}
+                    placeholder={'Item'}
                     //secureTextEntry={true}
                     style={styles.input}
                 />
                 <TextInput
-                    value={this.state.myData[0]['harga']}
-                    onChangeText={(harga) => {
+                    value={this.state.myData[0]['satuan']}
+                    onChangeText={(satuan) => {
                         let arr = this.state.myData;
-                        arr[0]['harga'] = harga;
+                        arr[0]['satuan'] = satuan;
                         this.setState({ myData: arr });
                     }}
-                    placeholder={'Harga'}
+                    placeholder={'Satuan'}
                     //secureTextEntry={true}
                     style={styles.input}
                 />
                 <TextInput
-                    value={this.state.myData[0]['ket_det_item']}
-                    onChangeText={(ket_det_item) => {
+                    value={this.state.myData[0]['harga_patokan']}
+                    onChangeText={(harga_patokan) => {
                         let arr = this.state.myData;
-                        arr[0]['ket_det_item'] = ket_det_item;
+                        arr[0]['harga_patokan'] = harga_patokan;
+                        this.setState({ myData: arr });
+                    }}
+                    placeholder={'Patokan Harga'}
+                    //secureTextEntry={true}
+                    style={styles.input}
+                />
+                <TextInput
+                    value={this.state.myData[0]['ket_item']}
+                    onChangeText={(ket_item) => {
+                        let arr = this.state.myData;
+                        arr[0]['ket_item'] = ket_item;
                         this.setState({ myData: arr });
                     }}
                     placeholder={'Keterangan'}
@@ -86,7 +87,7 @@ class ScreenTagihanDetailAdd extends Component {
                 <Button
                     title={'Simpan'}
                     style={styles.input}
-                    onPress={this.loadData}
+                    onPress={this.saveItem}
                 />
                 <ActivityIndicator style={styles.ActivityIndicator} size='large' color="red" animating={this.state.loading} />
                 {this.state.loading ? <Text style={styles.ActivityIndicatorText}>Loading... Mohon Tunggu</Text> : null}
@@ -97,8 +98,54 @@ class ScreenTagihanDetailAdd extends Component {
     }
 
 
+    saveItem = () => {
+        this.setState({ loading: true })
+        //this.tmpPass = this.state.txtPass;
+        fetch(
+            MyServerSettings.getPhp("add_item.php"),
+            {
+                method: 'POST',
+                headers: {
+                    Accept: 'application/json',
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(this.state.myData[0]),
+            }
+        )
+            .then((response) => response.json())
+            .then((responseJson) => {
+                this.setState({
+                    loading: false,
+                    myResult: responseJson
+                })
+            })
+            .then(this.processResult)
+            .catch((error) => {
+                console.log('Error selecting random data: ' + error)
+                this.setState({ loading: false })
+            });
+
+
+
+
+
+        //this.props.navigation.dispatch(StackActions.replace('Item'))
+    }
+    processResult = () => {
+        if (this.state.myResult[0]['succeed']) {
+            alert("Data tersimpan");
+            this.props.navigation.goBack();
+        } else {
+            alert("Gagal menyimpan\n" + this.state.myResult[0]['error']);
+        }
+    }
     componentDidMount() {
 
+    }
+    componentWillUnmount() {
+        this.setState = (state, callback) => {
+            return;
+        };
     }
 
 
@@ -140,5 +187,5 @@ const styles = StyleSheet.create({
 
 });
 
-AppRegistry.registerComponent('ScreenTagihanDetailAdd', () => ScreenTagihanDetailAdd);
-export default ScreenTagihanDetailAdd;
+AppRegistry.registerComponent('ScreenItemAdd', () => ScreenItemAdd);
+export default ScreenItemAdd;

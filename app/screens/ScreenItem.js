@@ -1,29 +1,38 @@
 import React, { Component } from 'react';
 import MyFunctions from './../functions/MyFunctions';
-import { AppRegistry, StyleSheet, FlatList, Text, View, ActivityIndicator, Platform, TouchableOpacity, TouchableHighlightComponent, RefreshControl } from 'react-native';
+import { AppRegistry, StyleSheet, FlatList, Text, View, ActivityIndicator, Platform, TouchableOpacity, TouchableHighlightComponent, RefreshControl, TextInput, Button } from 'react-native';
 import moment from 'moment/min/moment-with-locales';
 import MyServerSettings from '../functions/MyServerSettings';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
-import { DefaultTheme } from '@react-navigation/native';
+import { DefaultTheme, useFocusEffect } from '@react-navigation/native';
 import { StackActions } from '@react-navigation/routers';
 
 
 
-class ScreenTagihanDetail extends Component {
-    keyExtractor = (data, index) => data.id_tagihan;
+class ScreenItem extends Component {
+    keyExtractor = (data, index) => data.id_item;
 
     constructor(props) {
 
         super(props);
-
         this.state = {
             loading: true,
             myParentData: props.route.params.myParentData,
-            myData: []
+            myData: [],
+            loadingExtraData: false,
+            page: 1,
+            filter: ''
         }
+
     }
 
 
+
+    loadMoreData = () => {
+        this.setState({
+            page: this.state.page + 1
+        }, () => this.loadData(true))
+    }
 
     FlatListItemSeparator = () => {
         return (
@@ -41,6 +50,21 @@ class ScreenTagihanDetail extends Component {
 
         return (
             <View style={styles.MainContainer}>
+                <View style={styles.ItemFilter}>
+                    <TextInput
+                        value={this.state.filter}
+                        onChangeText={(filter) => {
+                            this.setState({ filter: filter });
+                        }}
+                        placeholder={'Cari...'}
+                        style={styles.input}
+                    //secureTextEntry={true}
+                    />
+                    <Button
+                        title={'Go'}
+                        onPress={this.filterData}
+                    />
+                </View>
                 <FlatList
                     data={this.state.myData}
                     style={{ width: 350, height: 800 }}
@@ -54,7 +78,7 @@ class ScreenTagihanDetail extends Component {
                     }
                 />
                 <ActivityIndicator style={styles.ActivityIndicator} size='large' color="red" animating={this.state.loading} />
-                <TouchableOpacity style={styles.AddButton} onPress={() => this.props.navigation.navigate('Tambah Detail Tagihan', { myParentData: this.state.myData })}>
+                <TouchableOpacity style={styles.AddButton} onPress={() => this.props.navigation.navigate('Tambah Item', { MyParentData: this.state.myData })}>
                     <MaterialCommunityIcons
                         name="plus-circle"
                         size={50}
@@ -64,20 +88,32 @@ class ScreenTagihanDetail extends Component {
             </View>
         )
     }
+
     refreshData = () => {
         this.setState({
             loading: true,
-            myParentData: props.route.params.myParentData,
-            myData: []
+            myData: [],
+            loadingExtraData: false,
+            page: 1,
+            //filter: ''
+        });
+        this.loadData();
+    }
+    filterData = () => {
+        this.setState({
+            loading: true,
+            myData: [],
+            loadingExtraData: false,
+            page: 1
         });
         this.loadData();
     }
 
-    loadData = () => {
+    loadData = (more = false) => {
         this.setState({ loading: true })
-        let id = "";
-        if (this.state.myData[0] !== undefined) id = this.state.myData[0]["id_tagihan"];
-        fetch(MyServerSettings.getPhp("get_list_detail.php") + '?id=' + id)
+        let url = MyServerSettings.getPhp("get_list_item.php") + '?fltr=' + this.state.filter + '&res=10&pg=' + this.state.page;
+        console.log(url);
+        fetch(url)
             .then((response) => response.json())
             .then((responseJson) => {
                 this.setState({
@@ -88,22 +124,23 @@ class ScreenTagihanDetail extends Component {
             .catch((error) => {
                 console.log('Error selecting random data: ' + error)
                 this.setState({ loading: false })
+                if (more) this.setState({ page: this.state.page - 1 })
             });
-
     }
 
     componentDidMount() {
-        this.loadData();
+        //alert("mounted");
+        this.loadData()
     }
 
     renderDataItem = ({ item, index }) => {
 
         return (
             <TouchableOpacity onPress={() => this.props.navigation.navigate('Detail', { id: item.id_tagihan })}>
-                <Text>{moment(item.tgl_pembuatan).locale("id").format("llll")}</Text>
-                <Text>{item.ket_tagihan}</Text>
-                <Text>{item.ketdet}</Text>
-                <Text>{MyFunctions.formatMoney(item.total)}</Text>
+                <Text>{item.nm_item}</Text>
+                <Text>{"Satuan: " + item.satuan}</Text>
+                <Text>{"Patokan Harga: Rp. " + MyFunctions.formatMoney(item.harga_patokan)}</Text>
+                <Text>{"Ket: " + ((item.ket_item === '') ? '-' : item.ket_item)}</Text>
             </TouchableOpacity>
         )
     }
@@ -118,6 +155,11 @@ const styles = StyleSheet.create({
         flex: 1,
         margin: 10,
         paddingTop: (Platform.OS === 'ios') ? 20 : 0,
+    },
+    ItemFilter: {
+        flexDirection: 'row',
+        alignSelf: 'center',
+        padding: 10
     },
 
     FlatListItemStyle: {
@@ -136,9 +178,17 @@ const styles = StyleSheet.create({
         alignSelf: 'flex-end',
         bottom: 0
 
+    },
+    input: {
+        width: 200,
+        height: 44,
+        padding: 10,
+        marginRight: 5,
+        borderWidth: 1,
+        borderColor: 'black',
     }
 
 });
 
-AppRegistry.registerComponent('ScreenTagihanDetail', () => ScreenTagihanDetail);
-export default ScreenTagihanDetail;
+AppRegistry.registerComponent('ScreenItem', () => ScreenItem);
+export default ScreenItem;

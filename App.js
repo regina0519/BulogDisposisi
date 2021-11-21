@@ -16,6 +16,8 @@ import ScreenMain from './app/screens/ScreenMain';
 import ScreenTagihanAdd from './app/screens/ScreenTagihanAdd';
 import ScreenTagihanDetailAdd from './app/screens/ScreenTagihanDetailAdd';
 import ScreenTagihanDetail from './app/screens/ScreenTagihanDetail';
+import ScreenItem from './app/screens/ScreenItem';
+import ScreenItemAdd from './app/screens/ScreenItemAdd';
 
 const Stack = createNativeStackNavigator();
 
@@ -30,6 +32,8 @@ export default function App() {
         <Stack.Screen name="Tambah Tagihan" component={ScreenTagihanAdd} />
         <Stack.Screen name="Detail Tagihan" component={ScreenTagihanDetail} />
         <Stack.Screen name="Tambah Detail Tagihan" component={ScreenTagihanDetailAdd} />
+        <Stack.Screen name="Item" component={ScreenItem} />
+        <Stack.Screen name="Tambah Item" component={ScreenItemAdd} />
         <Stack.Screen name="Home" component={ScreenMain} />
         <Stack.Screen name="Test List" component={TestListScreen} />
         <Stack.Screen name="Detail" component={TestDetail} />

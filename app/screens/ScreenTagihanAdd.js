@@ -82,13 +82,10 @@ class ScreenTagihanAdd extends Component {
                 <TextInput
                     value={this.state.myData[0]['ket_tagihan']}
                     onChangeText={(ket_tagihan) => {
-                        console.log(JSON.stringify(this.state.myData));
-                    }}
-                    /*onChangeText={(ket_tagihan) => {
-                        let arr = [...this.state.myData];
-                        arr[0] = { ...arr[0], 'ket_tagihan': ket_tagihan };
+                        let arr = this.state.myData;
+                        arr[0]['ket_tagihan'] = ket_tagihan;
                         this.setState({ myData: arr });
-                    }}*/
+                    }}
                     placeholder={'Uraian'}
                     //secureTextEntry={true}
                     style={styles.input}
@@ -96,8 +93,8 @@ class ScreenTagihanAdd extends Component {
                 <TextInput
                     value={this.state.myData[0]['cat_pembuat']}
                     onChangeText={(cat_pembuat) => {
-                        let arr = [...this.state.myData];
-                        arr[0] = { ...arr[0], 'cat_pembuat': cat_pembuat };
+                        let arr = this.state.myData;
+                        arr[0]['ket_tagihan'] = cat_pembuat;
                         this.setState({ myData: arr });
                     }}
                     placeholder={'Catatan'}

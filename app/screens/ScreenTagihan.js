@@ -19,7 +19,6 @@ class ScreenTagihan extends Component {
     this.state = {
       loading: true,
       myData: [],
-      loadingExtraData: false,
       page: 1
     }
   }
@@ -27,10 +26,9 @@ class ScreenTagihan extends Component {
 
 
   loadMoreData = () => {
-    //Alert.alert(this.state.page+'');
     this.setState({
       page: this.state.page + 1
-    }, () => this.loadData())
+    }, () => this.loadData(true))
   }
 
   FlatListItemSeparator = () => {
@@ -64,7 +62,7 @@ class ScreenTagihan extends Component {
         <ActivityIndicator style={styles.ActivityIndicator} size='large' color="red" animating={this.state.loading} />
         <TouchableOpacity style={styles.AddButton} onPress={() => this.props.navigation.navigate('Tambah Tagihan')}>
           <MaterialCommunityIcons
-            name="file-plus"
+            name="plus-circle"
             size={50}
             color={DefaultTheme.colors.primary}
           />
@@ -77,15 +75,17 @@ class ScreenTagihan extends Component {
     this.setState({
       loading: true,
       myData: [],
-      loadingExtraData: false,
       page: 1
     });
     this.loadData();
   }
 
-  loadData = () => {
+  loadData = (more = false) => {
     this.setState({ loading: true })
-    fetch(MyServerSettings.getPhp("get_list_ongoing.php") + '?res=10&pg=' + this.state.page)
+    let url = MyServerSettings.getPhp("get_list_ongoing.php") + '?res=10&pg=' + this.state.page;
+    //let url = MyServerSettings.getPhp("test.php") + '?res=10&pg=' + this.state.page;
+    //console.log(url);
+    fetch(url)
       .then((response) => response.json())
       .then((responseJson) => {
         this.setState({
@@ -96,6 +96,7 @@ class ScreenTagihan extends Component {
       .catch((error) => {
         console.log('Error selecting random data: ' + error)
         this.setState({ loading: false })
+        if (more) this.setState({ page: this.state.page - 1 })
       });
   }
 
@@ -105,6 +106,14 @@ class ScreenTagihan extends Component {
 
   renderDataItem = ({ item, index }) => {
 
+    /*return (
+      <TouchableOpacity onPress={() => this.props.navigation.navigate('Detail', { id: item.id })}>
+        <Text>{item.id}</Text>
+        <Text>{item.data_string}</Text>
+        <Text>{item.data_double}</Text>
+        <Text>{item.data_datetime}</Text>
+      </TouchableOpacity>
+    )*/
     return (
       <TouchableOpacity onPress={() => this.props.navigation.navigate('Detail', { id: item.id_tagihan })}>
         <Text>{moment(item.tgl_pembuatan).locale("id").format("llll")}</Text>
