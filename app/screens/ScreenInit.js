@@ -66,7 +66,8 @@ class ScreenInit extends Component {
   gotoLogin = () => {
     //alert(this.state.user + "         " + this.state.password);
     if (this.state.user === "" || this.state.password === "") {
-      this.props.navigation.dispatch(StackActions.replace('Login'));
+      //this.props.navigation.dispatch(StackActions.replace('Login'));
+      this.props.navigation.dispatch(StackActions.replace('Home'));
 
     } else {
       alert(this.state.user + "         " + this.state.password);

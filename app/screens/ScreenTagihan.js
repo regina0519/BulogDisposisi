@@ -1,14 +1,16 @@
 import React, { Component } from 'react';
 import MyFunctions from './../functions/MyFunctions';
-import { AppRegistry, StyleSheet, FlatList, Text, View, Alert, ActivityIndicator, Platform, TouchableOpacity } from 'react-native';
+import { AppRegistry, StyleSheet, FlatList, Text, View, ActivityIndicator, Platform, TouchableOpacity, TouchableHighlightComponent, RefreshControl } from 'react-native';
 import moment from 'moment/min/moment-with-locales';
 import MyServerSettings from '../functions/MyServerSettings';
-import Global from '../functions/Global';
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import { DefaultTheme } from '@react-navigation/native';
+import { StackActions } from '@react-navigation/routers';
 
 
 
 class ScreenTagihan extends Component {
-  keyExtractor = (data, index) => data.id;
+  keyExtractor = (data, index) => data.id_tagihan;
 
   constructor(props) {
 
@@ -55,15 +57,35 @@ class ScreenTagihan extends Component {
           keyExtractor={this.keyExtractor}
           onEndReachedThreshold={0.1}
           onEndReached={this.loadMoreData}
+          refreshControl={
+            <RefreshControl refreshing={this.state.loading} onRefresh={this.refreshData} />
+          }
         />
         <ActivityIndicator style={styles.ActivityIndicator} size='large' color="red" animating={this.state.loading} />
+        <TouchableOpacity style={styles.AddButton} onPress={() => this.props.navigation.navigate('Tambah Tagihan')}>
+          <MaterialCommunityIcons
+            name="file-plus"
+            size={50}
+            color={DefaultTheme.colors.primary}
+          />
+        </TouchableOpacity>
       </View>
     )
   }
 
+  refreshData = () => {
+    this.setState({
+      loading: true,
+      myData: [],
+      loadingExtraData: false,
+      page: 1
+    });
+    this.loadData();
+  }
+
   loadData = () => {
     this.setState({ loading: true })
-    fetch(MyServerSettings.getPhp("test.php") + '?res=10&pg=' + this.state.page)
+    fetch(MyServerSettings.getPhp("get_list_ongoing.php") + '?res=10&pg=' + this.state.page)
       .then((response) => response.json())
       .then((responseJson) => {
         this.setState({
@@ -84,12 +106,11 @@ class ScreenTagihan extends Component {
   renderDataItem = ({ item, index }) => {
 
     return (
-      <TouchableOpacity onPress={() => this.props.navigation.navigate('Detail', { id: item.id })}>
-        <Text>{Global.getUserKey()}</Text>
-        <Text>{Global.getPassKey()}</Text>
-        <Text>{item.data_string}</Text>
-        <Text>{MyFunctions.formatMoney(item.data_double)}</Text>
-        <Text>{moment(item.data_datetime).locale("id").format("llll")}</Text>
+      <TouchableOpacity onPress={() => this.props.navigation.navigate('Detail', { id: item.id_tagihan })}>
+        <Text>{moment(item.tgl_pembuatan).locale("id").format("llll")}</Text>
+        <Text>{item.ket_tagihan}</Text>
+        <Text>{item.ketdet}</Text>
+        <Text>{"Rp. " + MyFunctions.formatMoney(item.total)}</Text>
       </TouchableOpacity>
     )
   }
@@ -115,6 +136,13 @@ const styles = StyleSheet.create({
   ActivityIndicator: {
     position: 'absolute',
     width: '100%'
+  },
+
+  AddButton: {
+    position: 'absolute',
+    alignSelf: 'flex-end',
+    bottom: 0
+
   }
 
 });
