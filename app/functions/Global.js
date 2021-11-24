@@ -1,4 +1,4 @@
-
+import { Dimensions } from "react-native";
 class Global {
     static #curUserId = "";
     static #idJab = "";
@@ -17,6 +17,10 @@ class Global {
 
     static #userKey = "";
     static #passKey = "";
+
+    static getScreenWidth() {
+        return Dimensions.get('window').width;
+    }
 
     static getCurUserId() {
         return this.#curUserId;

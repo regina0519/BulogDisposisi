@@ -10,11 +10,14 @@ import { StackActions } from '@react-navigation/routers';
 
 
 class ScreenItem extends Component {
+    mode = "view";
     keyExtractor = (data, index) => data.id_item;
+
 
     constructor(props) {
 
         super(props);
+        this.mode = props.route.params.mode;
         this.state = {
             loading: true,
             myParentData: props.route.params.myParentData,
@@ -130,13 +133,37 @@ class ScreenItem extends Component {
 
     componentDidMount() {
         //alert("mounted");
+        //const { navigation } = this.props;
         this.loadData()
+        this.focusListener = this.props.navigation.addListener("focus", () => {
+            // The screen is focused
+            // Call any action
+            this.refreshData();
+        });
+
+    }
+    componentWillUnmount() {
+        this.setState = (state, callback) => {
+            return;
+        };
     }
 
     renderDataItem = ({ item, index }) => {
-
         return (
-            <TouchableOpacity onPress={() => this.props.navigation.navigate('Detail', { id: item.id_tagihan })}>
+            <TouchableOpacity onPress={() => {
+                if (this.mode === "view") {
+                    this.props.navigation.navigate('Detail', { id: item.id_tagihan })
+                } else {
+                    let arr = this.state.myParentData;
+                    arr[0]['id_item'] = item.id_item;
+                    arr[0]['nm_item'] = item.nm_item;
+                    arr[0]['satuan'] = item.satuan;
+                    arr[0]['harga_patokan'] = item.harga_patokan;
+                    arr[0]['ket_item'] = item.ket_item;
+                    this.setState({ myParentData: arr });
+                    this.props.navigation.goBack();
+                }
+            }}>
                 <Text>{item.nm_item}</Text>
                 <Text>{"Satuan: " + item.satuan}</Text>
                 <Text>{"Patokan Harga: Rp. " + MyFunctions.formatMoney(item.harga_patokan)}</Text>
@@ -144,6 +171,7 @@ class ScreenItem extends Component {
             </TouchableOpacity>
         )
     }
+
 }
 
 

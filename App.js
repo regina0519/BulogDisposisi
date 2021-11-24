@@ -13,11 +13,11 @@ import ScreenTagihan from './app/screens/ScreenTagihan';
 import ScreenInit from './app/screens/ScreenInit';
 import ScreenLogin from './app/screens/ScreenLogin';
 import ScreenMain from './app/screens/ScreenMain';
-import ScreenTagihanAdd from './app/screens/ScreenTagihanAdd';
 import ScreenTagihanDetailAdd from './app/screens/ScreenTagihanDetailAdd';
 import ScreenTagihanDetail from './app/screens/ScreenTagihanDetail';
 import ScreenItem from './app/screens/ScreenItem';
 import ScreenItemAdd from './app/screens/ScreenItemAdd';
+import ScreenTagihanEdit from './app/screens/ScreenTagihanEdit';
 
 const Stack = createNativeStackNavigator();
 
@@ -29,7 +29,7 @@ export default function App() {
         <Stack.Screen name="Init" component={ScreenInit} options={{ headerShown: false }} />
         <Stack.Screen name="Login" component={ScreenLogin} options={{ headerShown: false }} />
         <Stack.Screen name="Tagihan" component={ScreenTagihan} />
-        <Stack.Screen name="Tambah Tagihan" component={ScreenTagihanAdd} />
+        <Stack.Screen name="Tambah Tagihan" component={ScreenTagihanEdit} />
         <Stack.Screen name="Detail Tagihan" component={ScreenTagihanDetail} />
         <Stack.Screen name="Tambah Detail Tagihan" component={ScreenTagihanDetailAdd} />
         <Stack.Screen name="Item" component={ScreenItem} />

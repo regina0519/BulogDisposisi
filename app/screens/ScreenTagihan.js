@@ -25,6 +25,8 @@ class ScreenTagihan extends Component {
 
 
 
+
+
   loadMoreData = () => {
     this.setState({
       page: this.state.page + 1
@@ -60,7 +62,9 @@ class ScreenTagihan extends Component {
           }
         />
         <ActivityIndicator style={styles.ActivityIndicator} size='large' color="red" animating={this.state.loading} />
-        <TouchableOpacity style={styles.AddButton} onPress={() => this.props.navigation.navigate('Tambah Tagihan')}>
+        <TouchableOpacity style={styles.AddButton} onPress={() => this.props.navigation.navigate('Tambah Tagihan', {
+          idTagihan: ""
+        })}>
           <MaterialCommunityIcons
             name="plus-circle"
             size={50}

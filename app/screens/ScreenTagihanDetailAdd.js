@@ -35,6 +35,11 @@ class ScreenTagihanDetailAdd extends Component {
 
     }
 
+    refreshData = () => {
+        console.log(this.state.myData[0]["nm_item"]);
+        this.setState({ myData: this.state.myData });
+    }
+
 
 
     render() {
@@ -45,8 +50,8 @@ class ScreenTagihanDetailAdd extends Component {
                 <View style={styles.ItemLookup}>
                     <Text style={{ textAlign: 'center' }}>{this.state.myData[0]['nm_item']}</Text>
                     <Button
-                        title={'Cari Item'}
-                        onPress={() => this.props.navigation.navigate('Item', { myParentData: this.state.myData })}
+                        title={'Pilih Item'}
+                        onPress={() => this.props.navigation.navigate('Item', { myParentData: this.state.myData, mode: "lookup" })}
                     />
                 </View>
                 <TextInput
@@ -98,7 +103,11 @@ class ScreenTagihanDetailAdd extends Component {
 
 
     componentDidMount() {
-
+        this.focusListener = this.props.navigation.addListener("focus", () => {
+            // The screen is focused
+            // Call any action
+            this.refreshData();
+        });
     }
 
 

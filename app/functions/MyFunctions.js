@@ -21,5 +21,11 @@ class MyFunctions {
             .toFixed(2)
             .replace(/\d(?=(\d{3})+\.)/g, '$&,');
     }
+
+    static validateString(str) {
+        str = str.substr(-1) === " " ? str.trim() + " " : str.trim();
+        str = str.trim() === "" ? str.trim() : str;
+        return str;
+    }
 }
 export default MyFunctions;
