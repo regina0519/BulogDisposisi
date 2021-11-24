@@ -21,6 +21,7 @@ class ScreenItem extends Component {
         this.state = {
             loading: true,
             myParentData: props.route.params.myParentData,
+            myParentDataDetIndex: props.route.params.myParentDataDetIndex,
             myData: [],
             loadingExtraData: false,
             page: 1,
@@ -155,11 +156,14 @@ class ScreenItem extends Component {
                     this.props.navigation.navigate('Detail', { id: item.id_tagihan })
                 } else {
                     let arr = this.state.myParentData;
-                    arr[0]['id_item'] = item.id_item;
-                    arr[0]['nm_item'] = item.nm_item;
-                    arr[0]['satuan'] = item.satuan;
-                    arr[0]['harga_patokan'] = item.harga_patokan;
-                    arr[0]['ket_item'] = item.ket_item;
+                    arr["det_array"][this.state.myParentDataDetIndex]['id_item'] = item.id_item;
+                    arr["det_array"][this.state.myParentDataDetIndex]['qty'] = '1';
+                    arr["det_array"][this.state.myParentDataDetIndex]['harga'] = item.harga_patokan;
+                    arr["det_array"][this.state.myParentDataDetIndex]['ket_det_item'] = "";
+                    arr["det_array"][this.state.myParentDataDetIndex]['nm_item'] = item.nm_item;
+                    arr["det_array"][this.state.myParentDataDetIndex]['satuan'] = item.satuan;
+                    arr["det_array"][this.state.myParentDataDetIndex]['harga_patokan'] = item.harga_patokan;
+                    arr["det_array"][this.state.myParentDataDetIndex]['ket_item'] = item.ket_item;
                     this.setState({ myParentData: arr });
                     this.props.navigation.goBack();
                 }

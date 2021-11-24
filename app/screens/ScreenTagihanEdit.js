@@ -1,17 +1,21 @@
 import { StackActions } from '@react-navigation/routers';
 import React, { Component } from 'react';
 
-import { AppRegistry, StyleSheet, TextInput, Text, View, Button, ActivityIndicator, Platform, TouchableOpacity } from 'react-native';
+import { AppRegistry, StyleSheet, FlatList, RefreshControl, TextInput, Text, View, Button, ActivityIndicator, Platform, TouchableOpacity } from 'react-native';
 import Global from '../functions/Global';
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import { DefaultTheme } from '@react-navigation/native';
 import MyServerSettings from '../functions/MyServerSettings';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import MyFunctions from '../functions/MyFunctions';
+import moment from 'moment/min/moment-with-locales';
 
 
 
 
 
 class ScreenTagihanEdit extends Component {
+    keyExtractor = (data, index) => data.id_det_item;
     myDataBU = [];
 
     constructor(props) {
@@ -23,8 +27,8 @@ class ScreenTagihanEdit extends Component {
             loading: false,
             idTagihan: props.route.params.idTagihan,
             myData: [],
-            allowSave: false,
-            allowRincian: false
+            myDataDetToDelete: [],
+            allowSave: false
         }
     }
 
@@ -84,60 +88,80 @@ class ScreenTagihanEdit extends Component {
         //console.log(JSON.stringify(this.state.myData));
         //alert("rendered");
         return (
-
             <View style={styles.MainContainer}>
-                <TextInput
-                    value={this.state.myData['ket_tagihan']}
-                    multiline={true}
-                    onChangeText={(ket_tagihan) => {
-                        ket_tagihan = MyFunctions.validateString(ket_tagihan);
-                        let arr = this.state.myData;
-                        arr['ket_tagihan'] = ket_tagihan;
-                        this.setState({ myData: arr });
-                        this.setAllowRincian();
-                        this.setAllowSave();
-                    }}
-                    placeholder={'Uraian'}
-                    //secureTextEntry={true}
-                    style={styles.input}
-                />
-                <TextInput
-                    value={this.state.myData['cat_pembuat']}
-                    multiline={true}
-                    onChangeText={(cat_pembuat) => {
-                        cat_pembuat = MyFunctions.validateString(cat_pembuat);
-                        let arr = this.state.myData;
-                        arr['cat_pembuat'] = cat_pembuat;
-                        this.setState({ myData: arr });
-                        this.setAllowSave();
-                    }}
-                    placeholder={'Catatan'}
-                    //secureTextEntry={true}
-                    style={styles.input}
-                />
-                <Button
-                    title={'Simpan'}
-                    style={styles.input}
-                    disabled={!this.state.allowSave}
-                    onPress={() => this.props.navigation.navigate('Detail Tagihan', { myParentData: this.state.myData })}
-                />
-                <View style={{ margin: 5 }}></View>
-                <Button
-                    title={'Rincian'}
-                    style={styles.input}
-                    disabled={!this.state.allowRincian}
-                    onPress={() => this.props.navigation.navigate('Detail Tagihan', { myParentData: this.state.myData })}
-                />
-                <ActivityIndicator style={styles.ActivityIndicator} size='large' color="red" animating={this.state.loading} />
-                {this.state.loading ? <Text style={styles.ActivityIndicatorText}>Loading... Mohon Tunggu</Text> : null}
+                <View style={styles.ContentContainer}>
+                    <View style={{ margin: 5 }}>
+                        <Text>{moment(this.state.myData['tgl_pembuatan']).locale("id").format("llll")}</Text>
+                        <View style={{ margin: 3 }}></View>
+                        <TextInput
+                            value={this.state.myData['ket_tagihan']}
+                            multiline={true}
+                            onChangeText={(ket_tagihan) => {
+                                ket_tagihan = MyFunctions.validateString(ket_tagihan);
+                                let arr = this.state.myData;
+                                arr['ket_tagihan'] = ket_tagihan;
+                                this.setState({ myData: arr });
+                                this.setAllowSave();
+                            }}
+                            placeholder={'Uraian'}
+                            //secureTextEntry={true}
+                            style={styles.input}
+                        />
+                        <TextInput
+                            value={this.state.myData['cat_pembuat']}
+                            multiline={true}
+                            onChangeText={(cat_pembuat) => {
+                                cat_pembuat = MyFunctions.validateString(cat_pembuat);
+                                let arr = this.state.myData;
+                                arr['cat_pembuat'] = cat_pembuat;
+                                this.setState({ myData: arr });
+                                this.setAllowSave();
+                            }}
+                            placeholder={'Catatan'}
+                            //secureTextEntry={true}
+                            style={styles.input}
+                        />
+                    </View>
+                    <View style={{ margin: 5, flexGrow: 1 }}>
+                        <FlatList
+                            data={this.state.myData["det_array"]}
+                            style={{ width: '100%' }}
+                            ItemSeparatorComponent={this.FlatListItemSeparator}
+                            renderItem={this.renderDataItem}
+                            keyExtractor={this.keyExtractor}
+                            refreshControl={
+                                <RefreshControl refreshing={this.state.loading} onRefresh={this.refreshData} />
+                            }
+                        />
+                        <TouchableOpacity style={styles.AddButton} onPress={() => this.props.navigation.navigate('Edit Detail Tagihan', { myData: this.state.myData, myDataDetIndex: this.state.myData["det_array"].length, myDataDetToDelete: this.state.myDataDetToDelete })}>
+                            <MaterialCommunityIcons
+                                name="plus-circle"
+                                size={50}
+                                color={DefaultTheme.colors.primary}
+                            />
+                        </TouchableOpacity>
+                    </View>
+                    <View style={{ margin: 5 }}>
+                        <Button
+                            title={'Simpan'}
+                            style={styles.input}
+                            disabled={!this.state.allowSave}
+                            onPress={() => this.props.navigation.navigate('Detail Tagihan', { myParentData: this.state.myData })}
+                        />
+                    </View>
 
+
+
+
+
+                </View>
+                <View style={styles.LoadingContainer}>
+                    <ActivityIndicator style={styles.ActivityIndicator} size='large' color="red" animating={this.state.loading} />
+                    {this.state.loading ? <Text style={styles.ActivityIndicatorText}>Loading... Mohon Tunggu</Text> : null}
+                </View>
             </View>
         )
 
-    }
-
-    next() {
-        //this.props.navigation.navigate('Tambah Detail Tagihan', { myData: this.state.myData });
     }
 
 
@@ -157,9 +181,9 @@ class ScreenTagihanEdit extends Component {
             myData: [],
             allowSave: false,
             allowRincian: false
-        });
+        });*/
         this.loadData();
-        */
+
     }
     loadData = () => {
         if (this.state.myData.length === 0) {
@@ -169,9 +193,10 @@ class ScreenTagihanEdit extends Component {
                 .then((responseJson) => {
                     this.setState({
                         loading: false,
-                        myData: responseJson
+                        myData: responseJson[0]
                     })
                     this.backupData();
+                    console.log(this.state.myData["det_array"])
                 })
                 .catch((error) => {
                     console.log('Error selecting random data: ' + error)
@@ -181,6 +206,10 @@ class ScreenTagihanEdit extends Component {
                     })
                     this.backupData();
                 });
+        } else {
+            this.setState({
+                myData: this.state.myData
+            });
         }
     }
     backupData = () => {
@@ -198,6 +227,28 @@ class ScreenTagihanEdit extends Component {
         });
     }
 
+    renderDataItem = ({ item, index }) => {
+
+        return (
+            <TouchableOpacity onPress={() => this.props.navigation.navigate('Edit Detail Tagihan', { myDataDetIndex: index, myData: this.state.myData, myDataDetToDelete: this.state.myDataDetToDelete })}>
+                <Text>{item.id_det_item}</Text>
+                <Text>{item.id_tagihan}</Text>
+                <Text>{item.id_item}</Text>
+                <Text>{MyFunctions.formatMoney(item.qty)}</Text>
+            </TouchableOpacity>
+        )
+    }
+    FlatListItemSeparator = () => {
+        return (
+            <View
+                style={{
+                    height: 1,
+                    width: "100%",
+                    backgroundColor: "#607D8B",
+                }}
+            />
+        );
+    }
 
 }
 
@@ -207,10 +258,23 @@ class ScreenTagihanEdit extends Component {
 const styles = StyleSheet.create({
 
     MainContainer: {
-        justifyContent: 'center',
-        flex: 1,
-        margin: 10,
+        //justifyContent: 'center',
+        //flex: 1,
+        //alignContent: 'flex-start',
+        margin: 1,
         paddingTop: (Platform.OS === 'ios') ? 20 : 0,
+    },
+
+    ContentContainer: {
+        width: '100%',
+        height: '100%',
+    },
+    LoadingContainer: {
+        position: 'absolute',
+        width: '100%',
+        height: '100%',
+        justifyContent: 'center',
+        //borderWidth: 5
     },
 
     ActivityIndicator: {
@@ -221,11 +285,24 @@ const styles = StyleSheet.create({
         textAlign: 'center'
     },
     input: {
-        width: Global.getScreenWidth() - 20,
+        width: '100%',
         padding: 10,
         borderWidth: 1,
         borderColor: 'black',
         marginBottom: 10,
+    },
+
+    AddButton: {
+        position: 'absolute',
+        alignSelf: 'flex-end',
+        bottom: 0
+
+    },
+
+    FlatListItemStyle: {
+        padding: 10,
+        fontSize: 18,
+        height: 44,
     }
 
 });

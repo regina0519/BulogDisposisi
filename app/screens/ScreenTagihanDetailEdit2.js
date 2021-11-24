@@ -10,7 +10,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 
 
 
-class ScreenTagihanDetailAdd extends Component {
+class ScreenTagihanDetailEdit2 extends Component {
 
     constructor(props) {
 
@@ -19,26 +19,27 @@ class ScreenTagihanDetailAdd extends Component {
         this.state = {
             loading: false,
             myParentData: props.route.params.myParentData,
-            myData: [{
-                'id_det_item': '',
-                'id_tagihan': '',
-                'id_item': '',
-                'qty': '0',
-                'harga': '0',
-                'ket_det_item': '',
-                'nm_item': '',
-                'satuan': '',
-                'harga_patokan': '',
-                'ket_item': ''
-            }]
+            myData: props.route.params.myData,
+            myDataToDelete: props.route.params.myDataToDelete
         }
 
     }
 
-    refreshData = () => {
-        console.log(this.state.myData[0]["nm_item"]);
-        this.setState({ myData: this.state.myData });
+    newRecord = () => {
+        return ({
+            'id_det_item': '',
+            'id_tagihan': '',
+            'id_item': '',
+            'qty': '0',
+            'harga': '0',
+            'ket_det_item': '',
+            'nm_item': '',
+            'satuan': '',
+            'harga_patokan': '',
+            'ket_item': ''
+        });
     }
+
 
 
 
@@ -48,17 +49,17 @@ class ScreenTagihanDetailAdd extends Component {
 
             <View style={styles.MainContainer}>
                 <View style={styles.ItemLookup}>
-                    <Text style={{ textAlign: 'center' }}>{this.state.myData[0]['nm_item']}</Text>
+                    <Text style={{ textAlign: 'center' }}>{this.state.myData['nm_item']}</Text>
                     <Button
                         title={'Pilih Item'}
                         onPress={() => this.props.navigation.navigate('Item', { myParentData: this.state.myData, mode: "lookup" })}
                     />
                 </View>
                 <TextInput
-                    value={this.state.myData[0]['qty']}
+                    value={this.state.myData['qty']}
                     onChangeText={(qty) => {
                         let arr = this.state.myData;
-                        arr[0]['qty'] = qty;
+                        arr['qty'] = qty;
                         this.setState({ myData: arr });
                     }}
                     placeholder={'Jumlah'}
@@ -66,10 +67,10 @@ class ScreenTagihanDetailAdd extends Component {
                     style={styles.input}
                 />
                 <TextInput
-                    value={this.state.myData[0]['harga']}
+                    value={this.state.myData['harga']}
                     onChangeText={(harga) => {
                         let arr = this.state.myData;
-                        arr[0]['harga'] = harga;
+                        arr['harga'] = harga;
                         this.setState({ myData: arr });
                     }}
                     placeholder={'Harga'}
@@ -77,19 +78,48 @@ class ScreenTagihanDetailAdd extends Component {
                     style={styles.input}
                 />
                 <TextInput
-                    value={this.state.myData[0]['ket_det_item']}
+                    value={this.state.myData['ket_det_item']}
                     onChangeText={(ket_det_item) => {
                         let arr = this.state.myData;
-                        arr[0]['ket_det_item'] = ket_det_item;
+                        arr['ket_det_item'] = ket_det_item;
                         this.setState({ myData: arr });
                     }}
                     placeholder={'Keterangan'}
                     //secureTextEntry={true}
                     style={styles.input}
                 />
+                <View style={{ flexDirection: 'row', justifyContent: 'space-evenly' }}>
+                    <View style={{ flexDirection: 'row', justifyContent: 'flex-start' }}>
+                        <Button
+                            title={'Hapus'}
+                            onPress={this.loadData}
+                        />
+                    </View>
+                    <View style={{ flexDirection: 'row', justifyContent: 'center' }}>
+                        <View style={{ flexDirection: 'row', justifyContent: 'space-evenly' }}>
+                            <Button
+                                title={'<<'}
+                                onPress={this.loadData}
+                            />
+                            <Button
+                                title={'>>'}
+                                onPress={this.loadData}
+                            />
+                        </View>
+                    </View>
+                    <View style={{ flexDirection: 'row', justifyContent: 'flex-end' }}>
+                        <Button
+                            title={'Tambah'}
+                            onPress={this.loadData}
+                        />
 
+
+                    </View>
+                </View>
+
+                <View style={{ margin: 10 }}></View>
                 <Button
-                    title={'Simpan'}
+                    title={'Selesai'}
                     style={styles.input}
                     onPress={this.loadData}
                 />
@@ -109,6 +139,12 @@ class ScreenTagihanDetailAdd extends Component {
             this.refreshData();
         });
     }
+
+    refreshData = () => {
+        console.log(this.state.myData["nm_item"]);
+        this.setState({ myData: this.state.myData });
+    }
+
 
 
 }
@@ -145,9 +181,10 @@ const styles = StyleSheet.create({
         borderWidth: 1,
         borderColor: 'black',
         marginBottom: 10,
+
     }
 
 });
 
-AppRegistry.registerComponent('ScreenTagihanDetailAdd', () => ScreenTagihanDetailAdd);
-export default ScreenTagihanDetailAdd;
+AppRegistry.registerComponent('ScreenTagihanDetailEdit2', () => ScreenTagihanDetailEdit2);
+export default ScreenTagihanDetailEdit2;

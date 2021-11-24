@@ -27,5 +27,10 @@ class MyFunctions {
         str = str.trim() === "" ? str.trim() : str;
         return str;
     }
+    static validateNumber(str) {
+        str = str.substr(-1) === " " ? str.trim() + " " : str.trim();
+        str = str.trim() === "" ? str.trim() : str;
+        return str.replace(/[^0-9]/g, '');
+    }
 }
 export default MyFunctions;

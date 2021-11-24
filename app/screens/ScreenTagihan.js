@@ -62,7 +62,7 @@ class ScreenTagihan extends Component {
           }
         />
         <ActivityIndicator style={styles.ActivityIndicator} size='large' color="red" animating={this.state.loading} />
-        <TouchableOpacity style={styles.AddButton} onPress={() => this.props.navigation.navigate('Tambah Tagihan', {
+        <TouchableOpacity style={styles.AddButton} onPress={() => this.props.navigation.navigate('Edit Tagihan', {
           idTagihan: ""
         })}>
           <MaterialCommunityIcons
@@ -119,7 +119,9 @@ class ScreenTagihan extends Component {
       </TouchableOpacity>
     )*/
     return (
-      <TouchableOpacity onPress={() => this.props.navigation.navigate('Detail', { id: item.id_tagihan })}>
+      <TouchableOpacity onPress={() => this.props.navigation.navigate('Edit Tagihan', {
+        idTagihan: item.id_tagihan
+      })}>
         <Text>{moment(item.tgl_pembuatan).locale("id").format("llll")}</Text>
         <Text>{item.ket_tagihan}</Text>
         <Text>{item.ketdet}</Text>
