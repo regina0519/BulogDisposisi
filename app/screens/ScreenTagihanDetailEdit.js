@@ -1,7 +1,7 @@
 import { StackActions } from '@react-navigation/routers';
 import React, { Component } from 'react';
 
-import { AppRegistry, Alert, StyleSheet, BackHandler, TextInput, Text, View, Button, ActivityIndicator, Platform, TouchableOpacity } from 'react-native';
+import { AppRegistry, ImageBackground, Alert, StyleSheet, BackHandler, TextInput, Text, View, Button, ActivityIndicator, Platform, TouchableOpacity } from 'react-native';
 import Global from '../functions/Global';
 import MyServerSettings from '../functions/MyServerSettings';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -63,55 +63,69 @@ class ScreenTagihanDetailEdit extends Component {
         //console.log(this.state.myData["det_array"].length);
         return (
 
-            <View style={styles.MainContainer}>
-                <View style={styles.ContentContainer}>
-                    <View style={{ margin: 5 }}>
-                        <Text>{this.state.myData['ket_tagihan']}</Text>
-                        <Text>Total (bruto) : Rp.{MyFunctions.formatMoney(this.countTotal())}</Text>
-                    </View>
-                    <View style={{ margin: 5, flexGrow: 1, flexShrink: 1 }}>
-                        <View style={{ flex: 1 }}>
-
-                            <PagerView style={styles.viewPager} initialPage={this.state.myDataDetIndex} ref={this.state.pagerView} onPageSelected={(e) => { this.setState({ myDataDetIndex: e.nativeEvent.position }); console.log("pos: " + e.nativeEvent.position); }}>
-                                {this.state.myData["det_array"].map(this.renderSwipeView)}
-                            </PagerView>
+            <ImageBackground style={Global.customStyles.BGImage} source={require('../assets/invoice.jpeg')}>
+                <View style={styles.MainContainer}>
+                    <View style={styles.ContentContainer}>
+                        <View style={{ margin: 5 }}>
+                            <Text style={[Global.customStyles.Label, { textAlign: 'center', fontSize: 20 }]}>{this.state.myData['ket_tagihan']}</Text>
+                            <Text style={[Global.customStyles.Label, { textAlign: 'center' }]}>Rp.{MyFunctions.formatMoney(this.countTotal())}</Text>
                         </View>
-                        <View style={styles.EditControls}>
-                            <TouchableOpacity style={{ alignSelf: 'flex-start' }} onPress={this.delDetItem}>
-                                <MaterialCommunityIcons
-                                    name="minus-circle"
-                                    size={50}
-                                    color={DefaultTheme.colors.primary}
+                        <View style={{
+                            margin: 5, flexGrow: 1, flexShrink: 1, elevation: 2,
+                            backgroundColor: 'rgba(255, 255, 255, 0.6)', padding: 10
+                        }}>
+                            <View style={{
+                                flex: 1,
+
+                            }}>
+
+                                <PagerView style={styles.viewPager} initialPage={this.state.myDataDetIndex} ref={this.state.pagerView} onPageSelected={(e) => { this.setState({ myDataDetIndex: e.nativeEvent.position }); console.log("pos: " + e.nativeEvent.position); }}>
+                                    {this.state.myData["det_array"].map(this.renderSwipeView)}
+                                </PagerView>
+                            </View>
+
+                        </View>
+                        <View style={{ width: '100%', alignSelf: 'center' }}>
+                            <View style={styles.EditControls}>
+                                <TouchableOpacity style={{ flexDirection: 'row' }} onPress={this.delDetItem}>
+                                    <MaterialCommunityIcons
+                                        name="database-remove"
+                                        size={30}
+                                        color={'#b52424'}
+                                    />
+                                    <Text style={[Global.customStyles.Label, { textAlignVertical: 'center', color: '#b52424' }]}>Hapus</Text>
+                                </TouchableOpacity>
+                                <TouchableOpacity style={{ flexDirection: 'row' }} onPress={this.addDetItem}>
+                                    <Text style={[Global.customStyles.Label, { textAlignVertical: 'center', color: '#484848' }]}>Tambah</Text>
+                                    <MaterialCommunityIcons
+                                        name="database-plus"
+                                        size={30}
+                                        color={'#484848'}
+                                    />
+                                </TouchableOpacity>
+                            </View>
+                            <View style={{ width: '50%', alignSelf: 'center', margin: 8 }}>
+                                <Button
+                                    title={'Selesai'}
+                                    color='#101417'
+                                    onPress={this.backAction}
                                 />
-                            </TouchableOpacity>
-                            <TouchableOpacity style={{ alignSelf: 'flex-start' }} onPress={this.addDetItem}>
-                                <MaterialCommunityIcons
-                                    name="plus-circle"
-                                    size={50}
-                                    color={DefaultTheme.colors.primary}
-                                />
-                            </TouchableOpacity>
+                            </View>
+
                         </View>
 
+
+
+
+
                     </View>
-                    <View style={{ margin: 5 }}>
-                        <Button
-                            title={'Selesai'}
-                            style={styles.input}
-                            onPress={this.backAction}
-                        />
+                    <View style={styles.LoadingContainer}>
+                        <ActivityIndicator style={styles.ActivityIndicator} size='large' color="red" animating={this.state.loading} />
+                        {this.state.loading ? <Text style={styles.ActivityIndicatorText}>Loading... Mohon Tunggu</Text> : null}
                     </View>
-
-
-
-
 
                 </View>
-                <View style={styles.LoadingContainer}>
-                    <ActivityIndicator style={styles.ActivityIndicator} size='large' color="red" animating={this.state.loading} />
-                    {this.state.loading ? <Text style={styles.ActivityIndicatorText}>Loading... Mohon Tunggu</Text> : null}
-                </View>
-            </View>
+            </ImageBackground>
         )
 
     }
@@ -248,9 +262,11 @@ class ScreenTagihanDetailEdit extends Component {
             <View style={styles.page} key={index}>
                 <Button
                     title={(data["id_item"] === undefined || data["id_item"] === "") ? "Pilih Item" : data["nm_item"]}
-                    style={styles.input}
+                    color='#101417'
                     onPress={() => this.props.navigation.navigate('Item', { myParentData: this.state.myData, mode: "lookup", myParentDataDetIndex: index, onReturn: (index) => { this.state.pagerView.current.setPage(index) } })}
                 />
+                <View style={{ margin: 10 }}></View>
+                <Text style={[Global.customStyles.Label, { alignSelf: 'flex-start' }]}>Jumlah {data['satuan'] !== "" ? "(" + data['satuan'] + ")" : ""}</Text>
                 <TextInput
                     value={data['qty']}
                     onChangeText={(qty) => {
@@ -261,10 +277,11 @@ class ScreenTagihanDetailEdit extends Component {
                     }}
                     placeholder={'Jumlah'}
                     //secureTextEntry={true}
-                    style={styles.input}
+                    style={Global.customStyles.Input}
                     keyboardType="numeric"
                     numeric
                 />
+                <Text style={[Global.customStyles.Label, { alignSelf: 'flex-start' }]}>Harga (Rp)</Text>
                 <TextInput
                     value={data['harga']}
                     onChangeText={(harga) => {
@@ -275,10 +292,11 @@ class ScreenTagihanDetailEdit extends Component {
                     }}
                     placeholder={'Harga'}
                     //secureTextEntry={true}
-                    style={styles.input}
+                    style={Global.customStyles.Input}
                     keyboardType="numeric"
                     numeric
                 />
+                <Text style={[Global.customStyles.Label, { alignSelf: 'flex-start' }]}>Keterangan</Text>
                 <TextInput
                     value={data['ket_det_item']}
                     onChangeText={(ket_det_item) => {
@@ -289,7 +307,7 @@ class ScreenTagihanDetailEdit extends Component {
                     }}
                     placeholder={'Keterangan'}
                     //secureTextEntry={true}
-                    style={styles.input}
+                    style={Global.customStyles.Input}
                 />
                 <Text>{index > 0 && index < me.length - 1 ? "◀ Swipe ▶" : index > 0 ? "◀ Swipe" : index < me.length - 1 ? "Swipe ▶" : ""}</Text>
             </View>
@@ -312,13 +330,20 @@ class ScreenTagihanDetailEdit extends Component {
 const styles = StyleSheet.create({
 
     MainContainer: {
+        //justifyContent: 'center',
+        //flex: 1,
+        //alignContent: 'flex-start',
         margin: 1,
-        paddingTop: (Platform.OS === 'ios') ? 20 : 0,
+        //paddingTop: (Platform.OS === 'ios') ? 20 : 0,
+        padding: 5,
+
     },
 
     ContentContainer: {
         width: '100%',
         height: '100%',
+        borderRadius: 5,
+        padding: 5,
     },
     LoadingContainer: {
         position: 'absolute',
@@ -344,12 +369,13 @@ const styles = StyleSheet.create({
     },
 
     EditControls: {
-        position: 'absolute',
         bottom: 0,
         padding: 10,
         flexDirection: 'row',
         width: '100%',
         justifyContent: 'space-between'
+
+
 
     },
 
