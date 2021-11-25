@@ -22,6 +22,7 @@ class ScreenItem extends Component {
             loading: true,
             myParentData: props.route.params.myParentData,
             myParentDataDetIndex: props.route.params.myParentDataDetIndex,
+            pagerView: props.route.params.pagerView,
             myData: [],
             loadingExtraData: false,
             page: 1,
@@ -155,16 +156,29 @@ class ScreenItem extends Component {
                 if (this.mode === "view") {
                     this.props.navigation.navigate('Detail', { id: item.id_tagihan })
                 } else {
-                    let arr = this.state.myParentData;
-                    arr["det_array"][this.state.myParentDataDetIndex]['id_item'] = item.id_item;
-                    arr["det_array"][this.state.myParentDataDetIndex]['qty'] = '1';
-                    arr["det_array"][this.state.myParentDataDetIndex]['harga'] = item.harga_patokan;
-                    arr["det_array"][this.state.myParentDataDetIndex]['ket_det_item'] = "";
-                    arr["det_array"][this.state.myParentDataDetIndex]['nm_item'] = item.nm_item;
-                    arr["det_array"][this.state.myParentDataDetIndex]['satuan'] = item.satuan;
-                    arr["det_array"][this.state.myParentDataDetIndex]['harga_patokan'] = item.harga_patokan;
-                    arr["det_array"][this.state.myParentDataDetIndex]['ket_item'] = item.ket_item;
-                    this.setState({ myParentData: arr });
+                    let foundInd = this.findDetItemIndexById(item.id_item);
+                    console.log("found index: " + foundInd);
+                    if (foundInd < 0) {
+                        let arr = this.state.myParentData;
+                        arr["det_array"][this.state.myParentDataDetIndex]['id_item'] = item.id_item;
+                        arr["det_array"][this.state.myParentDataDetIndex]['qty'] = '1';
+                        arr["det_array"][this.state.myParentDataDetIndex]['harga'] = item.harga_patokan;
+                        arr["det_array"][this.state.myParentDataDetIndex]['ket_det_item'] = "";
+                        arr["det_array"][this.state.myParentDataDetIndex]['nm_item'] = item.nm_item;
+                        arr["det_array"][this.state.myParentDataDetIndex]['satuan'] = item.satuan;
+                        arr["det_array"][this.state.myParentDataDetIndex]['harga_patokan'] = item.harga_patokan;
+                        arr["det_array"][this.state.myParentDataDetIndex]['ket_item'] = item.ket_item;
+                        this.setState({ myParentData: arr });
+                    } else {
+                        alert(item.nm_item + " sudah ada.");
+                        let arr = this.state.myParentData;
+                        if (arr["det_array"][this.state.myParentDataDetIndex]["id_item"] === "") {
+                            arr["det_array"].splice(this.state.myParentDataDetIndex, 1);
+                            this.setState({ myParentData: arr });
+                        }
+                        this.state.pagerView.current.setPage(foundInd);
+                    }
+
                     this.props.navigation.goBack();
                 }
             }}>
@@ -175,6 +189,13 @@ class ScreenItem extends Component {
             </TouchableOpacity>
         )
     }
+
+    findDetItemIndexById(id) {
+        return this.state.myParentData["det_array"].findIndex((currentValue, index, arr) => {
+            return currentValue["id_item"] === id;
+        });
+    }
+
 
 }
 

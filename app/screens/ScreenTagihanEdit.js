@@ -1,7 +1,7 @@
 import { StackActions } from '@react-navigation/routers';
 import React, { Component } from 'react';
 
-import { AppRegistry, StyleSheet, FlatList, RefreshControl, TextInput, Text, View, Button, ActivityIndicator, Platform, TouchableOpacity } from 'react-native';
+import { AppRegistry, StyleSheet, Alert, RefreshControl, TextInput, Text, View, Button, ActivityIndicator, Platform, TouchableOpacity, ImageBackground, TouchableHighlight, TouchableOpacityBase } from 'react-native';
 import Global from '../functions/Global';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import { DefaultTheme } from '@react-navigation/native';
@@ -9,13 +9,14 @@ import MyServerSettings from '../functions/MyServerSettings';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import MyFunctions from '../functions/MyFunctions';
 import moment from 'moment/min/moment-with-locales';
+import { SwipeListView } from 'react-native-swipe-list-view';
 
 
 
 
 
 class ScreenTagihanEdit extends Component {
-    keyExtractor = (data, index) => data.id_det_item;
+    keyExtractor = (data, index) => index + "";
     myDataBU = [];
 
     constructor(props) {
@@ -41,7 +42,7 @@ class ScreenTagihanEdit extends Component {
             'nm_pembuat': '',
             'jab_pembuat': '',
             'cat_pembuat': '',
-            'tgl_pembuatan': '',
+            'tgl_pembuatan': new Date().getFullYear() + '-' + MyFunctions.leadingZero((new Date().getMonth() + 1), 2) + '-' + MyFunctions.leadingZero(new Date().getDate(), 2) + ' ' + MyFunctions.leadingZero(new Date().getHours(), 2) + ':' + MyFunctions.leadingZero(new Date().getMinutes(), 2) + ':' + MyFunctions.leadingZero(new Date().getSeconds(), 2),
             'status_pembuatan': '0',
             'no_nota_intern': '',
             'id_pengaju': '',
@@ -87,86 +88,156 @@ class ScreenTagihanEdit extends Component {
     render() {
         //console.log(JSON.stringify(this.state.myData));
         //alert("rendered");
+
         return (
-            <View style={styles.MainContainer}>
-                <View style={styles.ContentContainer}>
-                    <View style={{ margin: 5 }}>
-                        <Text>{moment(this.state.myData['tgl_pembuatan']).locale("id").format("llll")}</Text>
-                        <View style={{ margin: 3 }}></View>
-                        <TextInput
-                            value={this.state.myData['ket_tagihan']}
-                            multiline={true}
-                            onChangeText={(ket_tagihan) => {
-                                ket_tagihan = MyFunctions.validateString(ket_tagihan);
-                                let arr = this.state.myData;
-                                arr['ket_tagihan'] = ket_tagihan;
-                                this.setState({ myData: arr });
-                                this.setAllowSave();
-                            }}
-                            placeholder={'Uraian'}
-                            //secureTextEntry={true}
-                            style={styles.input}
-                        />
-                        <TextInput
-                            value={this.state.myData['cat_pembuat']}
-                            multiline={true}
-                            onChangeText={(cat_pembuat) => {
-                                cat_pembuat = MyFunctions.validateString(cat_pembuat);
-                                let arr = this.state.myData;
-                                arr['cat_pembuat'] = cat_pembuat;
-                                this.setState({ myData: arr });
-                                this.setAllowSave();
-                            }}
-                            placeholder={'Catatan'}
-                            //secureTextEntry={true}
-                            style={styles.input}
-                        />
-                    </View>
-                    <View style={{ margin: 5, flexGrow: 1 }}>
-                        <FlatList
-                            data={this.state.myData["det_array"]}
-                            style={{ width: '100%' }}
-                            ItemSeparatorComponent={this.FlatListItemSeparator}
-                            renderItem={this.renderDataItem}
-                            keyExtractor={this.keyExtractor}
-                            refreshControl={
-                                <RefreshControl refreshing={this.state.loading} onRefresh={this.refreshData} />
-                            }
-                        />
-                        <TouchableOpacity style={styles.AddButton} onPress={() => this.props.navigation.navigate('Edit Detail Tagihan', { myData: this.state.myData, myDataDetIndex: this.state.myData["det_array"].length, myDataDetToDelete: this.state.myDataDetToDelete })}>
-                            <MaterialCommunityIcons
-                                name="plus-circle"
-                                size={50}
-                                color={DefaultTheme.colors.primary}
+
+            <ImageBackground style={Global.customStyles.BGImage} source={require('../assets/bgwhite.jpg')}>
+                <View style={styles.MainContainer}>
+                    <View style={styles.ContentContainer}>
+                        <View style={{ margin: 5 }}>
+                            <Text style={[Global.customStyles.Label, { textAlign: 'right' }]}>{moment(this.state.myData['tgl_pembuatan']).locale("id").format("llll")}</Text>
+                            <View style={{ margin: 3 }}></View>
+                            <Text style={Global.customStyles.Label}>Uraian</Text>
+                            <TextInput
+                                value={this.state.myData['ket_tagihan']}
+                                multiline={true}
+                                onChangeText={(ket_tagihan) => {
+                                    ket_tagihan = MyFunctions.validateString(ket_tagihan);
+                                    let arr = this.state.myData;
+                                    arr['ket_tagihan'] = ket_tagihan;
+                                    this.setState({ myData: arr });
+                                    this.setAllowSave();
+                                }}
+                                placeholder={'Uraian'}
+                                //secureTextEntry={true}
+                                style={Global.customStyles.Input}
                             />
-                        </TouchableOpacity>
+                            <Text style={Global.customStyles.Label}>Keterangan</Text>
+                            <TextInput
+                                value={this.state.myData['cat_pembuat']}
+                                multiline={true}
+                                onChangeText={(cat_pembuat) => {
+                                    cat_pembuat = MyFunctions.validateString(cat_pembuat);
+                                    let arr = this.state.myData;
+                                    arr['cat_pembuat'] = cat_pembuat;
+                                    this.setState({ myData: arr });
+                                    this.setAllowSave();
+                                }}
+                                placeholder={'Catatan'}
+                                //secureTextEntry={true}
+                                style={Global.customStyles.Input}
+                            />
+                            <Text style={Global.customStyles.Label}>Total (bruto): Rp. {MyFunctions.formatMoney(this.countTotal())}</Text>
+                        </View>
+                        <View style={{ margin: 5, flexGrow: 1, flexShrink: 1 }}>
+                            <SwipeListView
+                                data={this.state.myData["det_array"]}
+                                renderItem={this.renderDataItem}
+                                renderHiddenItem={this.renderHiddenItem}
+                                leftOpenValue={0}
+                                rightOpenValue={-75}
+                                previewRowKey={'0'}
+                                previewOpenValue={-40}
+                                previewOpenDelay={3000}
+                                onRowDidOpen={this.onRowDidOpen}
+                                keyExtractor={this.keyExtractor}
+                                style={{ width: '100%' }}
+                                refreshControl={
+                                    <RefreshControl refreshing={this.state.loading} onRefresh={this.refreshData} />
+                                }
+                            />
+                            <TouchableOpacity style={styles.AddButton} onPress={() => this.props.navigation.navigate('Edit Detail Tagihan', { myData: this.state.myData, myDataDetIndex: this.state.myData["det_array"].length, myDataDetToDelete: this.state.myDataDetToDelete })}>
+                                <MaterialCommunityIcons
+                                    name="plus-circle"
+                                    size={50}
+                                    color='#101417'
+                                />
+                            </TouchableOpacity>
+                        </View>
+                        <View style={{ width: '50%', alignSelf: 'center' }}>
+                            <Button
+                                title={'Simpan'}
+                                color='#101417'
+                                disabled={!this.state.allowSave}
+                                onPress={() => this.props.navigation.navigate('Detail Tagihan', { myParentData: this.state.myData })}
+                            />
+                        </View>
+
+
+
+
+
                     </View>
-                    <View style={{ margin: 5 }}>
-                        <Button
-                            title={'Simpan'}
-                            style={styles.input}
-                            disabled={!this.state.allowSave}
-                            onPress={() => this.props.navigation.navigate('Detail Tagihan', { myParentData: this.state.myData })}
-                        />
+                    <View style={styles.LoadingContainer}>
+                        <ActivityIndicator style={styles.ActivityIndicator} size='large' color="red" animating={this.state.loading} />
+                        {this.state.loading ? <Text style={styles.ActivityIndicatorText}>Loading... Mohon Tunggu</Text> : null}
                     </View>
-
-
-
-
 
                 </View>
-                <View style={styles.LoadingContainer}>
-                    <ActivityIndicator style={styles.ActivityIndicator} size='large' color="red" animating={this.state.loading} />
-                    {this.state.loading ? <Text style={styles.ActivityIndicatorText}>Loading... Mohon Tunggu</Text> : null}
-                </View>
-            </View>
+            </ImageBackground>
         )
 
     }
+    deleteRow = (rowMap, rowKey) => {
+        let arr = this.state.myData;
+
+        Alert.alert("Konfirmasi!", "Hapus item '" + arr["det_array"][rowKey]["nm_item"] + "'?", [
+            {
+                text: "Batal",
+                onPress: () => null,
+                style: "cancel"
+            },
+            {
+                text: "Ya", onPress: () => {
+                    let del = this.state.myDataDetToDelete;
+                    if (arr["det_array"][rowKey]["id_det_item"] !== "") {
+                        del.push(arr["det_array"][rowKey]["id_det_item"]);
+                    }
+                    arr["det_array"].splice(rowKey, 1);
+                    this.setState({ myData: arr, myDataDetToDelete: del });
+                }
+            }
+        ]);
+        /*
+        closeRow(rowMap, rowKey);
+        const newData = [...listData];
+        const prevIndex = listData.findIndex(item => item.key === rowKey);
+        newData.splice(prevIndex, 1);
+        setListData(newData);
+        */
+    };
+    onRowDidOpen = rowKey => {
+        console.log('This row opened', rowKey);
+    };
+    renderHiddenItem = (data, rowMap) => (
+        <View style={Global.customStyles.rowBack}>
+            <TouchableOpacity
+                style={[Global.customStyles.backRightBtn, Global.customStyles.backRightBtnRight]}
+                onPress={() => this.deleteRow(rowMap, data.index)}
+            >
+                <MaterialCommunityIcons
+                    name="delete"
+                    size={30}
+                    color='#101417'
+                />
+                <Text style={{ color: '#101417' }}>Hapus</Text>
+            </TouchableOpacity>
+        </View>
+    );
 
 
     componentDidMount() {
         this.loadData();
+        this.focusListener = this.props.navigation.addListener("focus", () => {
+            // The screen is focused
+            // Call any action
+            this.refreshData();
+        });
+    }
+    componentWillUnmount() {
+        this.setState = (state, callback) => {
+            return;
+        };
     }
     refreshData = () => {
         /*
@@ -211,6 +282,7 @@ class ScreenTagihanEdit extends Component {
                 myData: this.state.myData
             });
         }
+        this.setAllowSave();
     }
     backupData = () => {
         this.myDataBU = JSON.parse(JSON.stringify(this.state.myData));
@@ -218,19 +290,14 @@ class ScreenTagihanEdit extends Component {
     setAllowSave = () => {
         let edited = (JSON.stringify(this.state.myData) !== JSON.stringify(this.myDataBU));
         this.setState({
-            allowSave: edited && (this.state.myData["ket_tagihan"] !== "")
-        });
-    }
-    setAllowRincian = () => {
-        this.setState({
-            allowRincian: (this.state.myData["ket_tagihan"] !== "")
+            allowSave: edited && (this.state.myData["ket_tagihan"] !== "") && (this.state.myData["det_array"].length > 0)
         });
     }
 
     renderDataItem = ({ item, index }) => {
 
         return (
-            <TouchableOpacity onPress={() => this.props.navigation.navigate('Edit Detail Tagihan', { myDataDetIndex: index, myData: this.state.myData, myDataDetToDelete: this.state.myDataDetToDelete })}>
+            <TouchableOpacity style={Global.customStyles.ListItem} onPress={() => this.props.navigation.navigate('Edit Detail Tagihan', { myDataDetIndex: index, myData: this.state.myData, myDataDetToDelete: this.state.myDataDetToDelete })}>
                 <Text>{item.id_det_item}</Text>
                 <Text>{item.id_tagihan}</Text>
                 <Text>{item.id_item}</Text>
@@ -238,16 +305,12 @@ class ScreenTagihanEdit extends Component {
             </TouchableOpacity>
         )
     }
-    FlatListItemSeparator = () => {
-        return (
-            <View
-                style={{
-                    height: 1,
-                    width: "100%",
-                    backgroundColor: "#607D8B",
-                }}
-            />
-        );
+    countTotal() {
+        if (this.state.myData.length === 0) return 0;
+        var msgTotal = this.state.myData["det_array"].reduce(function (prev, cur) {
+            return prev + (cur.qty * cur.harga);
+        }, 0);
+        return msgTotal;
     }
 
 }
@@ -262,12 +325,18 @@ const styles = StyleSheet.create({
         //flex: 1,
         //alignContent: 'flex-start',
         margin: 1,
-        paddingTop: (Platform.OS === 'ios') ? 20 : 0,
+        //paddingTop: (Platform.OS === 'ios') ? 20 : 0,
+        padding: 5,
+
     },
 
     ContentContainer: {
         width: '100%',
         height: '100%',
+        borderRadius: 5,
+        padding: 5,
+        elevation: 3,
+        backgroundColor: 'rgba(255, 255, 255, 0.1)'
     },
     LoadingContainer: {
         position: 'absolute',

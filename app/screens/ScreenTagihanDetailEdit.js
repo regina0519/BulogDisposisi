@@ -1,12 +1,14 @@
 import { StackActions } from '@react-navigation/routers';
 import React, { Component } from 'react';
 
-import { AppRegistry, StyleSheet, TextInput, Text, View, Button, ActivityIndicator, Platform, TouchableOpacity } from 'react-native';
+import { AppRegistry, Alert, StyleSheet, BackHandler, TextInput, Text, View, Button, ActivityIndicator, Platform, TouchableOpacity } from 'react-native';
 import Global from '../functions/Global';
 import MyServerSettings from '../functions/MyServerSettings';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import PagerView from 'react-native-pager-view';
 import MyFunctions from '../functions/MyFunctions';
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import { DefaultTheme } from '@react-navigation/native';
 
 
 
@@ -14,13 +16,14 @@ import MyFunctions from '../functions/MyFunctions';
 
 class ScreenTagihanDetailEdit extends Component {
 
+
     constructor(props) {
 
         super(props);
         //alert(props.route.params.mode);
         let ind = props.route.params.myDataDetIndex;
         let data = props.route.params.myData;
-        console.log(data["det_array"].length);
+        //console.log(data["det_array"].length);
         if (ind >= data["det_array"].length) {
             data["det_array"].push(this.newRecord());
             ind = data["det_array"].length;
@@ -28,11 +31,14 @@ class ScreenTagihanDetailEdit extends Component {
         this.state = {
             loading: false,
             myDataDetIndex: ind,
+            pagerView: React.createRef(),
             myData: data,
             myDataDetToDelete: props.route.params.myDataDetToDelete
         }
 
     }
+
+
 
     newRecord = () => {
         return ({
@@ -61,15 +67,32 @@ class ScreenTagihanDetailEdit extends Component {
                 <View style={styles.ContentContainer}>
                     <View style={{ margin: 5 }}>
                         <Text>{this.state.myData['ket_tagihan']}</Text>
-                        <Text>Total (bruto) : </Text>
+                        <Text>Total (bruto) : Rp.{MyFunctions.formatMoney(this.countTotal())}</Text>
                     </View>
-                    <View style={{ margin: 5, flexGrow: 1 }}>
+                    <View style={{ margin: 5, flexGrow: 1, flexShrink: 1 }}>
                         <View style={{ flex: 1 }}>
 
-                            <PagerView style={styles.viewPager} initialPage={this.state.myDataDetIndex} >
+                            <PagerView style={styles.viewPager} initialPage={this.state.myDataDetIndex} ref={this.state.pagerView} onPageSelected={(e) => { this.setState({ myDataDetIndex: e.nativeEvent.position }) }}>
                                 {this.state.myData["det_array"].map(this.renderSwipeView)}
                             </PagerView>
                         </View>
+                        <View style={styles.EditControls}>
+                            <TouchableOpacity style={{ alignSelf: 'flex-start' }} onPress={this.delDetItem}>
+                                <MaterialCommunityIcons
+                                    name="minus-circle"
+                                    size={50}
+                                    color={DefaultTheme.colors.primary}
+                                />
+                            </TouchableOpacity>
+                            <TouchableOpacity style={{ alignSelf: 'flex-start' }} onPress={this.addDetItem}>
+                                <MaterialCommunityIcons
+                                    name="plus-circle"
+                                    size={50}
+                                    color={DefaultTheme.colors.primary}
+                                />
+                            </TouchableOpacity>
+                        </View>
+
                     </View>
                     <View style={{ margin: 5 }}>
                         <Button
@@ -93,13 +116,105 @@ class ScreenTagihanDetailEdit extends Component {
 
     }
 
+    initNewItem = async () => {
+        let data = this.state.myData;
+        if (data["det_array"].length > 0) {
+            if (data["det_array"][data["det_array"].length - 1]["id_item"] === "") throw "not yet";
+        }
+
+        data["det_array"].push(this.newRecord());
+        let ind = data["det_array"].length - 1;
+        this.setState({
+            myDataDetIndex: ind,
+            myData: data
+        });
+    }
+
+    addDetItem = () => {
+        this.initNewItem().then(() => {
+            this.state.pagerView.current.setPage(this.state.myDataDetIndex);
+        }).catch((err) => { console.log(err) });
+        //this.state.pagerView.current.setPage(this.state.myDataDetIndex);
+    }
+    initDelItem = async () => {
+        let data = this.state.myData;
+        let ind = this.state.myDataDetIndex;
+        if (data["det_array"].length > 0) {
+            if (data["det_array"][ind]["id_det_item"] !== "") {
+                let bu = this.state.myDataDetToDelete;
+                bu.push(data["det_array"][ind]["id_det_item"]);
+                this.setState({
+                    myDataDetToDelete: bu
+                });
+            }
+            data["det_array"].splice(ind, 1);
+            if (ind < data["det_array"].length - 1) {
+                ind++;
+            } else if (ind > 0) {
+                ind--;
+            }
+
+            this.setState({
+                myDataDetIndex: ind,
+                myData: data
+            });
+        }
+    }
+    delDetItem = () => {
+        if (this.state.myData["det_array"].length > 0) {
+            this.initDelItem().then(() => {
+                this.state.pagerView.current.setPage(this.state.myDataDetIndex);
+            });
+        }
+
+    }
+
+    validData = () => {
+        let data = this.state.myData;
+        if (data["det_array"].length > 0) {
+            if (data["det_array"][data["det_array"].length - 1]["id_item"] === "") {
+                Alert.alert("Maaf!", "Anda belum memilih item. Tetap kembali?", [
+                    {
+                        text: "Batal",
+                        onPress: () => this.state.pagerView.current.setPage(data["det_array"].length - 1),
+                        style: "cancel"
+                    },
+                    {
+                        text: "Ya", onPress: () => {
+                            data["det_array"].splice(data["det_array"].length - 1, 1);
+                            this.props.navigation.goBack();
+                        }
+                    }
+                ]);
+            } else {
+                this.props.navigation.goBack();
+            }
+        } else {
+            this.props.navigation.goBack();
+        }
+    }
+
+    backAction = () => {
+        this.validData();
+        return true;
+    };
 
     componentDidMount() {
+        this.backHandler = BackHandler.addEventListener(
+            "hardwareBackPress",
+            this.backAction
+        );
         this.focusListener = this.props.navigation.addListener("focus", () => {
             // The screen is focused
             // Call any action
             this.refreshData();
         });
+    }
+    componentWillUnmount() {
+        this.backHandler.remove();
+        this.setState = (state, callback) => {
+            return;
+        };
     }
 
     refreshData = () => {
@@ -107,16 +222,15 @@ class ScreenTagihanDetailEdit extends Component {
         this.setState({ myData: this.state.myData });
     }
     renderSwipeView = (data, index, me) => {
+
         return (
-            <View style={styles.page} key={"view" + data["id_det_item"]}>
+            <View style={styles.page} key={index}>
                 <Button
-                    key={"btn" + data["id_det_item"]}
                     title={(data["id_item"] === undefined || data["id_item"] === "") ? "Pilih Item" : data["nm_item"]}
                     style={styles.input}
-                    onPress={() => this.props.navigation.navigate('Item', { myParentData: this.state.myData, mode: "lookup", myParentDataDetIndex: index })}
+                    onPress={() => this.props.navigation.navigate('Item', { myParentData: this.state.myData, mode: "lookup", myParentDataDetIndex: index, pagerView: this.state.pagerView })}
                 />
                 <TextInput
-                    key={"txt_qty" + data["id_det_item"]}
                     value={data['qty']}
                     onChangeText={(qty) => {
                         qty = MyFunctions.validateNumber(qty);
@@ -131,7 +245,6 @@ class ScreenTagihanDetailEdit extends Component {
                     numeric
                 />
                 <TextInput
-                    key={"txt_harga" + data["id_det_item"]}
                     value={data['harga']}
                     onChangeText={(harga) => {
                         harga = MyFunctions.validateNumber(harga);
@@ -146,7 +259,6 @@ class ScreenTagihanDetailEdit extends Component {
                     numeric
                 />
                 <TextInput
-                    key={"txt_ket_det_item" + data["id_det_item"]}
                     value={data['ket_det_item']}
                     onChangeText={(ket_det_item) => {
                         ket_det_item = MyFunctions.validateString(ket_det_item);
@@ -158,9 +270,16 @@ class ScreenTagihanDetailEdit extends Component {
                     //secureTextEntry={true}
                     style={styles.input}
                 />
-                <Text>{index > 0 && index < me.length - 1 ? "◀ Swipe ▶" : index > 0 ? "◀ Swipe" : "Swipe ▶"}</Text>
+                <Text>{index > 0 && index < me.length - 1 ? "◀ Swipe ▶" : index > 0 ? "◀ Swipe" : index < me.length - 1 ? "Swipe ▶" : ""}</Text>
             </View>
         );
+    }
+
+    countTotal() {
+        var msgTotal = this.state.myData["det_array"].reduce(function (prev, cur) {
+            return prev + (cur.qty * cur.harga);
+        }, 0);
+        return msgTotal;
     }
 
 
@@ -203,10 +322,13 @@ const styles = StyleSheet.create({
         marginBottom: 10,
     },
 
-    AddButton: {
+    EditControls: {
         position: 'absolute',
-        alignSelf: 'flex-end',
-        bottom: 0
+        bottom: 0,
+        padding: 10,
+        flexDirection: 'row',
+        width: '100%',
+        justifyContent: 'space-between'
 
     },
 

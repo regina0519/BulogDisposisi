@@ -1,4 +1,5 @@
-import { Dimensions } from "react-native";
+import { Dimensions, StyleSheet } from "react-native";
+import { DefaultTheme } from '@react-navigation/native';
 class Global {
     static #curUserId = "";
     static #idJab = "";
@@ -97,6 +98,59 @@ class Global {
         this.#ketFungsi = data['ket_fungsi'];
         this.#nmBidang = data['nm_bidang'];
     }
+
+
+    static customStyles = StyleSheet.create({
+        BGImage: {
+            resizeMode: 'stretch',
+            justifyContent: 'center',
+        },
+        ListItem: {
+            borderRadius: 5,
+            margin: 2,
+            padding: 5,
+            elevation: 3,
+            backgroundColor: DefaultTheme.colors.background
+        },
+        Input: {
+            width: '100%',
+            paddingVertical: 2,
+            paddingHorizontal: 10,
+            backgroundColor: DefaultTheme.colors.background,
+            borderRadius: 25,
+            borderWidth: 2,
+            borderColor: '#a8a8a8',
+            marginBottom: 10,
+        },
+        Label: {
+            color: '#484848',
+            fontWeight: 'bold'
+        },
+        rowBack: {
+            alignItems: 'center',
+            //backgroundColor: '#DDD',
+            flex: 1,
+            flexDirection: 'row',
+            justifyContent: 'space-between',
+            paddingLeft: 15,
+        },
+        backRightBtn: {
+            alignItems: 'center',
+            bottom: 0,
+            justifyContent: 'center',
+            position: 'absolute',
+            top: 0,
+            width: 75,
+        },
+        backRightBtnLeft: {
+            //backgroundColor: 'blue',
+            right: 75,
+        },
+        backRightBtnRight: {
+            //backgroundColor: 'red',
+            right: 0,
+        }
+    });
 
 
 }
