@@ -102,7 +102,7 @@ class Global {
 
     static customStyles = StyleSheet.create({
         BGImage: {
-            resizeMode: 'stretch',
+            resizeMode: 'cover',
             justifyContent: 'center',
         },
         ListItem: {

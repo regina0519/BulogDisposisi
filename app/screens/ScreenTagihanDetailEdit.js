@@ -26,7 +26,7 @@ class ScreenTagihanDetailEdit extends Component {
         //console.log(data["det_array"].length);
         if (ind >= data["det_array"].length) {
             data["det_array"].push(this.newRecord());
-            ind = data["det_array"].length;
+            ind = data["det_array"].length - 1;
         }
         this.state = {
             loading: false,
@@ -72,7 +72,7 @@ class ScreenTagihanDetailEdit extends Component {
                     <View style={{ margin: 5, flexGrow: 1, flexShrink: 1 }}>
                         <View style={{ flex: 1 }}>
 
-                            <PagerView style={styles.viewPager} initialPage={this.state.myDataDetIndex} ref={this.state.pagerView} onPageSelected={(e) => { this.setState({ myDataDetIndex: e.nativeEvent.position }) }}>
+                            <PagerView style={styles.viewPager} initialPage={this.state.myDataDetIndex} ref={this.state.pagerView} onPageSelected={(e) => { this.setState({ myDataDetIndex: e.nativeEvent.position }); console.log("pos: " + e.nativeEvent.position); }}>
                                 {this.state.myData["det_array"].map(this.renderSwipeView)}
                             </PagerView>
                         </View>
@@ -98,7 +98,7 @@ class ScreenTagihanDetailEdit extends Component {
                         <Button
                             title={'Selesai'}
                             style={styles.input}
-                            onPress={this.loadData}
+                            onPress={this.backAction}
                         />
                     </View>
 
@@ -140,6 +140,7 @@ class ScreenTagihanDetailEdit extends Component {
         let data = this.state.myData;
         let ind = this.state.myDataDetIndex;
         if (data["det_array"].length > 0) {
+            if (data["det_array"][ind] === undefined) throw "unknown";
             if (data["det_array"][ind]["id_det_item"] !== "") {
                 let bu = this.state.myDataDetToDelete;
                 bu.push(data["det_array"][ind]["id_det_item"]);
@@ -164,7 +165,7 @@ class ScreenTagihanDetailEdit extends Component {
         if (this.state.myData["det_array"].length > 0) {
             this.initDelItem().then(() => {
                 this.state.pagerView.current.setPage(this.state.myDataDetIndex);
-            });
+            }).catch((err) => { console.log(err) });
         }
 
     }
@@ -173,7 +174,7 @@ class ScreenTagihanDetailEdit extends Component {
         let data = this.state.myData;
         if (data["det_array"].length > 0) {
             if (data["det_array"][data["det_array"].length - 1]["id_item"] === "") {
-                Alert.alert("Maaf!", "Anda belum memilih item. Tetap kembali?", [
+                Alert.alert("Maaf!", "Anda belum memilih item. Selesai mengedit?", [
                     {
                         text: "Batal",
                         onPress: () => this.state.pagerView.current.setPage(data["det_array"].length - 1),
@@ -200,6 +201,19 @@ class ScreenTagihanDetailEdit extends Component {
     };
 
     componentDidMount() {
+        this.props.navigation.setOptions({
+            headerLeft: () => (
+                <TouchableOpacity
+                    onPress={this.backAction}
+                >
+                    <MaterialCommunityIcons
+                        name="menu-left"
+                        size={40}
+                        color='#101417'
+                    />
+                </TouchableOpacity>
+            ),
+        });
         this.backHandler = BackHandler.addEventListener(
             "hardwareBackPress",
             this.backAction
@@ -208,8 +222,15 @@ class ScreenTagihanDetailEdit extends Component {
             // The screen is focused
             // Call any action
             this.refreshData();
+
         });
     }
+
+    requestToGoToDetIndex = (index) => {
+        this.state.pagerView.current.setPage(this.state.myDataDetIndex);
+        this.setState({ myDataDetIndex: index });
+    }
+
     componentWillUnmount() {
         this.backHandler.remove();
         this.setState = (state, callback) => {
@@ -228,7 +249,7 @@ class ScreenTagihanDetailEdit extends Component {
                 <Button
                     title={(data["id_item"] === undefined || data["id_item"] === "") ? "Pilih Item" : data["nm_item"]}
                     style={styles.input}
-                    onPress={() => this.props.navigation.navigate('Item', { myParentData: this.state.myData, mode: "lookup", myParentDataDetIndex: index, pagerView: this.state.pagerView })}
+                    onPress={() => this.props.navigation.navigate('Item', { myParentData: this.state.myData, mode: "lookup", myParentDataDetIndex: index, onReturn: (index) => { this.state.pagerView.current.setPage(index) } })}
                 />
                 <TextInput
                     value={data['qty']}

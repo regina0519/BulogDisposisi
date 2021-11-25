@@ -1,7 +1,7 @@
 import { StackActions } from '@react-navigation/routers';
 import React, { Component } from 'react';
 
-import { AppRegistry, StyleSheet, Alert, RefreshControl, TextInput, Text, View, Button, ActivityIndicator, Platform, TouchableOpacity, ImageBackground, TouchableHighlight, TouchableOpacityBase } from 'react-native';
+import { AppRegistry, StyleSheet, Alert, BackHandler, RefreshControl, TextInput, Text, View, Button, ActivityIndicator, Platform, TouchableOpacity, ImageBackground, TouchableHighlight, TouchableOpacityBase } from 'react-native';
 import Global from '../functions/Global';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import { DefaultTheme } from '@react-navigation/native';
@@ -91,7 +91,7 @@ class ScreenTagihanEdit extends Component {
 
         return (
 
-            <ImageBackground style={Global.customStyles.BGImage} source={require('../assets/bgwhite.jpg')}>
+            <ImageBackground style={Global.customStyles.BGImage} source={require('../assets/invoice.jpeg')}>
                 <View style={styles.MainContainer}>
                     <View style={styles.ContentContainer}>
                         <View style={{ margin: 5 }}>
@@ -159,7 +159,7 @@ class ScreenTagihanEdit extends Component {
                                 title={'Simpan'}
                                 color='#101417'
                                 disabled={!this.state.allowSave}
-                                onPress={() => this.props.navigation.navigate('Detail Tagihan', { myParentData: this.state.myData })}
+                                onPress={this.saveData}
                             />
                         </View>
 
@@ -178,6 +178,11 @@ class ScreenTagihanEdit extends Component {
         )
 
     }
+
+    saveData = () => {
+        console.log(this.state.myDataDetToDelete);
+    }
+
     deleteRow = (rowMap, rowKey) => {
         let arr = this.state.myData;
 
@@ -191,23 +196,20 @@ class ScreenTagihanEdit extends Component {
                 text: "Ya", onPress: () => {
                     let del = this.state.myDataDetToDelete;
                     if (arr["det_array"][rowKey]["id_det_item"] !== "") {
+                        //console.log("bef: " + del.length);
                         del.push(arr["det_array"][rowKey]["id_det_item"]);
+                        //console.log("aft: " + del.length);
                     }
                     arr["det_array"].splice(rowKey, 1);
                     this.setState({ myData: arr, myDataDetToDelete: del });
+                    this.setAllowSave();
                 }
             }
         ]);
-        /*
-        closeRow(rowMap, rowKey);
-        const newData = [...listData];
-        const prevIndex = listData.findIndex(item => item.key === rowKey);
-        newData.splice(prevIndex, 1);
-        setListData(newData);
-        */
+
     };
     onRowDidOpen = rowKey => {
-        console.log('This row opened', rowKey);
+        //console.log('This row opened', rowKey);
     };
     renderHiddenItem = (data, rowMap) => (
         <View style={Global.customStyles.rowBack}>
@@ -226,8 +228,48 @@ class ScreenTagihanEdit extends Component {
     );
 
 
+    validData = () => {
+        if (this.state.allowSave) {
+            Alert.alert("Konfirmasi?", "Anda belum menyimpan data yang telah diubah. Batalkan perubahan?", [
+                {
+                    text: "Tidak",
+                    onPress: () => null,
+                    style: "cancel"
+                },
+                {
+                    text: "Ya", onPress: () => {
+                        this.props.navigation.goBack();
+                    }
+                }
+            ]);
+        } else this.props.navigation.goBack();
+    }
+
+    backAction = () => {
+        this.validData();
+        return true;
+    };
+
     componentDidMount() {
+        this.props.navigation.setOptions({
+            headerLeft: () => (
+                <TouchableOpacity
+                    onPress={this.backAction}
+                >
+                    <MaterialCommunityIcons
+                        name="menu-left"
+                        size={40}
+                        color='#101417'
+                    />
+                </TouchableOpacity>
+            ),
+        });
+        this.backHandler = BackHandler.addEventListener(
+            "hardwareBackPress",
+            this.backAction
+        );
         this.loadData();
+
         this.focusListener = this.props.navigation.addListener("focus", () => {
             // The screen is focused
             // Call any action
@@ -235,6 +277,7 @@ class ScreenTagihanEdit extends Component {
         });
     }
     componentWillUnmount() {
+        this.backHandler.remove();
         this.setState = (state, callback) => {
             return;
         };
@@ -267,7 +310,7 @@ class ScreenTagihanEdit extends Component {
                         myData: responseJson[0]
                     })
                     this.backupData();
-                    console.log(this.state.myData["det_array"])
+                    //console.log(this.state.myData["det_array"])
                 })
                 .catch((error) => {
                     console.log('Error selecting random data: ' + error)
@@ -288,6 +331,7 @@ class ScreenTagihanEdit extends Component {
         this.myDataBU = JSON.parse(JSON.stringify(this.state.myData));
     }
     setAllowSave = () => {
+        //console.log(JSON.stringify(this.state.myData));
         let edited = (JSON.stringify(this.state.myData) !== JSON.stringify(this.myDataBU));
         this.setState({
             allowSave: edited && (this.state.myData["ket_tagihan"] !== "") && (this.state.myData["det_array"].length > 0)
@@ -336,7 +380,7 @@ const styles = StyleSheet.create({
         borderRadius: 5,
         padding: 5,
         elevation: 3,
-        backgroundColor: 'rgba(255, 255, 255, 0.1)'
+        backgroundColor: 'rgba(255, 255, 255, 0.5)'
     },
     LoadingContainer: {
         position: 'absolute',

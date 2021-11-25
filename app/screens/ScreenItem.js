@@ -22,7 +22,7 @@ class ScreenItem extends Component {
             loading: true,
             myParentData: props.route.params.myParentData,
             myParentDataDetIndex: props.route.params.myParentDataDetIndex,
-            pagerView: props.route.params.pagerView,
+            //pagerView: props.route.params.pagerView,
             myData: [],
             loadingExtraData: false,
             page: 1,
@@ -174,9 +174,9 @@ class ScreenItem extends Component {
                         let arr = this.state.myParentData;
                         if (arr["det_array"][this.state.myParentDataDetIndex]["id_item"] === "") {
                             arr["det_array"].splice(this.state.myParentDataDetIndex, 1);
-                            this.setState({ myParentData: arr });
+                            this.setState({ myParentData: arr, myParentDataDetIndex: foundInd });
                         }
-                        this.state.pagerView.current.setPage(foundInd);
+                        this.props.route.params.onReturn(foundInd);
                     }
 
                     this.props.navigation.goBack();
