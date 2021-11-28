@@ -336,7 +336,7 @@ class ScreenTagihanDetailEdit extends Component {
                                 <MaterialCommunityIcons name="gesture-swipe-right" size={40} color='#101417' />
                                 : index < me.length - 1 ?
                                     <MaterialCommunityIcons name="gesture-swipe-left" size={40} color='#101417' />
-                                    : ""}
+                                    : null}
                     </View>
                 </ScrollView>
 

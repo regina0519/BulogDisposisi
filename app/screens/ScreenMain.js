@@ -4,6 +4,7 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import ScreenTagihan from './ScreenTagihan';
 import TestNotif from './TestNotif';
+import ScreenProfil from './ScreenProfil';
 
 
 
@@ -34,7 +35,7 @@ export default function ScreenMain() {
                 }} />
             <Tab.Screen
                 name="TabProfile"
-                component={TestNotif}
+                component={ScreenProfil}
                 options={{
                     tabBarLabel: 'Profil',
                     tabBarIcon: ({ color, size }) => (

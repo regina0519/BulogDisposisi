@@ -125,7 +125,7 @@ class MyFunctions {
     }
     static stringTruncateIndo(str, min, char, name) {
         let arr = str.split(char);
-        if (arr.length == min + 1) return str;
+        if (arr.length <= min + 1) return str;
         let ret = "";
         for (var i = 0; i < min; i++) {
             ret += arr[i];

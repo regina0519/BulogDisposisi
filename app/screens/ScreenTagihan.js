@@ -175,10 +175,11 @@ class ScreenTagihan extends Component {
       <TouchableOpacity style={Global.customStyles.ListItem} onPress={() => this.props.navigation.navigate('Edit Tagihan', {
         idTagihan: item.id_tagihan
       })}>
-        <Text>{moment(item.tgl_pembuatan).locale("id").format("llll")}</Text>
-        <Text>{item.ket_tagihan}</Text>
-        <Text>{item.ketdet}</Text>
-        <Text>{"Rp. " + MyFunctions.formatMoney(item.total)}</Text>
+        <Text style={{ textAlign: 'right' }}>Bidang {item.nm_bidang}</Text>
+        <Text style={{ textAlign: 'right' }}>{moment(item.tgl_pembuatan).locale("id").format("llll")}</Text>
+        <Text style={{ fontWeight: 'bold' }}>{item.ket_tagihan}</Text>
+        <Text>{MyFunctions.stringTruncateIndo(item.ketdet, 2, '\n', 'item')}</Text>
+        <Text style={{ textAlign: 'right', fontWeight: 'bold' }}>{"Rp. " + MyFunctions.formatMoney(item.total)}</Text>
       </TouchableOpacity>
     )
   }

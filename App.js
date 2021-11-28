@@ -19,6 +19,9 @@ import ScreenItem from './app/screens/ScreenItem';
 import ScreenItemAdd from './app/screens/ScreenItemAdd';
 import ScreenTagihanEdit from './app/screens/ScreenTagihanEdit';
 import ScreenTagihanDetailEdit from './app/screens/ScreenTagihanDetailEdit';
+import TestTmp from './app/screens/TestTmp';
+import ScreenProfil from './app/screens/ScreenProfil';
+import ScreenChangePass from './app/screens/ScreenChangePass';
 
 const Stack = createNativeStackNavigator();
 
@@ -30,6 +33,8 @@ export default function App() {
         <Stack.Screen name="Init" component={ScreenInit} options={{ headerShown: false }} />
         <Stack.Screen name="Login" component={ScreenLogin} options={{ headerShown: false }} />
         <Stack.Screen name="Tagihan" component={ScreenTagihan} />
+        <Stack.Screen name="Profil" component={ScreenProfil} />
+        <Stack.Screen name="Ganti Password" component={ScreenChangePass} />
         <Stack.Screen name="Edit Tagihan" component={ScreenTagihanEdit} />
         <Stack.Screen name="Detail Tagihan" component={ScreenTagihanDetail} />
         <Stack.Screen name="Edit Detail Tagihan" component={ScreenTagihanDetailEdit} />

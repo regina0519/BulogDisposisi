@@ -346,10 +346,9 @@ class ScreenTagihanEdit extends Component {
 
         return (
             <TouchableOpacity style={Global.customStyles.ListItem} onPress={() => this.props.navigation.navigate('Edit Detail Tagihan', { myDataDetIndex: index, myData: this.state.myData, myDataDetToDelete: this.state.myDataDetToDelete })}>
-                <Text>{item.id_det_item}</Text>
-                <Text>{item.id_tagihan}</Text>
-                <Text>{item.id_item}</Text>
-                <Text>{MyFunctions.formatMoney(item.qty)}</Text>
+                <Text style={{ fontWeight: 'bold' }}>{item.nm_item}</Text>
+                <Text>{MyFunctions.formatMoney(item.qty) + " " + item.satuan} @Rp.{MyFunctions.formatMoney(item.harga)}</Text>
+                <Text style={{ fontWeight: 'bold', textAlign: 'right' }}>Rp.{MyFunctions.formatMoney(Number.parseFloat(item.qty) * Number.parseFloat(item.harga))}</Text>
             </TouchableOpacity>
         )
     }

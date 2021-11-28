@@ -19,6 +19,7 @@
     "expo-print": "^10.2.1",
     "expo-sharing": "^10.0.3",
     "expo-status-bar": "~1.0.4",
+    "fiction-expo-restart": "^1.1.0",
     "moment": "^2.29.1",
     "react": "16.13.1",
     "react-dom": "16.13.1",

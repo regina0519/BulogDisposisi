@@ -1,7 +1,7 @@
 import { StackActions } from '@react-navigation/routers';
 import React, { Component } from 'react';
 
-import { AppRegistry, ImageBackground, StyleSheet, TextInput, Text, View, Button, ActivityIndicator, Platform, TouchableOpacity } from 'react-native';
+import { AppRegistry, ImageBackground, ScrollView, StyleSheet, TextInput, Text, View, Button, ActivityIndicator, Platform, TouchableOpacity } from 'react-native';
 import Global from '../functions/Global';
 import MyServerSettings from '../functions/MyServerSettings';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -47,60 +47,62 @@ class ScreenItemAdd extends Component {
                         </View>
                         <View style={{ margin: 5, flexGrow: 1, flexShrink: 1, justifyContent: 'center' }}>
                             <View style={[styles.ContentContainer, { height: 'auto', padding: 10 }]}>
-                                <Text style={Global.customStyles.Label}>Item</Text>
-                                <TextInput
-                                    value={this.state.myData[0]['nm_item']}
-                                    onChangeText={(nm_item) => {
-                                        nm_item = MyFunctions.validateString(nm_item);
-                                        let arr = this.state.myData;
-                                        arr[0]['nm_item'] = nm_item;
-                                        this.setState({ myData: arr });
-                                    }}
-                                    placeholder={'Item'}
-                                    //secureTextEntry={true}
-                                    style={Global.customStyles.Input}
-                                />
-                                <Text style={Global.customStyles.Label}>Satuan</Text>
-                                <TextInput
-                                    value={this.state.myData[0]['satuan']}
-                                    onChangeText={(satuan) => {
-                                        satuan = MyFunctions.validateString(satuan);
-                                        let arr = this.state.myData;
-                                        arr[0]['satuan'] = satuan;
-                                        this.setState({ myData: arr });
-                                    }}
-                                    placeholder={'Satuan'}
-                                    //secureTextEntry={true}
-                                    style={Global.customStyles.Input}
-                                />
-                                <Text style={Global.customStyles.Label}>Standar Harga</Text>
-                                <TextInput
-                                    value={this.state.myData[0]['harga_patokan']}
-                                    onChangeText={(harga_patokan) => {
-                                        harga_patokan = MyFunctions.validateInputDouble(harga_patokan);
-                                        let arr = this.state.myData;
-                                        arr[0]['harga_patokan'] = harga_patokan;
-                                        this.setState({ myData: arr });
-                                    }}
-                                    placeholder={'Standar Harga'}
-                                    //secureTextEntry={true}
-                                    style={Global.customStyles.Input}
-                                    keyboardType="numeric"
-                                    numeric
-                                />
-                                <Text style={Global.customStyles.Label}>Keterangan</Text>
-                                <TextInput
-                                    value={this.state.myData[0]['ket_item']}
-                                    onChangeText={(ket_item) => {
-                                        ket_item = MyFunctions.validateString(ket_item);
-                                        let arr = this.state.myData;
-                                        arr[0]['ket_item'] = ket_item;
-                                        this.setState({ myData: arr });
-                                    }}
-                                    placeholder={'Keterangan'}
-                                    //secureTextEntry={true}
-                                    style={Global.customStyles.Input}
-                                />
+                                <ScrollView style={{ width: '100%', paddingHorizontal: 10 }}>
+                                    <Text style={Global.customStyles.Label}>Item</Text>
+                                    <TextInput
+                                        value={this.state.myData[0]['nm_item']}
+                                        onChangeText={(nm_item) => {
+                                            nm_item = MyFunctions.validateString(nm_item);
+                                            let arr = this.state.myData;
+                                            arr[0]['nm_item'] = nm_item;
+                                            this.setState({ myData: arr });
+                                        }}
+                                        placeholder={'Item'}
+                                        //secureTextEntry={true}
+                                        style={Global.customStyles.Input}
+                                    />
+                                    <Text style={Global.customStyles.Label}>Satuan</Text>
+                                    <TextInput
+                                        value={this.state.myData[0]['satuan']}
+                                        onChangeText={(satuan) => {
+                                            satuan = MyFunctions.validateString(satuan);
+                                            let arr = this.state.myData;
+                                            arr[0]['satuan'] = satuan;
+                                            this.setState({ myData: arr });
+                                        }}
+                                        placeholder={'Satuan'}
+                                        //secureTextEntry={true}
+                                        style={Global.customStyles.Input}
+                                    />
+                                    <Text style={Global.customStyles.Label}>Standar Harga</Text>
+                                    <TextInput
+                                        value={this.state.myData[0]['harga_patokan']}
+                                        onChangeText={(harga_patokan) => {
+                                            harga_patokan = MyFunctions.validateInputDouble(harga_patokan);
+                                            let arr = this.state.myData;
+                                            arr[0]['harga_patokan'] = harga_patokan;
+                                            this.setState({ myData: arr });
+                                        }}
+                                        placeholder={'Standar Harga'}
+                                        //secureTextEntry={true}
+                                        style={Global.customStyles.Input}
+                                        keyboardType="numeric"
+                                        numeric
+                                    />
+                                    <Text style={Global.customStyles.Label}>Keterangan</Text>
+                                    <TextInput
+                                        value={this.state.myData[0]['ket_item']}
+                                        onChangeText={(ket_item) => {
+                                            ket_item = MyFunctions.validateString(ket_item);
+                                            let arr = this.state.myData;
+                                            arr[0]['ket_item'] = ket_item;
+                                            this.setState({ myData: arr });
+                                        }}
+                                        placeholder={'Keterangan'}
+                                        //secureTextEntry={true}
+                                        style={Global.customStyles.Input}
+                                    />
+                                </ScrollView>
                             </View>
 
                         </View>

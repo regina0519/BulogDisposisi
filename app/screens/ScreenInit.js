@@ -50,55 +50,118 @@ class ScreenInit extends Component {
         })
       })
       .then(this.readCred)
+      .then(this.readUser)
+      .then(this.readPass)
       .then(this.gotoLogin)
       .catch((error) => {
-        alert(error);
-        console.log('Error selecting random data xxx: ' + error)
+        //alert(error);
+        console.log('Error selecting random data: ' + error)
         this.setState({ loading: false })
       });
   }
   readCred = () => {
     Global.setUserKey(this.state.myData[0]['app_user_key']);
     Global.setPassKey(this.state.myData[0]['app_pass_key']);
-    //alert(Global.getUserKey() + "         " + Global.getPassKey());
-    this.readData(Global.getUserKey(), 'user');
-    this.readData(Global.getPassKey(), 'password');
+    //console.log(Global.getUserKey() + "         " + Global.getPassKey());
   }
   gotoLogin = () => {
-    //alert(this.state.user + "         " + this.state.password);
+    //console.log(this.state.user + "         " + this.state.password);
     if (this.state.user === "" || this.state.password === "") {
-      //this.props.navigation.dispatch(StackActions.replace('Login'));
-      this.props.navigation.dispatch(StackActions.replace('Home'));
+      this.props.navigation.dispatch(StackActions.replace('Login'));
+      //this.props.navigation.dispatch(StackActions.replace('Home'));
 
     } else {
-      alert(this.state.user + "         " + this.state.password);
+      this.uploadData();
     }
   }
-  readData = async (key, _var) => {
+
+  uploadData = () => {
+    this.setState({ loading: true })
+    //this.tmpPass = this.state.txtPass;
+    fetch(
+      MyServerSettings.getPhp("get_login_info.php"),
+      {
+        method: 'POST',
+        headers: {
+          Accept: 'application/json',
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          "user": this.state.user,
+          "pass": this.state.password
+        }),
+      }
+    )
+      .then((response) => response.json())
+      .then((responseJson) => {
+        this.setState({
+          loading: false,
+          myData: responseJson
+        })
+      })
+      .then(this.login)
+      .then(this.gotoTagihan)
+      .catch((error) => {
+        console.log('Error selecting random data: ' + error)
+        alert("Gagal login otomatis.");
+        this.setState({ loading: false })
+        this.props.navigation.dispatch(StackActions.replace('Login'));
+      });
+  }
+
+  login = () => {
+    Global.setUser(this.state.myData[0]);
+  }
+
+  gotoTagihan = () => {
+    this.props.navigation.dispatch(StackActions.replace('Home'))
+  }
+
+
+
+
+
+
+
+
+  readUser = async () => {
     try {
-      const value = await AsyncStorage.getItem(key)
+      const value = await AsyncStorage.getItem(Global.getUserKey());
       if (value !== null) {
         // value previously stored
-        this.setState({ _var: value });
+        this.setState({ user: value });
+        //console.log("read value: " + value);
       } else {
-        this.setState({ _var: null });
+        this.setState({ user: '' });
+        //console.log("read value null");
       }
     } catch (e) {
       // error reading value
+      this.setState({ user: '' });
+      //console.log("read error");
     }
   }
-
-
-
+  readPass = async () => {
+    try {
+      const value = await AsyncStorage.getItem(Global.getPassKey());
+      if (value !== null) {
+        // value previously stored
+        this.setState({ password: value });
+        //console.log("read value: " + value);
+      } else {
+        this.setState({ password: '' });
+        //console.log("read value null");
+      }
+    } catch (e) {
+      // error reading value
+      this.setState({ password: '' });
+      //console.log("read error");
+    }
+  }
 
 
   componentDidMount() {
     this.loadData();
-  }
-  componentWillUnmount() {
-    this.setState = (state, callback) => {
-      return;
-    };
   }
 
 }
