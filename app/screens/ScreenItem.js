@@ -1,11 +1,12 @@
 import React, { Component } from 'react';
 import MyFunctions from './../functions/MyFunctions';
-import { AppRegistry, StyleSheet, FlatList, Text, View, ActivityIndicator, Platform, TouchableOpacity, TouchableHighlightComponent, RefreshControl, TextInput, Button } from 'react-native';
+import { AppRegistry, StyleSheet, FlatList, ImageBackground, Text, View, ActivityIndicator, Platform, TouchableOpacity, TouchableHighlightComponent, RefreshControl, TextInput, Button } from 'react-native';
 import moment from 'moment/min/moment-with-locales';
 import MyServerSettings from '../functions/MyServerSettings';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import { DefaultTheme, useFocusEffect } from '@react-navigation/native';
 import { StackActions } from '@react-navigation/routers';
+import Global from '../functions/Global';
 
 
 
@@ -54,43 +55,68 @@ class ScreenItem extends Component {
     render() {
 
         return (
-            <View style={styles.MainContainer}>
-                <View style={styles.ItemFilter}>
-                    <TextInput
-                        value={this.state.filter}
-                        onChangeText={(filter) => {
-                            this.setState({ filter: filter });
-                        }}
-                        placeholder={'Cari...'}
-                        style={styles.input}
-                    //secureTextEntry={true}
-                    />
-                    <Button
-                        title={'Go'}
-                        onPress={this.filterData}
-                    />
+            <ImageBackground style={Global.customStyles.BGImage} source={require('../assets/invoice.jpeg')}>
+                <View style={styles.MainContainer}>
+                    <View style={styles.ContentContainer}>
+                        <View style={{ margin: 5 }}>
+                            <View style={styles.ItemFilter}>
+                                <TextInput
+                                    value={this.state.filter}
+                                    onChangeText={(filter) => {
+                                        this.setState({ filter: filter });
+                                    }}
+                                    placeholder={'Cari...'}
+                                    style={[Global.customStyles.Input, { width: '60%', margin: 2, marginBottom: 2 }]}
+                                //secureTextEntry={true}
+                                />
+                                <TouchableOpacity style={{ margin: 2 }} onPress={this.filterData}
+                                    disabled={this.state.loading}
+                                >
+                                    <MaterialCommunityIcons
+                                        name="magnify"
+                                        size={40}
+                                        color={'#101417'}
+                                    />
+                                </TouchableOpacity>
+                            </View>
+                        </View>
+                        <View style={{ margin: 5, flexGrow: 1, flexShrink: 1 }}>
+                            <FlatList
+                                data={this.state.myData}
+                                renderItem={this.renderDataItem}
+                                keyExtractor={this.keyExtractor}
+                                onEndReachedThreshold={0.1}
+                                onEndReached={this.loadMoreData}
+                                refreshControl={
+                                    <RefreshControl refreshing={this.state.loading} onRefresh={this.refreshData} />
+                                }
+                            />
+                            <TouchableOpacity style={styles.AddButton} onPress={() => this.props.navigation.navigate('Tambah Item', { MyParentData: this.state.myData })}
+                                disabled={this.state.loading}
+                            >
+                                <MaterialCommunityIcons
+                                    name="plus-circle"
+                                    size={50}
+                                    color={'#101417'}
+                                />
+                            </TouchableOpacity>
+                        </View>
+                        <View style={{ width: '50%', alignSelf: 'center' }}>
+
+                        </View>
+
+
+
+
+
+                    </View>
+                    <View style={styles.LoadingContainer}>
+                        <ActivityIndicator style={styles.ActivityIndicator} size='large' color="red" animating={this.state.loading} />
+                        {this.state.loading ? <Text style={styles.ActivityIndicatorText}>Loading... Mohon Tunggu</Text> : null}
+                    </View>
+
                 </View>
-                <FlatList
-                    data={this.state.myData}
-                    style={{ width: 350, height: 800 }}
-                    ItemSeparatorComponent={this.FlatListItemSeparator}
-                    renderItem={this.renderDataItem}
-                    keyExtractor={this.keyExtractor}
-                    onEndReachedThreshold={0.1}
-                    onEndReached={this.loadMoreData}
-                    refreshControl={
-                        <RefreshControl refreshing={this.state.loading} onRefresh={this.refreshData} />
-                    }
-                />
-                <ActivityIndicator style={styles.ActivityIndicator} size='large' color="red" animating={this.state.loading} />
-                <TouchableOpacity style={styles.AddButton} onPress={() => this.props.navigation.navigate('Tambah Item', { MyParentData: this.state.myData })}>
-                    <MaterialCommunityIcons
-                        name="plus-circle"
-                        size={50}
-                        color={DefaultTheme.colors.primary}
-                    />
-                </TouchableOpacity>
-            </View>
+            </ImageBackground>
         )
     }
 
@@ -152,7 +178,7 @@ class ScreenItem extends Component {
 
     renderDataItem = ({ item, index }) => {
         return (
-            <TouchableOpacity onPress={() => {
+            <TouchableOpacity style={[Global.customStyles.ListItem, styles.FlatListItemStyle]} onPress={() => {
                 if (this.mode === "view") {
                     this.props.navigation.navigate('Detail', { id: item.id_tagihan })
                 } else {
@@ -204,26 +230,44 @@ class ScreenItem extends Component {
 const styles = StyleSheet.create({
 
     MainContainer: {
-        justifyContent: 'center',
-        flex: 1,
-        margin: 10,
-        paddingTop: (Platform.OS === 'ios') ? 20 : 0,
-    },
-    ItemFilter: {
-        flexDirection: 'row',
-        alignSelf: 'center',
-        padding: 10
+        //justifyContent: 'center',
+        //flex: 1,
+        //alignContent: 'flex-start',
+        margin: 1,
+        //paddingTop: (Platform.OS === 'ios') ? 20 : 0,
+        padding: 5,
+
     },
 
-    FlatListItemStyle: {
-        padding: 10,
-        fontSize: 18,
-        height: 44,
+    ContentContainer: {
+        width: '100%',
+        height: '100%',
+        borderRadius: 5,
+        padding: 5,
+        elevation: 3,
+        backgroundColor: 'rgba(255, 255, 255, 0.5)',
+    },
+    LoadingContainer: {
+        position: 'absolute',
+        width: '100%',
+        height: '100%',
+        justifyContent: 'center',
+        //borderWidth: 5
     },
 
     ActivityIndicator: {
-        position: 'absolute',
-        width: '100%'
+        width: '100%',
+    },
+    ActivityIndicatorText: {
+        width: '100%',
+        textAlign: 'center'
+    },
+    input: {
+        width: '100%',
+        padding: 10,
+        borderWidth: 1,
+        borderColor: 'black',
+        marginBottom: 10,
     },
 
     AddButton: {
@@ -232,14 +276,18 @@ const styles = StyleSheet.create({
         bottom: 0
 
     },
-    input: {
-        width: 200,
-        height: 44,
+
+    FlatListItemStyle: {
+        fontSize: 18,
+    },
+    ItemFilter: {
+        flexDirection: 'row',
+        justifyContent: 'center',
         padding: 10,
-        marginRight: 5,
-        borderWidth: 1,
-        borderColor: 'black',
-    }
+        width: '100%'
+    },
+
+
 
 });
 

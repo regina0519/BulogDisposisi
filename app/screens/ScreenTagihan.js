@@ -1,11 +1,13 @@
 import React, { Component } from 'react';
 import MyFunctions from './../functions/MyFunctions';
-import { AppRegistry, StyleSheet, FlatList, Text, View, ActivityIndicator, Platform, TouchableOpacity, TouchableHighlightComponent, RefreshControl } from 'react-native';
+import { AppRegistry, ImageBackground, StyleSheet, FlatList, Text, View, ActivityIndicator, Platform, TouchableOpacity, TouchableHighlightComponent, RefreshControl } from 'react-native';
 import moment from 'moment/min/moment-with-locales';
 import MyServerSettings from '../functions/MyServerSettings';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import { DefaultTheme } from '@react-navigation/native';
 import { StackActions } from '@react-navigation/routers';
+import Global from '../functions/Global';
+import { SwipeListView } from 'react-native-swipe-list-view';
 
 
 
@@ -48,30 +50,57 @@ class ScreenTagihan extends Component {
   render() {
 
     return (
-      <View style={styles.MainContainer}>
-        <FlatList
-          data={this.state.myData}
-          style={{ width: 350, height: 800 }}
-          ItemSeparatorComponent={this.FlatListItemSeparator}
-          renderItem={this.renderDataItem}
-          keyExtractor={this.keyExtractor}
-          onEndReachedThreshold={0.1}
-          onEndReached={this.loadMoreData}
-          refreshControl={
-            <RefreshControl refreshing={this.state.loading} onRefresh={this.refreshData} />
-          }
-        />
-        <ActivityIndicator style={styles.ActivityIndicator} size='large' color="red" animating={this.state.loading} />
-        <TouchableOpacity style={styles.AddButton} onPress={() => this.props.navigation.navigate('Edit Tagihan', {
-          idTagihan: ""
-        })}>
-          <MaterialCommunityIcons
-            name="plus-circle"
-            size={50}
-            color={DefaultTheme.colors.primary}
-          />
-        </TouchableOpacity>
-      </View>
+      <ImageBackground style={Global.customStyles.BGImage} source={require('../assets/invoice.jpeg')}>
+        <View style={styles.MainContainer}>
+          <View style={styles.ContentContainer}>
+            <View style={{ margin: 5 }}>
+
+            </View>
+            <View style={{ margin: 5, flexGrow: 1, flexShrink: 1 }}>
+              <SwipeListView
+                data={this.state.myData}
+                renderItem={this.renderDataItem}
+                renderHiddenItem={this.renderHiddenItem}
+                leftOpenValue={0}
+                rightOpenValue={-75}
+                previewRowKey={'0'}
+                previewOpenValue={-40}
+                previewOpenDelay={3000}
+                onRowDidOpen={this.onRowDidOpen}
+                keyExtractor={this.keyExtractor}
+                style={{ width: '100%' }}
+                onEndReachedThreshold={0.1}
+                onEndReached={this.loadMoreData}
+                refreshControl={
+                  <RefreshControl refreshing={this.state.loading} onRefresh={this.refreshData} />
+                }
+              />
+              <TouchableOpacity style={styles.AddButton} onPress={() => this.props.navigation.navigate('Edit Tagihan', {
+                idTagihan: ""
+              })} disabled={this.state.loading}>
+                <MaterialCommunityIcons
+                  name="plus-circle"
+                  size={50}
+                  color={'#101417'}
+                />
+              </TouchableOpacity>
+            </View>
+            <View style={{ width: '50%', alignSelf: 'center' }}>
+
+            </View>
+
+
+
+
+
+          </View>
+          <View style={styles.LoadingContainer}>
+            <ActivityIndicator style={styles.ActivityIndicator} size='large' color="red" animating={this.state.loading} />
+            {this.state.loading ? <Text style={styles.ActivityIndicatorText}>Loading... Mohon Tunggu</Text> : null}
+          </View>
+
+        </View>
+      </ImageBackground>
     )
   }
 
@@ -108,6 +137,30 @@ class ScreenTagihan extends Component {
     this.loadData()
   }
 
+  deleteRow = (rowMap, rowKey) => {
+    //console.log('This row opened', rowKey);
+
+  };
+  onRowDidOpen = rowKey => {
+    //console.log('This row opened', rowKey);
+  };
+
+  renderHiddenItem = (data, rowMap) => (
+    <View style={Global.customStyles.rowBack}>
+      <TouchableOpacity
+        style={[Global.customStyles.backRightBtn, Global.customStyles.backRightBtnRight]}
+        onPress={() => this.deleteRow(rowMap, data.index)}
+      >
+        <MaterialCommunityIcons
+          name="delete"
+          size={30}
+          color='#101417'
+        />
+        <Text style={{ color: '#101417' }}>Hapus</Text>
+      </TouchableOpacity>
+    </View>
+  );
+
   renderDataItem = ({ item, index }) => {
 
     /*return (
@@ -119,7 +172,7 @@ class ScreenTagihan extends Component {
       </TouchableOpacity>
     )*/
     return (
-      <TouchableOpacity onPress={() => this.props.navigation.navigate('Edit Tagihan', {
+      <TouchableOpacity style={Global.customStyles.ListItem} onPress={() => this.props.navigation.navigate('Edit Tagihan', {
         idTagihan: item.id_tagihan
       })}>
         <Text>{moment(item.tgl_pembuatan).locale("id").format("llll")}</Text>
@@ -136,10 +189,29 @@ class ScreenTagihan extends Component {
 const styles = StyleSheet.create({
 
   MainContainer: {
+    //justifyContent: 'center',
+    //flex: 1,
+    //alignContent: 'flex-start',
+    margin: 1,
+    //paddingTop: (Platform.OS === 'ios') ? 20 : 0,
+    padding: 5,
+
+  },
+
+  ContentContainer: {
+    width: '100%',
+    height: '100%',
+    borderRadius: 5,
+    padding: 5,
+    elevation: 3,
+    backgroundColor: 'rgba(255, 255, 255, 0.5)'
+  },
+  LoadingContainer: {
+    position: 'absolute',
+    width: '100%',
+    height: '100%',
     justifyContent: 'center',
-    flex: 1,
-    margin: 10,
-    paddingTop: (Platform.OS === 'ios') ? 20 : 0,
+    //borderWidth: 5
   },
 
   FlatListItemStyle: {
@@ -149,8 +221,11 @@ const styles = StyleSheet.create({
   },
 
   ActivityIndicator: {
-    position: 'absolute',
-    width: '100%'
+    width: '100%',
+  },
+  ActivityIndicatorText: {
+    width: '100%',
+    textAlign: 'center'
   },
 
   AddButton: {

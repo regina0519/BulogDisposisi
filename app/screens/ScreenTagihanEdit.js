@@ -146,7 +146,9 @@ class ScreenTagihanEdit extends Component {
                                     <RefreshControl refreshing={this.state.loading} onRefresh={this.refreshData} />
                                 }
                             />
-                            <TouchableOpacity style={styles.AddButton} onPress={() => this.props.navigation.navigate('Edit Detail Tagihan', { myData: this.state.myData, myDataDetIndex: this.state.myData["det_array"].length, myDataDetToDelete: this.state.myDataDetToDelete })}>
+                            <TouchableOpacity style={styles.AddButton} onPress={() => this.props.navigation.navigate('Edit Detail Tagihan', { myData: this.state.myData, myDataDetIndex: this.state.myData["det_array"].length, myDataDetToDelete: this.state.myDataDetToDelete })}
+                                disabled={this.state.loading}
+                            >
                                 <MaterialCommunityIcons
                                     name="plus-circle"
                                     size={50}
@@ -155,10 +157,11 @@ class ScreenTagihanEdit extends Component {
                             </TouchableOpacity>
                         </View>
                         <View style={{ width: '50%', alignSelf: 'center' }}>
+                            {console.log(this.state.allowSave + "    " + this.state.loading)}
                             <Button
                                 title={'Simpan'}
                                 color='#101417'
-                                disabled={!this.state.allowSave}
+                                disabled={!(this.state.allowSave && !this.state.loading)}
                                 onPress={this.saveData}
                             />
                         </View>
@@ -322,6 +325,7 @@ class ScreenTagihanEdit extends Component {
                 });
         } else {
             this.setState({
+                loading: false,
                 myData: this.state.myData
             });
         }

@@ -52,7 +52,8 @@ class ScreenInit extends Component {
       .then(this.readCred)
       .then(this.gotoLogin)
       .catch((error) => {
-        console.log('Error selecting random data: ' + error)
+        alert(error);
+        console.log('Error selecting random data xxx: ' + error)
         this.setState({ loading: false })
       });
   }

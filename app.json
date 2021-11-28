@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "Bulog Disposisi dan e-Verified Keuangan",
+    "name": "Bulog Disposisi dan e-Verify Keuangan",
     "slug": "BulogDisposisi",
     "version": "1.0.0",
     "orientation": "portrait",
@@ -24,13 +24,12 @@
         "foregroundImage": "./app/assets/adaptive-icon.png",
         "backgroundColor": "#FFFFFF"
       },
-      "package": "com.reginamondow.bulog",
-      "googleServicesFile": "./google-services.json"
+      "package": "com.reginamondow.bulog"
     },
     "web": {
       "favicon": "./app/assets/favicon.png"
     },
-    "description": "Aplikasi Disposisi dan e-Verified Keuangan",
+    "description": "Aplikasi Disposisi dan e-Verify Keuangan",
     "githubUrl": "https://github.com/regina0519/BulogDisposisi.git"
   }
 }

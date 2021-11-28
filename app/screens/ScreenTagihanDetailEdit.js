@@ -1,7 +1,7 @@
 import { StackActions } from '@react-navigation/routers';
 import React, { Component } from 'react';
 
-import { AppRegistry, ImageBackground, Alert, StyleSheet, BackHandler, TextInput, Text, View, Button, ActivityIndicator, Platform, TouchableOpacity } from 'react-native';
+import { AppRegistry, ImageBackground, Alert, StyleSheet, BackHandler, TextInput, Text, View, Button, ActivityIndicator, Platform, TouchableOpacity, ScrollView } from 'react-native';
 import Global from '../functions/Global';
 import MyServerSettings from '../functions/MyServerSettings';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -45,8 +45,8 @@ class ScreenTagihanDetailEdit extends Component {
             'id_det_item': '',
             'id_tagihan': '',
             'id_item': '',
-            'qty': '0',
-            'harga': '0',
+            'qty': '1',
+            'harga': '1',
             'ket_det_item': '',
             'nm_item': '',
             'satuan': '',
@@ -71,7 +71,7 @@ class ScreenTagihanDetailEdit extends Component {
                             <Text style={[Global.customStyles.Label, { textAlign: 'center' }]}>Rp.{MyFunctions.formatMoney(this.countTotal())}</Text>
                         </View>
                         <View style={{
-                            margin: 5, flexGrow: 1, flexShrink: 1, elevation: 2,
+                            margin: 5, flexGrow: 1, elevation: 2,
                             backgroundColor: 'rgba(255, 255, 255, 0.6)', padding: 10
                         }}>
                             <View style={{
@@ -184,6 +184,24 @@ class ScreenTagihanDetailEdit extends Component {
 
     }
 
+    checkDetValid = (data) => {
+        var invalid = -1;
+        data["det_array"].forEach((item, index) => {
+            //console.log("HAHAHAH :" + Number.parseFloat(item.qty * item.harga));
+            var subTot = Number.parseFloat(item.qty * item.harga);
+            if (isNaN(subTot) || subTot <= 0) {
+                invalid = invalid == -1 ? index : invalid;
+            }
+        });
+        console.log(invalid);
+        if (invalid == -1) {
+            this.props.navigation.goBack();
+        } else {
+            alert("Jumlah/Harga pada item '" + data["det_array"][invalid]["nm_item"] + "' tidak valid");
+            this.state.pagerView.current.setPage(invalid);
+        }
+    }
+
     validData = () => {
         let data = this.state.myData;
         if (data["det_array"].length > 0) {
@@ -197,12 +215,12 @@ class ScreenTagihanDetailEdit extends Component {
                     {
                         text: "Ya", onPress: () => {
                             data["det_array"].splice(data["det_array"].length - 1, 1);
-                            this.props.navigation.goBack();
+                            this.checkDetValid(data);
                         }
                     }
                 ]);
             } else {
-                this.props.navigation.goBack();
+                this.checkDetValid(data);
             }
         } else {
             this.props.navigation.goBack();
@@ -260,56 +278,68 @@ class ScreenTagihanDetailEdit extends Component {
 
         return (
             <View style={styles.page} key={index}>
-                <Button
-                    title={(data["id_item"] === undefined || data["id_item"] === "") ? "Pilih Item" : data["nm_item"]}
-                    color='#101417'
-                    onPress={() => this.props.navigation.navigate('Item', { myParentData: this.state.myData, mode: "lookup", myParentDataDetIndex: index, onReturn: (index) => { this.state.pagerView.current.setPage(index) } })}
-                />
-                <View style={{ margin: 10 }}></View>
-                <Text style={[Global.customStyles.Label, { alignSelf: 'flex-start' }]}>Jumlah {data['satuan'] !== "" ? "(" + data['satuan'] + ")" : ""}</Text>
-                <TextInput
-                    value={data['qty']}
-                    onChangeText={(qty) => {
-                        qty = MyFunctions.validateNumber(qty);
-                        let arr = this.state.myData;
-                        arr["det_array"][index]['qty'] = qty;
-                        this.setState({ myData: arr });
-                    }}
-                    placeholder={'Jumlah'}
-                    //secureTextEntry={true}
-                    style={Global.customStyles.Input}
-                    keyboardType="numeric"
-                    numeric
-                />
-                <Text style={[Global.customStyles.Label, { alignSelf: 'flex-start' }]}>Harga (Rp)</Text>
-                <TextInput
-                    value={data['harga']}
-                    onChangeText={(harga) => {
-                        harga = MyFunctions.validateNumber(harga);
-                        let arr = this.state.myData;
-                        arr["det_array"][index]['harga'] = harga;
-                        this.setState({ myData: arr });
-                    }}
-                    placeholder={'Harga'}
-                    //secureTextEntry={true}
-                    style={Global.customStyles.Input}
-                    keyboardType="numeric"
-                    numeric
-                />
-                <Text style={[Global.customStyles.Label, { alignSelf: 'flex-start' }]}>Keterangan</Text>
-                <TextInput
-                    value={data['ket_det_item']}
-                    onChangeText={(ket_det_item) => {
-                        ket_det_item = MyFunctions.validateString(ket_det_item);
-                        let arr = this.state.myData;
-                        arr["det_array"][index]['ket_det_item'] = ket_det_item;
-                        this.setState({ myData: arr });
-                    }}
-                    placeholder={'Keterangan'}
-                    //secureTextEntry={true}
-                    style={Global.customStyles.Input}
-                />
-                <Text>{index > 0 && index < me.length - 1 ? "◀ Swipe ▶" : index > 0 ? "◀ Swipe" : index < me.length - 1 ? "Swipe ▶" : ""}</Text>
+
+                <ScrollView style={{ width: '100%', paddingHorizontal: 10 }}>
+                    <Button
+                        title={(data["id_item"] === undefined || data["id_item"] === "") ? "Pilih Item" : data["nm_item"]}
+                        color='#101417'
+                        onPress={() => this.props.navigation.navigate('Item', { myParentData: this.state.myData, mode: "lookup", myParentDataDetIndex: index, onReturn: (index) => { this.state.pagerView.current.setPage(index) } })}
+                    />
+                    <View style={{ margin: 10 }}></View>
+                    <Text style={[Global.customStyles.Label, { alignSelf: 'flex-start' }]}>Jumlah {data['satuan'] !== "" ? "(" + data['satuan'] + ")" : ""}</Text>
+                    <TextInput
+                        value={data['qty']}
+                        onChangeText={(qty) => {
+                            qty = MyFunctions.validateInputDouble(qty);
+                            let arr = this.state.myData;
+                            arr["det_array"][index]['qty'] = qty;
+                            this.setState({ myData: arr });
+                        }}
+                        placeholder={'Jumlah'}
+                        //secureTextEntry={true}
+                        style={Global.customStyles.Input}
+                        keyboardType="numeric"
+                        numeric
+                    />
+                    <Text style={[Global.customStyles.Label, { alignSelf: 'flex-start' }]}>Harga (Rp)</Text>
+                    <TextInput
+                        value={data['harga']}
+                        onChangeText={(harga) => {
+                            harga = MyFunctions.validateInputDouble(harga);
+                            let arr = this.state.myData;
+                            arr["det_array"][index]['harga'] = harga;
+                            this.setState({ myData: arr });
+                        }}
+                        placeholder={'Harga'}
+                        //secureTextEntry={true}
+                        style={Global.customStyles.Input}
+                        keyboardType="numeric"
+                        numeric
+                    />
+                    <Text style={[Global.customStyles.Label, { alignSelf: 'flex-start' }]}>Keterangan</Text>
+                    <TextInput
+                        value={data['ket_det_item']}
+                        onChangeText={(ket_det_item) => {
+                            ket_det_item = MyFunctions.validateString(ket_det_item);
+                            let arr = this.state.myData;
+                            arr["det_array"][index]['ket_det_item'] = ket_det_item;
+                            this.setState({ myData: arr });
+                        }}
+                        placeholder={'Keterangan'}
+                        //secureTextEntry={true}
+                        style={Global.customStyles.Input}
+                    />
+                    <View style={{ width: '100%', alignItems: 'center' }}>
+                        {index > 0 && index < me.length - 1 ?
+                            <MaterialCommunityIcons name="gesture-swipe-horizontal" size={40} color='#101417' />
+                            : index > 0 ?
+                                <MaterialCommunityIcons name="gesture-swipe-right" size={40} color='#101417' />
+                                : index < me.length - 1 ?
+                                    <MaterialCommunityIcons name="gesture-swipe-left" size={40} color='#101417' />
+                                    : ""}
+                    </View>
+                </ScrollView>
+
             </View>
         );
     }

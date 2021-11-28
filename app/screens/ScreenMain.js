@@ -16,8 +16,9 @@ export default function ScreenMain() {
             initialRouteName="Feed"
             screenOptions={{
                 headerShown: false,
-                activeTintColor: '#42f44b',
-            }}>
+                tabBarActiveTintColor: '#000000',
+            }}
+        >
             <Tab.Screen
                 name="TabTagihan"
                 component={ScreenTagihan}
