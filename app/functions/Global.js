@@ -1,6 +1,14 @@
 import { Dimensions, StyleSheet } from "react-native";
 import { DefaultTheme } from '@react-navigation/native';
 class Global {
+    static #arrColor = {
+        "FUNGSI_001": "#101417",
+        "FUNGSI_002": "#783B8D",
+        "FUNGSI_003": "#FFA61F",
+        "FUNGSI_004": "#002F8B",
+        "FUNGSI_005": "#B71F35",
+        "FUNGSI_006": "#268059"
+    };
     static #curUserId = "";
     static #idJab = "";
     static #nmPeg = "";
@@ -81,6 +89,9 @@ class Global {
     }
     static getNmBidang() {
         return this.#nmBidang;
+    }
+    static getFungsiColor(idFungsi) {
+        return this.#arrColor[idFungsi];
     }
 
     static setUser(data) {

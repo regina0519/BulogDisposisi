@@ -52,7 +52,9 @@ class ScreenAdmin extends Component {
                                     />
                                     <Text style={{ padding: 3, paddingLeft: 15, fontWeight: 'bold' }}>Pegawai</Text>
                                 </TouchableOpacity>
-                                <TouchableOpacity style={{ flexDirection: 'row', margin: 5, padding: 5, paddingLeft: 20, alignItems: 'center', borderRadius: 20, elevation: 5, backgroundColor: "#FFFFFF" }}>
+                                <TouchableOpacity style={{ flexDirection: 'row', margin: 5, padding: 5, paddingLeft: 20, alignItems: 'center', borderRadius: 20, elevation: 5, backgroundColor: "#FFFFFF" }}
+                                    onPress={() => this.props.navigation.navigate('Jabatan')}
+                                >
                                     <MaterialCommunityIcons
                                         name="account-star"
                                         size={30}
@@ -61,7 +63,9 @@ class ScreenAdmin extends Component {
                                     />
                                     <Text style={{ padding: 3, paddingLeft: 15, fontWeight: 'bold' }}>Jabatan</Text>
                                 </TouchableOpacity>
-                                <TouchableOpacity style={{ flexDirection: 'row', margin: 5, padding: 5, paddingLeft: 20, alignItems: 'center', borderRadius: 20, elevation: 5, backgroundColor: "#FFFFFF" }}>
+                                <TouchableOpacity style={{ flexDirection: 'row', margin: 5, padding: 5, paddingLeft: 20, alignItems: 'center', borderRadius: 20, elevation: 5, backgroundColor: "#FFFFFF" }}
+                                    onPress={() => this.props.navigation.navigate('Fungsi')}
+                                >
                                     <MaterialCommunityIcons
                                         name="account-check"
                                         size={30}
@@ -84,12 +88,7 @@ class ScreenAdmin extends Component {
                             </View>
                         </View>
                         <View style={{ width: '50%', alignSelf: 'center' }}>
-                            <Button
-                                title={'Masuk'}
-                                color='#101417'
-                                style={styles.input}
-                                onPress={this.uploadData}
-                            />
+
                         </View>
 
 

@@ -25,6 +25,10 @@ import ScreenChangePass from './app/screens/ScreenChangePass';
 import ScreenAdmin from './app/screens/ScreenAdmin';
 import ScreenAdminBidang from './app/screens/ScreenAdminBidang';
 import ScreenAdminBidangEdit from './app/screens/ScreenAdminBidangEdit';
+import ScreenAdminJabatan from './app/screens/ScreenAdminJabatan';
+import ScreenAdminJabatanEdit from './app/screens/ScreenAdminJabatanEdit';
+import ScreenAdminFungsi from './app/screens/ScreenAdminFungsi';
+import ScreenAdminFungsiEdit from './app/screens/ScreenAdminFungsiEdit';
 
 const Stack = createNativeStackNavigator();
 
@@ -36,6 +40,10 @@ export default function App() {
         <Stack.Screen name="Admin" component={ScreenAdmin} />
         <Stack.Screen name="Bidang" component={ScreenAdminBidang} />
         <Stack.Screen name="Edit Bidang" component={ScreenAdminBidangEdit} />
+        <Stack.Screen name="Jabatan" component={ScreenAdminJabatan} />
+        <Stack.Screen name="Edit Jabatan" component={ScreenAdminJabatanEdit} />
+        <Stack.Screen name="Fungsi" component={ScreenAdminFungsi} />
+        <Stack.Screen name="Edit Fungsi" component={ScreenAdminFungsiEdit} />
         <Stack.Screen name="Init" component={ScreenInit} options={{ headerShown: false }} />
         <Stack.Screen name="Login" component={ScreenLogin} options={{ headerShown: false }} />
         <Stack.Screen name="Tagihan" component={ScreenTagihan} />

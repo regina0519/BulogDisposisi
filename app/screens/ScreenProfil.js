@@ -14,8 +14,7 @@ import { Restart } from 'fiction-expo-restart';
 
 
 class ScreenProfil extends Component {
-    //arrColor = { "FUNGSI_001": "#101417", "FUNGSI_002": "#783B8D", "FUNGSI_003": "#FFA61F", "FUNGSI_004": "#D24A1F", "FUNGSI_005": "#B71F35", "FUNGSI_006": "#268059" };
-    arrColor = { "FUNGSI_001": "#268059", "FUNGSI_002": "#783B8D", "FUNGSI_003": "#FCAC23", "FUNGSI_004": "#D24A1F", "FUNGSI_005": "#B71F35", "FUNGSI_006": "#268059" };
+
 
     constructor(props) {
 
@@ -40,14 +39,14 @@ class ScreenProfil extends Component {
                             <MaterialCommunityIcons
                                 name="badge-account-horizontal"
                                 size={100}
-                                color={this.arrColor[Global.getIdFungsi()]}
+                                color={Global.getFungsiColor(Global.getIdFungsi())}
                                 style={{ alignSelf: 'center' }}
                             />
-                            <Text style={{ color: this.arrColor[Global.getIdFungsi()], fontWeight: 'bold', fontSize: 18, textAlign: 'center' }}>{Global.getFungsi()}</Text>
+                            <Text style={{ color: Global.getFungsiColor(Global.getIdFungsi()), fontWeight: 'bold', fontSize: 18, textAlign: 'center' }}>{Global.getFungsi()}</Text>
                         </View>
                         <View style={{ margin: 5, flexGrow: 1, flexShrink: 1, justifyContent: 'flex-start' }}>
                             <View style={[styles.ContentContainer, { height: 'auto', padding: 10, backgroundColor: '#FFFFFF' }]}>
-                                <Text style={{ color: this.arrColor[Global.getIdFungsi()], fontWeight: 'bold', fontSize: 18 }}>{Global.getNmPeg()}</Text>
+                                <Text style={{ color: Global.getFungsiColor(Global.getIdFungsi()), fontWeight: 'bold', fontSize: 18 }}>{Global.getNmPeg()}</Text>
                                 <Text style={{ fontWeight: 'bold' }}>{Global.getCurUserId()}</Text>
                                 <Text >{Global.getNmJab()}</Text>
                                 <Text style={{ fontWeight: 'bold' }}>Bidang {Global.getNmBidang()}</Text>
@@ -60,10 +59,10 @@ class ScreenProfil extends Component {
                                 <MaterialCommunityIcons
                                     name="key-variant"
                                     size={40}
-                                    color={this.arrColor[Global.getIdFungsi()]}
+                                    color={Global.getFungsiColor(Global.getIdFungsi())}
                                     style={{ alignSelf: 'center' }}
                                 />
-                                <Text style={{ color: this.arrColor[Global.getIdFungsi()], fontSize: 10, textAlign: 'center' }} > Ganti Password</Text>
+                                <Text style={{ color: Global.getFungsiColor(Global.getIdFungsi()), fontSize: 10, textAlign: 'center' }} > Ganti Password</Text>
                             </TouchableOpacity>
                             <TouchableOpacity style={{ margin: 2 }} onPress={this.logout}
                                 disabled={this.state.loading}
@@ -71,10 +70,10 @@ class ScreenProfil extends Component {
                                 <MaterialCommunityIcons
                                     name="logout"
                                     size={40}
-                                    color={this.arrColor[Global.getIdFungsi()]}
+                                    color={Global.getFungsiColor(Global.getIdFungsi())}
                                     style={{ alignSelf: 'center' }}
                                 />
-                                <Text style={{ color: this.arrColor[Global.getIdFungsi()], fontSize: 10, textAlign: 'center' }} >Keluar</Text>
+                                <Text style={{ color: Global.getFungsiColor(Global.getIdFungsi()), fontSize: 10, textAlign: 'center' }} >Keluar</Text>
                             </TouchableOpacity>
                         </View>
 

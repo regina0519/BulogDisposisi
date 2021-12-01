@@ -11,8 +11,10 @@ import { SwipeListView } from 'react-native-swipe-list-view';
 
 
 
-class ScreenAdminBidang extends Component {
-    keyExtractor = (data, index) => data.id_bidang;
+class ScreenAdminFungsi extends Component {
+
+    keyExtractor = (data, index) => data.id_fungsi;
+
 
     constructor(props) {
 
@@ -20,32 +22,10 @@ class ScreenAdminBidang extends Component {
 
         this.state = {
             loading: true,
-            myData: [],
-            page: 1
+            myData: []
         }
     }
 
-
-
-
-
-    loadMoreData = () => {
-        this.setState({
-            page: this.state.page + 1
-        }, () => this.loadData(true))
-    }
-
-    FlatListItemSeparator = () => {
-        return (
-            <View
-                style={{
-                    height: 1,
-                    width: "100%",
-                    backgroundColor: "#607D8B",
-                }}
-            />
-        );
-    }
 
     render() {
 
@@ -62,7 +42,7 @@ class ScreenAdminBidang extends Component {
                                 renderItem={this.renderDataItem}
                                 renderHiddenItem={this.renderHiddenItem}
                                 leftOpenValue={0}
-                                rightOpenValue={-75}
+                                rightOpenValue={0}
                                 previewRowKey={'0'}
                                 previewOpenValue={-40}
                                 previewOpenDelay={3000}
@@ -75,15 +55,6 @@ class ScreenAdminBidang extends Component {
                                     <RefreshControl refreshing={this.state.loading} onRefresh={this.refreshData} />
                                 }
                             />
-                            <TouchableOpacity style={styles.AddButton} onPress={() => this.props.navigation.navigate('Edit Bidang', {
-                                myData: null
-                            })} disabled={this.state.loading}>
-                                <MaterialCommunityIcons
-                                    name="plus-circle"
-                                    size={50}
-                                    color={'#101417'}
-                                />
-                            </TouchableOpacity>
                         </View>
                         <View style={{ width: '50%', alignSelf: 'center' }}>
 
@@ -107,29 +78,25 @@ class ScreenAdminBidang extends Component {
     refreshData = () => {
         this.setState({
             loading: true,
-            myData: [],
-            page: 1
+            myData: []
         });
         this.loadData();
     }
 
-    loadData = (more = false) => {
+    loadData = () => {
         this.setState({ loading: true })
-        let url = MyServerSettings.getPhp("get_list_bidang.php") + '?res=10&pg=' + this.state.page;
-        //let url = MyServerSettings.getPhp("test.php") + '?res=10&pg=' + this.state.page;
-        //console.log(url);
+        let url = MyServerSettings.getPhp("get_list_fungsi.php");
         fetch(url)
             .then((response) => response.json())
             .then((responseJson) => {
                 this.setState({
                     loading: false,
-                    myData: this.state.page === 1 ? responseJson : [...this.state.myData, ...responseJson]
+                    myData: responseJson
                 })
             })
             .catch((error) => {
                 console.log('Error selecting random data: ' + error)
                 this.setState({ loading: false })
-                if (more) this.setState({ page: this.state.page - 1 })
             });
     }
 
@@ -143,74 +110,44 @@ class ScreenAdminBidang extends Component {
         });
     }
 
-    deleteRow = (rowMap, rowKey) => {
-        let arr = this.state.myData;
-
-        Alert.alert("Konfirmasi!", "Hapus bidang '" + arr[rowKey]["nm_bidang"] + "'?", [
-            {
-                text: "Batal",
-                onPress: () => null,
-                style: "cancel"
-            },
-            {
-                text: "Ya", onPress: () => {
-                    fetch(MyServerSettings.getPhp("delete_bidang.php") + '?id=' + arr[rowKey]["id_bidang"])
-                        .then((response) => response.json())
-                        .then((responseJson) => {
-                            var res = responseJson[0];
-                            console.log(res);
-                            if (res["succeed"] == "1") {
-                                alert("Bidang '" + arr[rowKey]["nm_bidang"] + "' telah dihapus.");
-                            } else {
-                                if (res["error"] == "EXIST") {
-                                    alert("Maaf, Bidang '" + arr[rowKey]["nm_bidang"] + "' tidak bisa dihapus karena sudah digunakan.");
-                                } else {
-                                    alert("Error Koneksi");
-                                }
-                            }
-                        }).then(this.refreshData)
-                        .catch((error) => {
-                            console.log('Error selecting random data: ' + error)
-                            this.setState({
-                                loading: false,
-                                myData: this.newRecord()
-                            })
-                            this.backupData();
-                        });
-                }
-            }
-        ]);
-
-    };
-
-
-
     onRowDidOpen = rowKey => {
         //console.log('This row opened', rowKey);
     };
 
     renderHiddenItem = (data, rowMap) => (
-        <View style={Global.customStyles.rowBack}>
-            <TouchableOpacity
-                style={[Global.customStyles.backRightBtn, Global.customStyles.backRightBtnRight]}
-                onPress={() => this.deleteRow(rowMap, data.index)}
-            >
-                <MaterialCommunityIcons
-                    name="delete"
-                    size={30}
-                    color='#101417'
-                />
-                <Text style={{ color: '#101417' }}>Hapus</Text>
-            </TouchableOpacity>
+        <View style={
+            [
+                Global.customStyles.rowBack,
+                {
+                    backgroundColor: Global.getFungsiColor(this.state.myData[data.index]["id_fungsi"]),
+                    margin: 10,
+                    borderRadius: 25
+                }
+            ]
+
+        }
+        >
+
         </View>
     );
 
     renderDataItem = ({ item, index }) => {
         return (
-            <TouchableOpacity style={Global.customStyles.ListItem} onPress={() => this.props.navigation.navigate('Edit Bidang', {
+            <TouchableOpacity style={Global.customStyles.ListItem} onPress={() => this.props.navigation.navigate('Edit Fungsi', {
                 myData: this.state.myData[index]
             })}>
-                <Text style={{ fontWeight: 'bold', paddingVertical: 15, paddingHorizontal: 5 }}>{item.nm_bidang}</Text>
+                <View style={{ flexDirection: 'row' }}>
+                    <MaterialCommunityIcons
+                        name="badge-account-horizontal"
+                        size={50}
+                        color={Global.getFungsiColor(item.id_fungsi)}
+                        style={{ alignSelf: 'center' }}
+                    />
+                    <View style={{ justifyContent: 'center' }}>
+                        <Text style={{ fontWeight: 'bold', paddingHorizontal: 5 }}>{item.fungsi_disposisi}</Text>
+                        <Text style={{ paddingHorizontal: 5 }}>{item.ket_fungsi}</Text>
+                    </View>
+                </View>
             </TouchableOpacity>
         )
     }
@@ -269,5 +206,5 @@ const styles = StyleSheet.create({
 
 });
 
-AppRegistry.registerComponent('ScreenAdminBidang', () => ScreenAdminBidang);
-export default ScreenAdminBidang;
+AppRegistry.registerComponent('ScreenAdminFungsi', () => ScreenAdminFungsi);
+export default ScreenAdminFungsi;
