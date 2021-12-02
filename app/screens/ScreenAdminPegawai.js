@@ -12,8 +12,8 @@ import { Picker } from '@react-native-picker/picker';
 
 
 
-class ScreenAdminJabatan extends Component {
-    keyExtractor = (data, index) => data.id_jab;
+class ScreenAdminPegawai extends Component {
+    keyExtractor = (data, index) => data.id_pegawai;
 
 
     constructor(props) {
@@ -62,6 +62,7 @@ class ScreenAdminJabatan extends Component {
                                 <Text style={{ width: '20%', fontWeight: 'bold' }}>Bidang </Text>
                                 <View style={[Global.customStyles.PickerContainer, { width: '80%' }]}>
                                     <Picker
+                                        style={{ borderWidth: 1 }}
                                         selectedValue={this.state.curBidang}
                                         onValueChange={(itemValue, itemIndex) => {
                                             const f = async () => {
@@ -99,8 +100,8 @@ class ScreenAdminJabatan extends Component {
                                     <RefreshControl refreshing={this.state.loading} onRefresh={this.refreshData} />
                                 }
                             />
-                            <TouchableOpacity style={styles.AddButton} onPress={() => this.props.navigation.navigate('Edit Jabatan', {
-                                myData: null
+                            <TouchableOpacity style={styles.AddButton} onPress={() => this.props.navigation.navigate('Edit Pegawai', {
+                                myData: null, adding: true
                             })} disabled={this.state.loading}>
                                 <MaterialCommunityIcons
                                     name="plus-circle"
@@ -142,7 +143,7 @@ class ScreenAdminJabatan extends Component {
 
     loadData = (more = false) => {
         this.setState({ loading: true })
-        let url = MyServerSettings.getPhp("get_list_jabatan.php") + "?bid=" + this.state.curBidang;
+        let url = MyServerSettings.getPhp("get_list_pegawai.php") + "?bid=" + this.state.curBidang;
         //let url = MyServerSettings.getPhp("test.php") + '?res=10&pg=' + this.state.page;
         //console.log(url);
         fetch(url)
@@ -163,8 +164,6 @@ class ScreenAdminJabatan extends Component {
     loadDataBidang = () => {
         this.setState({ loading: true })
         let url = MyServerSettings.getPhp("get_list_bidang.php");
-        //let url = MyServerSettings.getPhp("test.php") + '?res=10&pg=' + this.state.page;
-        //console.log(url);
         fetch(url)
             .then((response) => response.json())
             .then((responseJson) => {
@@ -179,7 +178,7 @@ class ScreenAdminJabatan extends Component {
                 })
             })
             .catch((error) => {
-                console.log('Error selecting random data xxx: ' + error)
+                console.log('Error selecting random data: ' + error)
                 this.setState({ loading: false })
             });
     }
@@ -202,7 +201,7 @@ class ScreenAdminJabatan extends Component {
     deleteRow = (rowMap, rowKey) => {
         let arr = this.state.myData;
 
-        Alert.alert("Konfirmasi!", "Hapus jabatan '" + arr[rowKey]["nm_jab"] + "'?", [
+        Alert.alert("Konfirmasi!", "Hapus pegawai '" + arr[rowKey]["nm_pegawai"] + "'?", [
             {
                 text: "Batal",
                 onPress: () => null,
@@ -210,7 +209,7 @@ class ScreenAdminJabatan extends Component {
             },
             {
                 text: "Ya", onPress: () => {
-                    fetch(MyServerSettings.getPhp("delete_jabatan.php") + '?id=' + arr[rowKey]["id_jab"] + '&kepala=' + arr[rowKey]["adalah_kepala_bidang"] + '&bid=' + arr[rowKey]["id_bidang"])
+                    fetch(MyServerSettings.getPhp("delete_pegawai.php") + '?id=' + arr[rowKey]["id_pegawai"])
                         .then((response) => response.json())
                         .then((responseJson) => {
                             var res = responseJson[0];
@@ -219,11 +218,11 @@ class ScreenAdminJabatan extends Component {
                                 if (res["error"] != "") {
                                     alert(res["error"]);
                                 } else {
-                                    alert("Jabatan '" + arr[rowKey]["nm_jab"] + "' telah dihapus.");
+                                    alert("Pegawai '" + arr[rowKey]["nm_pegawai"] + "' telah dihapus.");
                                 }
                             } else {
                                 if (res["error"] == "EXIST") {
-                                    alert("Maaf, Jabatan '" + arr[rowKey]["nm_jab"] + "' tidak bisa dihapus karena sudah digunakan.");
+                                    alert("Maaf, Pegawai '" + arr[rowKey]["nm_pegawai"] + "' tidak bisa dihapus karena sudah digunakan.");
                                 } else {
                                     alert("Error Koneksi");
                                 }
@@ -250,7 +249,18 @@ class ScreenAdminJabatan extends Component {
     };
 
     renderHiddenItem = (data, rowMap) => (
-        <View style={Global.customStyles.rowBack}>
+        <View style={
+            [
+                Global.customStyles.rowBack,
+                {
+                    backgroundColor: Global.getFungsiColor(this.state.myData[data.index]["id_fungsi"]),
+                    margin: 10,
+                    borderRadius: 25
+                }
+            ]
+
+        }
+        >
             <TouchableOpacity
                 style={[Global.customStyles.backRightBtn, Global.customStyles.backRightBtnRight]}
                 onPress={() => this.deleteRow(rowMap, data.index)}
@@ -258,17 +268,17 @@ class ScreenAdminJabatan extends Component {
                 <MaterialCommunityIcons
                     name="delete"
                     size={30}
-                    color='#101417'
+                    color='#ffffff'
                 />
-                <Text style={{ color: '#101417' }}>Hapus</Text>
+                <Text style={{ color: '#ffffff' }}>Hapus</Text>
             </TouchableOpacity>
         </View>
     );
 
     renderDataItem = ({ item, index }) => {
         return (
-            <TouchableOpacity style={Global.customStyles.ListItem} onPress={() => this.props.navigation.navigate('Edit Jabatan', {
-                myData: this.state.myData[index]
+            <TouchableOpacity style={Global.customStyles.ListItem} onPress={() => this.props.navigation.navigate('Edit Pegawai', {
+                myData: this.state.myData[index], adding: false
             })}>
                 <View style={{ flexDirection: 'row', width: '100%' }}>
                     <MaterialCommunityIcons
@@ -278,10 +288,10 @@ class ScreenAdminJabatan extends Component {
                         style={{ width: '20%', alignSelf: 'center', textAlign: 'center' }}
                     />
                     <View style={{ width: '80%', padding: 5 }}>
-                        <Text style={{ textAlign: 'right', fontWeight: 'bold' }}>{item.singk_jab}</Text>
-                        <Text style={{ textAlign: 'left' }}>{item.nm_jab}</Text>
-                        <Text style={{ textAlign: 'left', fontWeight: 'bold' }}>{item.nm_bidang == null ? "(Non-Bidang)" : "Bidang " + item.nm_bidang}</Text>
-                        <Text style={{ textAlign: 'center' }}>"{item.ket_fungsi}"</Text>
+                        <Text style={{ textAlign: 'left', fontWeight: 'bold' }}>{item.nm_pegawai}</Text>
+                        <Text style={{ textAlign: 'left' }}>{item.singk_jab}</Text>
+                        <Text style={{ textAlign: 'left' }}>{item.nm_bidang == null ? "(Non-Bidang)" : "Bidang " + item.nm_bidang}</Text>
+                        <Text style={{ textAlign: 'right', fontSize: 10, fontStyle: 'italic' }}>"{item.ket_fungsi}"</Text>
                     </View>
                 </View>
 
@@ -343,5 +353,5 @@ const styles = StyleSheet.create({
 
 });
 
-AppRegistry.registerComponent('ScreenAdminJabatan', () => ScreenAdminJabatan);
-export default ScreenAdminJabatan;
+AppRegistry.registerComponent('ScreenAdminPegawai', () => ScreenAdminPegawai);
+export default ScreenAdminPegawai;

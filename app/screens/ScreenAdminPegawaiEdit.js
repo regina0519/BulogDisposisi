@@ -7,23 +7,25 @@ import MyServerSettings from '../functions/MyServerSettings';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import MyFunctions from '../functions/MyFunctions';
 import { Picker } from '@react-native-picker/picker';
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 
 
 
 
 
-class ScreenAdminJabatanEdit extends Component {
+class ScreenAdminPegawaiEdit extends Component {
     myDataBU = [];
+    adding = false;
     constructor(props) {
 
         super(props);
+        this.adding = props.route.params.adding;
         let data = props.route.params.myData;
         if (data == null) data = this.newRecord();
         this.state = {
             loading: false,
             myData: data,
-            myBidang: [],
-            myFungsi: [],
+            myJab: [],
             myResult: [],
             allowSave: false
         }
@@ -33,7 +35,13 @@ class ScreenAdminJabatanEdit extends Component {
 
     newRecord = () => {
         return ({
+            'id_pegawai': '',
             'id_jab': '',
+            'nm_pegawai': '',
+            'password': '',
+            'tipe_user': 'Pengguna',
+            'ganti_pass': '0',
+            'aktif': '1',
             'id_bidang': '',
             'id_fungsi': '',
             'nm_jab': '',
@@ -53,96 +61,154 @@ class ScreenAdminJabatanEdit extends Component {
                 <View style={styles.MainContainer}>
                     <View style={{ width: '100%', height: '100%' }}>
                         <View style={{ margin: 5 }}>
+                            <View style={{ flexDirection: 'row', margin: 2, padding: 2, backgroundColor: "#FFFFFF", elevation: 2, alignSelf: 'center' }}>
+                                <View style={{ alignItems: 'center', width: '20%', justifyContent: 'center', borderWidth: 0, borderRadius: 5, backgroundColor: Global.getFungsiColor(this.state.myData["id_fungsi"]) }}>
+                                    <MaterialCommunityIcons
+                                        name={this.state.myData["adalah_kepala_bidang"] == 1 ? "account-star" : "account"}
+                                        size={30}
+                                        color="#FFFFFF"
+                                        style={{ alignSelf: 'center', textAlign: 'center' }}
+                                    />
+                                    <Text style={{ fontSize: 10, textAlign: 'center', color: "#FFFFFF", fontWeight: 'bold' }}>{this.state.myData["fungsi_disposisi"]}</Text>
+                                </View>
 
+                                <View style={{ padding: 5, justifyContent: 'center' }}>
+                                    <Text style={{ fontWeight: 'bold', textAlign: 'left', fontSize: 12, color: Global.getFungsiColor(this.state.myData["id_fungsi"]) }}>{this.state.myData["nm_pegawai"]}</Text>
+                                    <Text style={{ fontSize: 12 }}>{this.state.myData["id_pegawai"]}</Text>
+                                    <Text style={{ fontSize: 10 }}>{this.state.myData["nm_jab"]}</Text>
+                                    <Text style={{ fontSize: 10, fontWeight: 'bold' }}>{this.state.myData["id_bidang"] == "" ? "" : "Bidang " + this.state.myData["nm_bidang"]}</Text>
+                                </View>
+                            </View>
                         </View>
                         <View style={{ margin: 5, flexGrow: 1, flexShrink: 1, justifyContent: 'center' }}>
                             <View style={[styles.ContentContainer, { height: 'auto', padding: 10 }]}>
                                 <ScrollView style={{ width: '100%', paddingHorizontal: 10 }}>
+                                    <Text style={Global.customStyles.Label}>ID Pegawai</Text>
+                                    <TextInput
+                                        value={this.state.myData['id_pegawai']}
+                                        onChangeText={(id_pegawai) => {
+                                            id_pegawai = MyFunctions.validateInputNumbersOnly(id_pegawai);
+                                            let arr = this.state.myData;
+                                            arr['id_pegawai'] = id_pegawai;
+                                            this.setState({ myData: arr });
+                                            this.setAllowSave();
+                                        }}
+                                        placeholder={'ID Pegawai'}
+                                        //secureTextEntry={true}
+                                        style={Global.customStyles.Input}
+                                        maxLength={9}
+                                        keyboardType="numeric"
+                                        numeric
+                                    />
+                                    <Text style={Global.customStyles.Label}>Nama</Text>
+                                    <TextInput
+                                        value={this.state.myData['nm_pegawai']}
+                                        onChangeText={(nm_pegawai) => {
+                                            nm_pegawai = MyFunctions.validateString(nm_pegawai);
+                                            let arr = this.state.myData;
+                                            arr['nm_pegawai'] = nm_pegawai;
+                                            this.setState({ myData: arr });
+                                            this.setAllowSave();
+                                        }}
+                                        placeholder={'Nama'}
+                                        //secureTextEntry={true}
+                                        style={Global.customStyles.Input}
+                                    />
+
                                     <Text style={Global.customStyles.Label}>Jabatan</Text>
-                                    <TextInput
-                                        value={this.state.myData['nm_jab']}
-                                        onChangeText={(nm_jab) => {
-                                            nm_jab = MyFunctions.validateString(nm_jab);
-                                            let arr = this.state.myData;
-                                            arr['nm_jab'] = nm_jab;
-                                            this.setState({ myData: arr });
-                                            this.setAllowSave();
-                                        }}
-                                        placeholder={'Jabatan'}
-                                        //secureTextEntry={true}
-                                        style={Global.customStyles.Input}
-                                    />
-                                    <Text style={Global.customStyles.Label}>Singkatan</Text>
-                                    <TextInput
-                                        value={this.state.myData['singk_jab']}
-                                        onChangeText={(singk_jab) => {
-                                            singk_jab = MyFunctions.validateString(singk_jab);
-                                            let arr = this.state.myData;
-                                            arr['singk_jab'] = singk_jab;
-                                            this.setState({ myData: arr });
-                                            this.setAllowSave();
-                                        }}
-                                        placeholder={'Singkatan Jabatan'}
-                                        //secureTextEntry={true}
-                                        style={Global.customStyles.Input}
-                                    />
-                                    <Text style={Global.customStyles.Label}>Bidang</Text>
                                     <View style={[Global.customStyles.PickerContainer, { borderColor: '#a8a8a8', marginBottom: 10 }]}>
                                         <Picker
-                                            selectedValue={this.state.myData["id_bidang"] == "" ? "none" : this.state.myData["id_bidang"]}
+                                            selectedValue={this.state.myData["id_jab"]}
                                             onValueChange={(itemValue, itemIndex) => {
-                                                if (itemValue == "none") itemValue = "";
                                                 let arr = this.state.myData;
-                                                arr['id_bidang'] = itemValue;
+                                                arr['id_jab'] = itemValue;
+                                                this.state.myJab.map((item) => {
+                                                    if (item.id_jab == itemValue) {
+                                                        arr['id_bidang'] = item.id_bidang == null ? "" : item.id_bidang;
+                                                        arr['id_fungsi'] = item.id_fungsi;
+                                                        arr['nm_jab'] = item.nm_jab;
+                                                        arr['singk_jab'] = item.singk_jab;
+                                                        arr['adalah_kepala_bidang'] = item.adalah_kepala_bidang;
+                                                        arr['fungsi_disposisi'] = item.fungsi_disposisi;
+                                                        arr['ket_fungsi'] = item.ket_fungsi;
+                                                        arr['nm_bidang'] = item.nm_bidang == null ? "" : item.nm_bidang;
+                                                    }
+                                                })
                                                 this.setState({ myData: arr });
                                                 this.setAllowSave();
                                             }
                                             }>
                                             {
-                                                this.state.myBidang.map((item) => {
-                                                    return (<Picker.Item label={item.nm_bidang} value={item.id_bidang} key={item.id_bidang} style={{ fontSize: 15 }} />);
+                                                this.state.myJab.map((item) => {
+                                                    return (<Picker.Item label={item.singk_jab + "\n(" + (item.nm_bidang == null ? "Non-Bidang" : item.nm_bidang) + ")"} value={item.id_jab} key={item.id_jab} style={{ fontSize: 15 }} />);
                                                 })
                                             }
 
                                         </Picker>
                                     </View>
-                                    <Text style={Global.customStyles.Label}>Fungsi</Text>
+
+                                    <Text style={Global.customStyles.Label}>Hak Akses</Text>
                                     <View style={[Global.customStyles.PickerContainer, { borderColor: '#a8a8a8', marginBottom: 10 }]}>
                                         <Picker
-                                            selectedValue={this.state.myData["id_fungsi"]}
+                                            selectedValue={this.state.myData["tipe_user"]}
                                             onValueChange={(itemValue, itemIndex) => {
                                                 let arr = this.state.myData;
-                                                arr['id_fungsi'] = itemValue;
+                                                arr['tipe_user'] = itemValue;
                                                 this.setState({ myData: arr });
                                                 this.setAllowSave();
                                             }
                                             }>
-                                            {
-                                                this.state.myFungsi.map((item) => {
-                                                    //console.log(item.id_fungsi);
-                                                    return (<Picker.Item label={item.fungsi_disposisi} value={item.id_fungsi} key={item.id_fungsi} style={{ fontSize: 15 }} />);
-                                                })
-                                            }
+                                            <Picker.Item label="Pengguna" value="Pengguna" key="Pengguna" style={{ fontSize: 15 }} />
+                                            <Picker.Item label="Administrator" value="Admin" key="Admin" style={{ fontSize: 15 }} />
 
                                         </Picker>
                                     </View>
                                     <View style={{ flexDirection: 'row', justifyContent: 'flex-end' }}>
-                                        <Text style={{ fontWeight: 'bold', alignSelf: 'center' }}>Kepala Bidang</Text>
+                                        <Text style={{ fontWeight: 'bold', alignSelf: 'center' }}>Pegawai Aktif</Text>
                                         <Switch
                                             trackColor={{ false: '#a8a8a8', true: '#a8a8a8' }}
-                                            thumbColor={this.state.myData["adalah_kepala_bidang"] == 1 ? '#000000' : '#989898'}
+                                            thumbColor={this.state.myData["aktif"] == 1 ? '#000000' : '#989898'}
                                             onValueChange={() => {
-                                                var b = this.state.myData["adalah_kepala_bidang"] == 1;
+                                                var b = this.state.myData["aktif"] == 1;
                                                 b = !b;
                                                 let arr = this.state.myData;
-                                                arr['adalah_kepala_bidang'] = b ? "1" : "0";
+                                                arr['aktif'] = b ? "1" : "0";
                                                 this.setState({ myData: arr });
                                                 this.setAllowSave();
                                             }}
-                                            value={this.state.myData["id_bidang"] == "" ? false : this.state.myData["adalah_kepala_bidang"] == 1}
-                                            disabled={this.state.myData["id_bidang"] == ""}
+                                            value={this.state.myData["aktif"] == 1}
                                         />
                                     </View>
+                                    <TouchableOpacity
+                                        onPress={() => {
+                                            Alert.alert("Konfirmasi?", "Password akan direset ke: 'ID-Pegawai'. Lanjutkan?", [
+                                                {
+                                                    text: "Batal",
+                                                    onPress: () => null,
+                                                    style: "cancel"
+                                                },
+                                                {
+                                                    text: "Ya", onPress: () => {
+                                                        let arr = this.state.myData;
+                                                        arr['password'] = "";
+                                                        this.setState({ myData: arr });
+                                                        this.setAllowSave();
+                                                    }
+                                                }
+                                            ]);
+                                        }}
+                                    >
+                                        <View style={{ flexDirection: 'row' }}>
+                                            <MaterialCommunityIcons
+                                                name="lock-reset"
+                                                size={30}
+                                                color={'#101417'}
+                                                style={{ alignSelf: 'center' }}
+                                            />
+                                            <Text style={{ alignSelf: 'center', paddingLeft: 5, fontWeight: 'bold' }}>Reset Password</Text>
+                                        </View>
+                                    </TouchableOpacity>
+
 
 
                                 </ScrollView>
@@ -175,38 +241,15 @@ class ScreenAdminJabatanEdit extends Component {
 
     }
 
-    loadDataBidang = () => {
+    loadDataJabatan = () => {
         this.setState({ loading: true })
-        let url = MyServerSettings.getPhp("get_list_bidang.php");
-        //let url = MyServerSettings.getPhp("test.php") + '?res=10&pg=' + this.state.page;
-        //console.log(url);
-        fetch(url)
-            .then((response) => response.json())
-            .then((responseJson) => {
-                var arr = [{ "id_bidang": "none", "nm_bidang": "(kosong)" }];
-                responseJson.forEach((item, index) => {
-                    arr.push(item);
-                });
-
-                this.setState({
-                    loading: false,
-                    myBidang: arr
-                })
-            })
-            .catch((error) => {
-                console.log('Error selecting random data: ' + error)
-                this.setState({ loading: false })
-            });
-    }
-    loadDataFungsi = () => {
-        this.setState({ loading: true })
-        let url = MyServerSettings.getPhp("get_list_fungsi.php");
+        let url = MyServerSettings.getPhp("get_list_jabatan.php?bid=all");
         fetch(url)
             .then((response) => response.json())
             .then((responseJson) => {
                 this.setState({
                     loading: false,
-                    myFungsi: responseJson
+                    myJab: responseJson
                 })
             })
             .catch((error) => {
@@ -217,11 +260,11 @@ class ScreenAdminJabatanEdit extends Component {
 
 
     save = () => {
-        console.log("[" + JSON.stringify(this.state.myData) + "]");
+        //console.log("[" + JSON.stringify(this.state.myData) + "]");
         this.setState({ loading: true })
         //this.tmpPass = this.state.txtPass;
         fetch(
-            MyServerSettings.getPhp("post_jabatan.php"),
+            this.adding ? MyServerSettings.getPhp("post_pegawai_add.php") : MyServerSettings.getPhp("post_pegawai.php"),
             {
                 method: 'POST',
                 headers: {
@@ -261,8 +304,7 @@ class ScreenAdminJabatanEdit extends Component {
         //return true;
     }
     componentDidMount() {
-        this.loadDataBidang();
-        this.loadDataFungsi();
+        this.loadDataJabatan();
         this.backHandler = BackHandler.addEventListener(
             "hardwareBackPress",
             this.backAction
@@ -298,11 +340,18 @@ class ScreenAdminJabatanEdit extends Component {
         this.myDataBU = JSON.parse(JSON.stringify(this.state.myData));
     }
     setAllowSave = () => {
-        //console.log(JSON.stringify(this.state.myData));
+        console.log(JSON.stringify(this.state.myData) + "\n\n\n\n\n");
         let edited = (JSON.stringify(this.state.myData) !== JSON.stringify(this.myDataBU));
         //console.log(JSON.stringify(this.state.myData) + "\n\n\n\n\n" + JSON.stringify(this.myDataBU));
         this.setState({
-            allowSave: edited && (this.state.myData["nm_jab"] !== "" && this.state.myData["singk_jab"] !== "")
+            allowSave: edited &&
+                (
+                    this.state.myData["id_pegawai"] !== ""
+                    && this.state.myData["nm_pegawai"] !== ""
+                    && this.state.myData["id_jab"] !== ""
+                    && this.state.myData["tipe_user"] !== ""
+                    && this.state.myData["id_pegawai"].length == 9
+                )
         });
     }
 
@@ -358,5 +407,5 @@ const styles = StyleSheet.create({
 
 });
 
-AppRegistry.registerComponent('ScreenAdminJabatanEdit', () => ScreenAdminJabatanEdit);
-export default ScreenAdminJabatanEdit;
+AppRegistry.registerComponent('ScreenAdminPegawaiEdit', () => ScreenAdminPegawaiEdit);
+export default ScreenAdminPegawaiEdit;

@@ -5,6 +5,7 @@ import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityI
 import ScreenTagihan from './ScreenTagihan';
 import TestNotif from './TestNotif';
 import ScreenProfil from './ScreenProfil';
+import ScreenAdmin from './ScreenAdmin';
 
 
 
@@ -28,6 +29,19 @@ export default function ScreenMain() {
                     tabBarIcon: ({ color, size }) => (
                         <MaterialCommunityIcons
                             name="view-list"
+                            color={color}
+                            size={size}
+                        />
+                    ),
+                }} />
+            <Tab.Screen
+                name="TabAdmin"
+                component={ScreenAdmin}
+                options={{
+                    tabBarLabel: 'Pengaturan',
+                    tabBarIcon: ({ color, size }) => (
+                        <MaterialCommunityIcons
+                            name="tools"
                             color={color}
                             size={size}
                         />

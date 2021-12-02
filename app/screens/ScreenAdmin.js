@@ -35,7 +35,7 @@ class ScreenAdmin extends Component {
                     <View style={{ width: '100%', height: '100%' }}>
                         <View style={{ margin: 5, padding: 10 }}>
                             <MaterialCommunityIcons
-                                name="toolbox"
+                                name="tools"
                                 size={50}
                                 color={'#101417'}
                                 style={{ alignSelf: 'center' }}
@@ -43,7 +43,9 @@ class ScreenAdmin extends Component {
                         </View>
                         <View style={{ margin: 5, flexGrow: 1, flexShrink: 1, justifyContent: 'flex-start' }}>
                             <View style={[styles.ContentContainer, { height: 'auto', padding: 10 }]}>
-                                <TouchableOpacity style={{ flexDirection: 'row', margin: 5, padding: 5, paddingLeft: 20, alignItems: 'center', borderRadius: 20, elevation: 5, backgroundColor: "#FFFFFF" }}>
+                                <TouchableOpacity style={{ flexDirection: 'row', margin: 5, padding: 5, paddingLeft: 20, alignItems: 'center', borderRadius: 20, elevation: 5, backgroundColor: "#FFFFFF" }}
+                                    onPress={() => this.props.navigation.navigate('Pegawai')}
+                                >
                                     <MaterialCommunityIcons
                                         name="account-details"
                                         size={30}

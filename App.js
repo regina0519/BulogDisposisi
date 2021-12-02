@@ -29,6 +29,8 @@ import ScreenAdminJabatan from './app/screens/ScreenAdminJabatan';
 import ScreenAdminJabatanEdit from './app/screens/ScreenAdminJabatanEdit';
 import ScreenAdminFungsi from './app/screens/ScreenAdminFungsi';
 import ScreenAdminFungsiEdit from './app/screens/ScreenAdminFungsiEdit';
+import ScreenAdminPegawai from './app/screens/ScreenAdminPegawai';
+import ScreenAdminPegawaiEdit from './app/screens/ScreenAdminPegawaiEdit';
 
 const Stack = createNativeStackNavigator();
 
@@ -37,6 +39,8 @@ export default function App() {
   return (
     <NavigationContainer>
       <Stack.Navigator mode="modal" >
+        <Stack.Screen name="Init" component={ScreenInit} options={{ headerShown: false }} />
+        <Stack.Screen name="Login" component={ScreenLogin} options={{ headerShown: false }} />
         <Stack.Screen name="Admin" component={ScreenAdmin} />
         <Stack.Screen name="Bidang" component={ScreenAdminBidang} />
         <Stack.Screen name="Edit Bidang" component={ScreenAdminBidangEdit} />
@@ -44,8 +48,8 @@ export default function App() {
         <Stack.Screen name="Edit Jabatan" component={ScreenAdminJabatanEdit} />
         <Stack.Screen name="Fungsi" component={ScreenAdminFungsi} />
         <Stack.Screen name="Edit Fungsi" component={ScreenAdminFungsiEdit} />
-        <Stack.Screen name="Init" component={ScreenInit} options={{ headerShown: false }} />
-        <Stack.Screen name="Login" component={ScreenLogin} options={{ headerShown: false }} />
+        <Stack.Screen name="Pegawai" component={ScreenAdminPegawai} />
+        <Stack.Screen name="Edit Pegawai" component={ScreenAdminPegawaiEdit} />
         <Stack.Screen name="Tagihan" component={ScreenTagihan} />
         <Stack.Screen name="Profil" component={ScreenProfil} />
         <Stack.Screen name="Ganti Password" component={ScreenChangePass} />

@@ -137,6 +137,14 @@ class Global {
             color: '#484848',
             fontWeight: 'bold'
         },
+        PickerContainer: {
+            borderRadius: 25,
+            borderWidth: 2,
+            padding: 5,
+            flexDirection: 'column',
+            maxHeight: 35,
+
+        },
         rowBack: {
             alignItems: 'center',
             //backgroundColor: '#DDD',
