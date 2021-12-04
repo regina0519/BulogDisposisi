@@ -97,6 +97,21 @@ class ScreenTagihanEdit extends Component {
                         <View style={{ margin: 5 }}>
                             <Text style={[Global.customStyles.Label, { textAlign: 'right' }]}>{moment(this.state.myData['tgl_pembuatan']).locale("id").format("llll")}</Text>
                             <View style={{ margin: 3 }}></View>
+                            <Text style={Global.customStyles.Label}>Nomor Nota Intern</Text>
+                            <TextInput
+                                value={this.state.myData['no_nota_intern']}
+                                multiline={false}
+                                onChangeText={(no_nota_intern) => {
+                                    no_nota_intern = MyFunctions.validateString(no_nota_intern);
+                                    let arr = this.state.myData;
+                                    arr['no_nota_intern'] = no_nota_intern;
+                                    this.setState({ myData: arr });
+                                    this.setAllowSave();
+                                }}
+                                placeholder={'Nomor Nota Intern'}
+                                //secureTextEntry={true}
+                                style={Global.customStyles.Input}
+                            />
                             <Text style={Global.customStyles.Label}>Uraian</Text>
                             <TextInput
                                 value={this.state.myData['ket_tagihan']}
@@ -338,7 +353,7 @@ class ScreenTagihanEdit extends Component {
         //console.log(JSON.stringify(this.state.myData));
         let edited = (JSON.stringify(this.state.myData) !== JSON.stringify(this.myDataBU));
         this.setState({
-            allowSave: edited && (this.state.myData["ket_tagihan"] !== "") && (this.state.myData["det_array"].length > 0)
+            allowSave: edited && (this.state.myData["no_nota_intern"] !== "") && (this.state.myData["ket_tagihan"] !== "") && (this.state.myData["det_array"].length > 0)
         });
     }
 

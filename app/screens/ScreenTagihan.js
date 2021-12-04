@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import MyFunctions from './../functions/MyFunctions';
-import { AppRegistry, ImageBackground, StyleSheet, FlatList, Text, View, ActivityIndicator, Platform, TouchableOpacity, TouchableHighlightComponent, RefreshControl } from 'react-native';
+import { AppRegistry, ImageBackground, StyleSheet, FlatList, Text, View, ActivityIndicator, Platform, TouchableOpacity, TouchableHighlightComponent, RefreshControl, Image } from 'react-native';
 import moment from 'moment/min/moment-with-locales';
 import MyServerSettings from '../functions/MyServerSettings';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
@@ -175,11 +175,21 @@ class ScreenTagihan extends Component {
       <TouchableOpacity style={Global.customStyles.ListItem} onPress={() => this.props.navigation.navigate('Edit Tagihan', {
         idTagihan: item.id_tagihan
       })}>
-        <Text style={{ textAlign: 'right' }}>Bidang {item.nm_bidang}</Text>
-        <Text style={{ textAlign: 'right' }}>{moment(item.tgl_pembuatan).locale("id").format("llll")}</Text>
-        <Text style={{ fontWeight: 'bold' }}>{item.ket_tagihan}</Text>
-        <Text>{MyFunctions.stringTruncateIndo(item.ketdet, 2, '\n', 'item')}</Text>
-        <Text style={{ textAlign: 'right', fontWeight: 'bold' }}>{"Rp. " + MyFunctions.formatMoney(item.total)}</Text>
+        <View style={{ flexDirection: 'row' }}>
+          <View>
+            <Image
+              source={require('../assets/progress_circle/080.png')}
+              style={{ width: 30, height: 30 }}
+            />
+          </View>
+          <View>
+            <Text style={{ textAlign: 'right' }}>Bidang {item.nm_bidang}</Text>
+            <Text style={{ textAlign: 'right' }}>{moment(item.tgl_pembuatan).locale("id").format("llll")}</Text>
+            <Text style={{ fontWeight: 'bold' }}>{item.ket_tagihan}</Text>
+            <Text>{MyFunctions.stringTruncateIndo(item.ketdet, 2, '\n', 'item')}</Text>
+            <Text style={{ textAlign: 'right', fontWeight: 'bold' }}>{"Rp. " + MyFunctions.formatMoney(item.total)}</Text>
+          </View>
+        </View>
       </TouchableOpacity>
     )
   }

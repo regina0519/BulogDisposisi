@@ -129,7 +129,7 @@ class ScreenLogin extends Component {
     }
 
     gotoTagihan = () => {
-        this.props.navigation.dispatch(StackActions.replace('Home'))
+        this.props.navigation.dispatch(StackActions.replace('Bulog'))
     }
 
     storeUser = async (value) => {

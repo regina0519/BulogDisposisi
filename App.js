@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { useColorScheme } from 'react-native'
+import { useColorScheme, Text, Image } from 'react-native'
 import TestListScreen from './app/screens/TestListScreen';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator, createStackNavigator } from '@react-navigation/native-stack';
@@ -31,6 +31,7 @@ import ScreenAdminFungsi from './app/screens/ScreenAdminFungsi';
 import ScreenAdminFungsiEdit from './app/screens/ScreenAdminFungsiEdit';
 import ScreenAdminPegawai from './app/screens/ScreenAdminPegawai';
 import ScreenAdminPegawaiEdit from './app/screens/ScreenAdminPegawaiEdit';
+import ScreenNotif from './app/screens/ScreenNotif';
 
 const Stack = createNativeStackNavigator();
 
@@ -58,7 +59,8 @@ export default function App() {
         <Stack.Screen name="Edit Detail Tagihan" component={ScreenTagihanDetailEdit} />
         <Stack.Screen name="Item" component={ScreenItem} />
         <Stack.Screen name="Tambah Item" component={ScreenItemAdd} />
-        <Stack.Screen name="Home" component={ScreenMain} />
+        <Stack.Screen name="Bulog" component={ScreenMain} />
+        <Stack.Screen name="Notifikasi" component={ScreenNotif} />
         <Stack.Screen name="Test List" component={TestListScreen} />
         <Stack.Screen name="Detail" component={TestDetail} />
         <Stack.Screen name="Test PDF" component={TestPDF} />
