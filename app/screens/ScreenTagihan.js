@@ -8,6 +8,7 @@ import { DefaultTheme } from '@react-navigation/native';
 import { StackActions } from '@react-navigation/routers';
 import Global from '../functions/Global';
 import { SwipeListView } from 'react-native-swipe-list-view';
+import { AnimatedCircularProgress } from 'react-native-circular-progress';
 
 
 
@@ -61,7 +62,7 @@ class ScreenTagihan extends Component {
                 data={this.state.myData}
                 renderItem={this.renderDataItem}
                 renderHiddenItem={this.renderHiddenItem}
-                leftOpenValue={0}
+                leftOpenValue={75}
                 rightOpenValue={-75}
                 previewRowKey={'0'}
                 previewOpenValue={-40}
@@ -141,12 +142,26 @@ class ScreenTagihan extends Component {
     //console.log('This row opened', rowKey);
 
   };
+  progressRow = (rowMap, rowKey) => {
+    this.props.navigation.navigate('Progres Tagihan', { myData: this.state.myData[rowKey] });
+  };
   onRowDidOpen = rowKey => {
     //console.log('This row opened', rowKey);
   };
 
   renderHiddenItem = (data, rowMap) => (
     <View style={Global.customStyles.rowBack}>
+      <TouchableOpacity
+        style={[Global.customStyles.backRightBtn, Global.customStyles.backRightBtnLeft]}
+        onPress={() => this.progressRow(rowMap, data.index)}
+      >
+        <MaterialCommunityIcons
+          name="chart-timeline-variant"
+          size={30}
+          color='#101417'
+        />
+        <Text style={{ color: '#101417' }}>Progress</Text>
+      </TouchableOpacity>
       <TouchableOpacity
         style={[Global.customStyles.backRightBtn, Global.customStyles.backRightBtnRight]}
         onPress={() => this.deleteRow(rowMap, data.index)}
@@ -176,22 +191,69 @@ class ScreenTagihan extends Component {
         idTagihan: item.id_tagihan
       })}>
         <View style={{ flexDirection: 'row' }}>
-          <View>
-            <Image
-              source={require('../assets/progress_circle/080.png')}
-              style={{ width: 30, height: 30 }}
-            />
+          <View style={{ padding: 5, justifyContent: 'center', width: '20%' }}>
+            {
+              this.getPercentage(item).status != 2 ?
+                <View>
+                  <AnimatedCircularProgress
+                    size={50}
+                    width={10}
+                    fill={this.getPercentage(item).percent}
+                    tintColor="#03428B"
+                    onAnimationComplete={() => console.log('onAnimationComplete')}
+                    backgroundColor="#aaaaaa">
+                    {
+                      () => (
+                        <Text style={{ fontSize: 10 }}>
+                          {this.getPercentage(item).percent + "%"}
+                        </Text>
+
+                      )
+                    }
+                  </AnimatedCircularProgress>
+                  {
+                    this.getPercentage(item).status == 1 ?
+                      <View style={{ position: 'absolute', top: -5, right: 0, backgroundColor: "#FF0000", borderRadius: 25, padding: 3 }}>
+                        <MaterialCommunityIcons
+                          name="file-document-edit-outline"
+                          size={20}
+                          color={'#FFFFFF'}
+                          style={{}}
+                        />
+                      </View> : null
+                  }
+                </View>
+
+                :
+                <Image
+                  source={require('../assets/rejected.png')}
+                  style={{ width: 50, height: 50 }}
+                />
+            }
+
           </View>
-          <View>
-            <Text style={{ textAlign: 'right' }}>Bidang {item.nm_bidang}</Text>
-            <Text style={{ textAlign: 'right' }}>{moment(item.tgl_pembuatan).locale("id").format("llll")}</Text>
-            <Text style={{ fontWeight: 'bold' }}>{item.ket_tagihan}</Text>
-            <Text>{MyFunctions.stringTruncateIndo(item.ketdet, 2, '\n', 'item')}</Text>
-            <Text style={{ textAlign: 'right', fontWeight: 'bold' }}>{"Rp. " + MyFunctions.formatMoney(item.total)}</Text>
+          <View style={{ width: '80%' }}>
+            <Text style={{ textAlign: 'right', fontSize: 10 }}>{moment(item.tgl_pembuatan).locale("id").format("llll")}</Text>
+            <Text style={{ fontWeight: 'bold', color: this.getPercentage(item).status == 2 ? "#FF0000" : "#000000" }}>{item.ket_tagihan}</Text>
+            <Text style={{ textAlign: 'left' }}>Bidang {item.nm_bidang}</Text>
+            <Text style={{ fontSize: 10 }}>{MyFunctions.stringTruncateIndo(item.ketdet, 2, '\n', 'item')}</Text>
+            <Text style={{ textAlign: 'right', fontWeight: 'bold', color: this.getPercentage(item).status == 2 ? "#FF0000" : "#000000" }}>{"Rp. " + MyFunctions.formatMoney(item.total)}</Text>
           </View>
         </View>
       </TouchableOpacity>
     )
+  }
+  getPercentage = (item) => {
+    if (item.status_tagihan == "COMPLETED") return { status: 0, percent: 100 };
+    if (item.status_tagihan == "FAILED") return { status: 2, percent: 0 };
+    var p = 0;
+    p += (item.status_pembuatan % 3) < 2 ? item.status_pembuatan % 3 * 10 : 0;
+    p += (item.status_pengajuan % 3) < 2 ? item.status_pengajuan % 3 * 10 : 0;
+    p += (item.status_approval_kakanwil % 3) < 2 ? item.status_approval_kakanwil % 3 * 20 : 0;
+    p += (item.status_approval_minkeu % 3) < 2 ? item.status_approval_minkeu % 3 * 20 : 0;
+    p += (item.status_verifikasi % 3) < 2 ? item.status_verifikasi % 3 * 20 : 0;
+    p += (item.status_approval_bagkeu % 3) < 2 ? item.status_approval_bagkeu % 3 * 20 : 0;
+    return { status: item.status_tagihan == "EDITING" ? 1 : 0, percent: p }
   }
 }
 

@@ -6,7 +6,7 @@ class Global {
         "FUNGSI_002": "#783B8D",
         "FUNGSI_003": "#FFA61F",
         "FUNGSI_004": "#002F8B",
-        "FUNGSI_005": "#B71F35",
+        "FUNGSI_005": "#8F5902",
         "FUNGSI_006": "#268059"
     };
     static #curUserId = "";
@@ -163,7 +163,7 @@ class Global {
         },
         backRightBtnLeft: {
             //backgroundColor: 'blue',
-            right: 75,
+            left: 0
         },
         backRightBtnRight: {
             //backgroundColor: 'red',

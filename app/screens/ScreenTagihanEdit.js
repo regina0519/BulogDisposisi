@@ -198,7 +198,10 @@ class ScreenTagihanEdit extends Component {
     }
 
     saveData = () => {
-        console.log(this.state.myDataDetToDelete);
+        let arr = [];
+        arr.push(this.state.myDataDetToDelete);
+        arr.push(this.state.myData);
+        console.log(arr);
     }
 
     deleteRow = (rowMap, rowKey) => {
