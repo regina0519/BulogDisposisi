@@ -6,6 +6,7 @@ import ScreenTagihan from './ScreenTagihan';
 import TestNotif from './TestNotif';
 import ScreenProfil from './ScreenProfil';
 import ScreenAdmin from './ScreenAdmin';
+import BackgroundProcess from '../functions/BackgroundProcess';
 
 const Tab = createBottomTabNavigator();
 
@@ -78,6 +79,13 @@ class ScreenMain extends Component {
     }
 
     componentDidMount() {
+        let b = new BackgroundProcess();
+        b.checkStatusAsync().then((status) => {
+            console.log("Status: " + status["status"]);
+            console.log("Regitered: " + status["isRegistered"]);
+        });
+
+
         this.props.navigation.setOptions({
             headerTitle: () => (
                 <View style={{ flexDirection: 'row', alignItems: 'center' }}>
