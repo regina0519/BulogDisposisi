@@ -41,7 +41,8 @@ class ScreenAdminJabatanEdit extends Component {
             'adalah_kepala_bidang': '0',
             'fungsi_disposisi': '',
             'ket_fungsi': '',
-            'nm_bidang': ''
+            'nm_bidang': '',
+            'kode_bidang': ''
         });
     }
 
@@ -82,6 +83,7 @@ class ScreenAdminJabatanEdit extends Component {
                                             this.setState({ myData: arr });
                                             this.setAllowSave();
                                         }}
+                                        maxLength={10}
                                         placeholder={'Singkatan Jabatan'}
                                         //secureTextEntry={true}
                                         style={Global.customStyles.Input}

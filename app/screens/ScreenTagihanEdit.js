@@ -13,7 +13,7 @@ import { SwipeListView } from 'react-native-swipe-list-view';
 
 
 
-
+const unknownCode = "KU.04.02";
 
 class ScreenTagihanEdit extends Component {
     keyExtractor = (data, index) => index + "";
@@ -29,6 +29,9 @@ class ScreenTagihanEdit extends Component {
             idTagihan: props.route.params.idTagihan,
             myData: [],
             myDataDetToDelete: [],
+            myTimer: [],
+            myNewNI: [],
+            myResult: [],
             allowSave: false
         }
     }
@@ -37,37 +40,37 @@ class ScreenTagihanEdit extends Component {
         return ({
             'id_tagihan': '',
             'ket_tagihan': '',
-            'id_bidang': '',
-            'id_pembuat': '',
-            'nm_pembuat': '',
-            'jab_pembuat': '',
+            'id_bidang': Global.getIdBidang(),
+            'id_pembuat': Global.getCurUserId(),
+            'nm_pembuat': Global.getNmPeg(),
+            'jab_pembuat': Global.getNmJab(),
             'cat_pembuat': '',
-            'tgl_pembuatan': new Date().getFullYear() + '-' + MyFunctions.leadingZero((new Date().getMonth() + 1), 2) + '-' + MyFunctions.leadingZero(new Date().getDate(), 2) + ' ' + MyFunctions.leadingZero(new Date().getHours(), 2) + ':' + MyFunctions.leadingZero(new Date().getMinutes(), 2) + ':' + MyFunctions.leadingZero(new Date().getSeconds(), 2),
+            'tgl_pembuatan': this.state.myTimer["now"],
             'status_pembuatan': '0',
-            'no_nota_intern': '',
+            'no_nota_intern': this.injectNI("", MyFunctions.leadingZero(this.state.myNewNI["ni"], 3)),
             'id_pengaju': '',
             'nm_pengaju': '',
             'jab_pengaju': '',
             'cat_pengaju': '',
-            'tgl_pengajuan': '',
+            'tgl_pengajuan': this.state.myTimer["now"],
             'status_pengajuan': '0',
             'id_kakanwil': '',
             'nm_kakanwil': '',
             'jab_kakanwil': '',
             'cat_kakanwil': '',
-            'tgl_disposisi_kakanwil': '',
+            'tgl_disposisi_kakanwil': this.state.myTimer["now"],
             'status_approval_kakanwil': '0',
             'id_minkeu': '',
             'nm_minkeu': '',
             'jab_minkeu': '',
             'cat_minkeu': '',
-            'tgl_disposisi_minkeu': '',
+            'tgl_disposisi_minkeu': this.state.myTimer["now"],
             'status_approval_minkeu': '0',
             'id_verifikator': '',
             'nm_verifikator': '',
             'jab_verifikator': '',
             'cat_verifikator': '',
-            'tgl_verifikasi': '',
+            'tgl_verifikasi': this.state.myTimer["now"],
             'kesesuaian_data': '0',
             'kesesuaian_perhitungan': '0',
             'status_verifikasi': '0',
@@ -76,18 +79,27 @@ class ScreenTagihanEdit extends Component {
             'nm_bag_keu': '',
             'jab_bag_keu': '',
             'cat_bag_keu': '',
-            'tgl_bayar': '',
+            'tgl_bayar': this.state.myTimer["now"],
             'status_approval_bagkeu': '0',
             'no_bukti_pembayaran': '',
             'status_tagihan': '',
+            'nm_bidang': '',
+            'kode_bidang': '',
             'det_array': []
         });
     }
 
 
     render() {
-        //console.log(JSON.stringify(this.state.myData));
-        //alert("rendered");
+
+        if (this.state.loading) {
+            return (
+                <View style={styles.LoadingContainer}>
+                    <ActivityIndicator style={styles.ActivityIndicator} size='large' color="red" animating={this.state.loading} />
+                    {this.state.loading ? <Text style={styles.ActivityIndicatorText}>Loading... Mohon Tunggu</Text> : null}
+                </View>
+            );
+        }
 
         return (
 
@@ -98,20 +110,27 @@ class ScreenTagihanEdit extends Component {
                             <Text style={[Global.customStyles.Label, { textAlign: 'right' }]}>{moment(this.state.myData['tgl_pembuatan']).locale("id").format("llll")}</Text>
                             <View style={{ margin: 3 }}></View>
                             <Text style={Global.customStyles.Label}>Nomor Nota Intern</Text>
-                            <TextInput
-                                value={this.state.myData['no_nota_intern']}
-                                multiline={false}
-                                onChangeText={(no_nota_intern) => {
-                                    no_nota_intern = MyFunctions.validateString(no_nota_intern);
-                                    let arr = this.state.myData;
-                                    arr['no_nota_intern'] = no_nota_intern;
-                                    this.setState({ myData: arr });
-                                    this.setAllowSave();
-                                }}
-                                placeholder={'Nomor Nota Intern'}
-                                //secureTextEntry={true}
-                                style={Global.customStyles.Input}
-                            />
+                            <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 10, marginHorizontal: 10 }}>
+                                <Text style={Global.customStyles.Label}>NI- </Text>
+                                <TextInput
+                                    value={this.extractNI(this.state.myData["no_nota_intern"])}
+                                    multiline={false}
+                                    onChangeText={(no_nota_intern) => {
+                                        no_nota_intern = MyFunctions.validateInputNumbersOnly(no_nota_intern);
+                                        let arr = this.state.myData;
+                                        arr['no_nota_intern'] = this.injectNI(this.state.myData['no_nota_intern'], no_nota_intern);
+                                        this.setState({ myData: arr });
+                                        this.setAllowSave();
+                                    }}
+                                    placeholder={'Nomor NI'}
+                                    keyboardType="numeric"
+                                    numeric
+                                    //secureTextEntry={true}
+                                    style={[Global.customStyles.Input, { width: 80, marginBottom: 0 }]}
+                                />
+                                <Text style={Global.customStyles.Label}> {this.extractNILast(this.state.myData["no_nota_intern"])}</Text>
+                            </View>
+
                             <Text style={Global.customStyles.Label}>Uraian</Text>
                             <TextInput
                                 value={this.state.myData['ket_tagihan']}
@@ -172,7 +191,6 @@ class ScreenTagihanEdit extends Component {
                             </TouchableOpacity>
                         </View>
                         <View style={{ width: '50%', alignSelf: 'center' }}>
-                            {console.log(this.state.allowSave + "    " + this.state.loading)}
                             <Button
                                 title={'Simpan'}
                                 color='#101417'
@@ -197,13 +215,78 @@ class ScreenTagihanEdit extends Component {
 
     }
 
+    extractNI = (str) => {
+        if (str == "" || str == undefined) return "000";
+        var arr = str.split("-");
+        if (arr.length < 2) return "000";
+        var el = arr[1].split("/");
+        if (el.length === 0) return "000";
+        return el[0] == "" ? "000" : el[0];
+    }
+    extractNILast = (str) => {
+        if (str == "" || str == undefined) return "";
+        var arr = str.split("-");
+        if (arr.length < 2) return "";
+        var el = arr[1].split("/");
+        if (el.length < 5) return "";
+        return "/" + el[1] + "/" + el[2] + "/" + el[3] + "/" + el[4];
+    }
+    injectNI = (str, toInject) => {
+        if (str == "" || str == undefined) str = "NI-001/" + Global.getKodeBidang() + "/" + unknownCode + "/" + moment(this.state.myTimer["now"]).format('MM') + "/" + moment(this.state.myTimer["now"]).format('YYYY');
+        //str = "jimi jeno judith";
+
+        let arr = str.split("-");
+        //console.log(str + " - " + arr.length);
+        if (arr.length < 2) return "NI-001/" + Global.getKodeBidang() + "/" + unknownCode + "/" + moment(this.state.myData["tgl_pembuatan"]).format('MM') + "/" + moment(this.state.myData["tgl_pembuatan"]).format('YYYY');
+
+        let el = arr[1].split("/");
+        if (el.length < 5) return "NI-001/" + Global.getKodeBidang() + "/" + unknownCode + "/" + moment(this.state.myData["tgl_pembuatan"]).format('MM') + "/" + moment(this.state.myData["tgl_pembuatan"]).format('YYYY');
+
+        return "NI-" + toInject + "/" + el[1] + "/" + el[2] + "/" + el[3] + "/" + el[4];
+    }
+
     saveData = () => {
         let arr = [];
         arr.push(this.state.myDataDetToDelete);
-        arr.push(this.state.myData);
-        console.log(arr);
+        let tmp = [];
+        tmp.push(this.state.myData);
+        arr.push(tmp);
+        //console.log(JSON.stringify(arr));
+        this.setState({ loading: true })
+        fetch(
+            MyServerSettings.getPhp("post_tagihan.php"),
+            {
+                method: 'POST',
+                headers: {
+                    Accept: 'application/json',
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(arr),
+            }
+        )
+            .then((response) => response.json())
+            .then((responseJson) => {
+                this.setState({
+                    loading: false,
+                    myResult: responseJson
+                })
+            })
+            .then(this.processResult)
+            .catch((error) => {
+                console.log('Error selecting random data: ' + error)
+                this.setState({ loading: false })
+            });
     }
 
+    processResult = () => {
+        if (this.state.myResult[0]['succeed']) {
+            alert("Data tersimpan");
+            this.props.navigation.goBack();
+        } else {
+            alert("Gagal menyimpan\n" + this.state.myResult[0]['error']);
+        }
+        //return true;
+    }
     deleteRow = (rowMap, rowKey) => {
         let arr = this.state.myData;
 
@@ -289,7 +372,13 @@ class ScreenTagihanEdit extends Component {
             "hardwareBackPress",
             this.backAction
         );
-        this.loadData();
+
+        this.loadTimer();
+
+        //let f = async () => { this.loadTimer() };
+        //let f2 = async () => { await f().then(this.loadNewNI()) };
+        //let f3 = async () => { await f2().then(this.loadData()) };
+        //f3();
 
         this.focusListener = this.props.navigation.addListener("focus", () => {
             // The screen is focused
@@ -317,9 +406,11 @@ class ScreenTagihanEdit extends Component {
             allowSave: false,
             allowRincian: false
         });*/
-        this.loadData();
+        this.loadTimer();
 
     }
+
+
     loadData = () => {
         if (this.state.myData.length === 0) {
             this.setState({ loading: true })
@@ -334,12 +425,13 @@ class ScreenTagihanEdit extends Component {
                     //console.log(this.state.myData["det_array"])
                 })
                 .catch((error) => {
-                    console.log('Error selecting random data: ' + error)
+                    console.log('Error selecting random data TAGIHAN: ' + error)
                     this.setState({
                         loading: false,
                         myData: this.newRecord()
                     })
                     this.backupData();
+
                 });
         } else {
             this.setState({
@@ -349,14 +441,51 @@ class ScreenTagihanEdit extends Component {
         }
         this.setAllowSave();
     }
+    loadTimer = () => {
+        this.setState({ loading: true })
+        let url = MyServerSettings.getPhp("now.php");
+        fetch(url)
+            .then((response) => response.json())
+            .then((responseJson) => {
+                this.setState({
+                    loading: false,
+                    myTimer: responseJson[0]
+                })
+            })
+            .then(this.loadNewNI())
+            .catch((error) => {
+                alert("Maaf, terjadi kesalahan pada koneksi jaringan.");
+                console.log('Error selecting random data TIMER: ' + error)
+                this.setState({ loading: false })
+            });
+
+    }
+    loadNewNI = () => {
+        this.setState({ loading: true })
+        let url = MyServerSettings.getPhp("get_new_ni.php");
+        fetch(url)
+            .then((response) => response.json())
+            .then((responseJson) => {
+                this.setState({
+                    loading: false,
+                    myNewNI: responseJson[0]
+                })
+            })
+            .then(this.loadData())
+            .catch((error) => {
+                alert("Maaf, terjadi kesalahan pada koneksi jaringan.");
+                console.log('Error selecting random data NI: ' + error)
+                this.setState({ loading: false })
+            });
+    }
     backupData = () => {
         this.myDataBU = JSON.parse(JSON.stringify(this.state.myData));
     }
     setAllowSave = () => {
-        //console.log(JSON.stringify(this.state.myData));
+        console.log("AAAAA    " + this.extractNI(this.state.myData["no_nota_intern"]));
         let edited = (JSON.stringify(this.state.myData) !== JSON.stringify(this.myDataBU));
         this.setState({
-            allowSave: edited && (this.state.myData["no_nota_intern"] !== "") && (this.state.myData["ket_tagihan"] !== "") && (this.state.myData["det_array"].length > 0)
+            allowSave: edited && (Number.parseInt(this.extractNI(this.state.myData["no_nota_intern"])) !== 0) && (this.state.myData["ket_tagihan"] !== "") && (this.state.myData["det_array"].length > 0)
         });
     }
 

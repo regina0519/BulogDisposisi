@@ -33,6 +33,7 @@ import ScreenAdminPegawai from './app/screens/ScreenAdminPegawai';
 import ScreenAdminPegawaiEdit from './app/screens/ScreenAdminPegawaiEdit';
 import ScreenNotif from './app/screens/ScreenNotif';
 import ScreenProgress from './app/screens/ScreenProgress';
+import ScreenTagihanAction from './app/screens/ScreenTagihanAction';
 
 const Stack = createNativeStackNavigator();
 
@@ -56,6 +57,7 @@ export default function App() {
         <Stack.Screen name="Profil" component={ScreenProfil} />
         <Stack.Screen name="Ganti Password" component={ScreenChangePass} />
         <Stack.Screen name="Edit Tagihan" component={ScreenTagihanEdit} />
+        <Stack.Screen name="Disposisi Tagihan" component={ScreenTagihanAction} />
         <Stack.Screen name="Detail Tagihan" component={ScreenTagihanDetail} />
         <Stack.Screen name="Edit Detail Tagihan" component={ScreenTagihanDetailEdit} />
         <Stack.Screen name="Item" component={ScreenItem} />

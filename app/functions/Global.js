@@ -22,6 +22,7 @@ class Global {
     static #fungsi = "";
     static #ketFungsi = "";
     static #nmBidang = "";
+    static #kdBidang = "";
 
 
     static #userKey = "";
@@ -69,6 +70,9 @@ class Global {
     static getIdBidang() {
         return this.#idBidang;
     }
+    static getKodeBidang() {
+        return this.#kdBidang;
+    }
     static getIdFungsi() {
         return this.#idFungsi;
     }
@@ -108,6 +112,7 @@ class Global {
         this.#fungsi = data['fungsi_disposisi'];
         this.#ketFungsi = data['ket_fungsi'];
         this.#nmBidang = data['nm_bidang'];
+        this.#kdBidang = data['kode_bidang'];
     }
 
 

@@ -31,7 +31,8 @@ class ScreenAdminBidangEdit extends Component {
     newRecord = () => {
         return ({
             'id_bidang': '',
-            'nm_bidang': ''
+            'nm_bidang': '',
+            'kode_bidang': ''
         });
     }
 
@@ -59,6 +60,20 @@ class ScreenAdminBidangEdit extends Component {
                                             this.setAllowSave();
                                         }}
                                         placeholder={'Bidang'}
+                                        //secureTextEntry={true}
+                                        style={Global.customStyles.Input}
+                                    />
+                                    <Text style={Global.customStyles.Label}>Kode</Text>
+                                    <TextInput
+                                        value={this.state.myData['kode_bidang']}
+                                        onChangeText={(kode_bidang) => {
+                                            kode_bidang = MyFunctions.validateString(kode_bidang);
+                                            let arr = this.state.myData;
+                                            arr['kode_bidang'] = kode_bidang;
+                                            this.setState({ myData: arr });
+                                            this.setAllowSave();
+                                        }}
+                                        placeholder={'Kode Bidang'}
                                         //secureTextEntry={true}
                                         style={Global.customStyles.Input}
                                     />

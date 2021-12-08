@@ -2,6 +2,7 @@
 class CurrentDisposisi {
     #row;
     #fungsi;
+    #nmFungsi;
     #first;
     #last;
     #next;
@@ -14,6 +15,9 @@ class CurrentDisposisi {
     }
     getFungsi() {
         return this.#fungsi;
+    }
+    getNmFungsi() {
+        return this.#nmFungsi;
     }
     getNext() {
         return this.#next;
@@ -29,6 +33,7 @@ class CurrentDisposisi {
     }
     findMe(idFungsi) {
         let tmp = this.#first;
+        if (tmp == null) return null;
         while (tmp.#next != null) {
             if (tmp.#fungsi == idFungsi) break;
             tmp = tmp.#next;
@@ -51,6 +56,7 @@ class CurrentDisposisi {
     fillData(data) {
         this.#first = this;
         this.#fungsi = "FUNGSI_001";
+        this.#nmFungsi = "Pembuat Tagihan";
         this.#row = {
             "id": data["id_pembuat"],
             "nm": data["nm_pembuat"],
@@ -67,6 +73,7 @@ class CurrentDisposisi {
         this.#next.#first = this.#first;
         var cur = this.#next;
         cur.#fungsi = "FUNGSI_002";
+        cur.#nmFungsi = "Pengaju Tagihan";
         cur.#row = {
             "id": data["id_pengaju"],
             "nm": data["nm_pengaju"],
@@ -84,6 +91,7 @@ class CurrentDisposisi {
         cur.#next.#first = cur.#first;
         cur = cur.#next;
         cur.#fungsi = "FUNGSI_003";
+        cur.#nmFungsi = "Kakanwil";
         cur.#row = {
             "id": data["id_kakanwil"],
             "nm": data["nm_kakanwil"],
@@ -101,6 +109,7 @@ class CurrentDisposisi {
         cur.#next.#first = cur.#first;
         cur = cur.#next;
         cur.#fungsi = "FUNGSI_004";
+        cur.#nmFungsi = "Admin Keuangan";
         cur.#row = {
             "id": data["id_minkeu"],
             "nm": data["nm_minkeu"],
@@ -118,6 +127,7 @@ class CurrentDisposisi {
         cur.#next.#first = cur.#first;
         cur = cur.#next;
         cur.#fungsi = "FUNGSI_005";
+        cur.#nmFungsi = "Verifikator";
         cur.#row = {
             "id": data["id_verifikator"],
             "nm": data["nm_verifikator"],
@@ -135,6 +145,7 @@ class CurrentDisposisi {
         cur.#next.#first = cur.#first;
         cur = cur.#next;
         cur.#fungsi = "FUNGSI_006";
+        cur.#nmFungsi = "Bag. Keuangan";
         cur.#row = {
             "id": data["id_bag_keu"],
             "nm": data["nm_bag_keu"],

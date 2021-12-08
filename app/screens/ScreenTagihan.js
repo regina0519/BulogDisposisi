@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import MyFunctions from './../functions/MyFunctions';
-import { AppRegistry, ImageBackground, StyleSheet, FlatList, Text, View, ActivityIndicator, Platform, TouchableOpacity, TouchableHighlightComponent, RefreshControl, Image } from 'react-native';
+import { AppRegistry, ImageBackground, StyleSheet, Alert, Text, View, ActivityIndicator, Platform, TouchableOpacity, TouchableHighlightComponent, RefreshControl, Image } from 'react-native';
 import moment from 'moment/min/moment-with-locales';
 import MyServerSettings from '../functions/MyServerSettings';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
@@ -73,18 +73,22 @@ class ScreenTagihan extends Component {
                 onEndReachedThreshold={0.1}
                 onEndReached={this.loadMoreData}
                 refreshControl={
-                  <RefreshControl refreshing={this.state.loading} onRefresh={this.refreshData} />
+                  <RefreshControl refreshing={false} onRefresh={this.refreshData} />
                 }
               />
-              <TouchableOpacity style={styles.AddButton} onPress={() => this.props.navigation.navigate('Edit Tagihan', {
-                idTagihan: ""
-              })} disabled={this.state.loading}>
-                <MaterialCommunityIcons
-                  name="plus-circle"
-                  size={50}
-                  color={'#101417'}
-                />
-              </TouchableOpacity>
+              {
+                Global.getIdFungsi() == "FUNGSI_001" ? (
+                  <TouchableOpacity style={styles.AddButton} onPress={() => this.props.navigation.navigate('Edit Tagihan', {
+                    idTagihan: ""
+                  })} disabled={this.state.loading}>
+                    <MaterialCommunityIcons
+                      name="plus-circle"
+                      size={50}
+                      color={'#101417'}
+                    />
+                  </TouchableOpacity>
+                ) : (null)
+              }
             </View>
             <View style={{ width: '50%', alignSelf: 'center' }}>
 
@@ -135,11 +139,46 @@ class ScreenTagihan extends Component {
   }
 
   componentDidMount() {
-    this.loadData()
+    this.loadData();
+    this.focusListener = this.props.navigation.addListener("focus", () => {
+      this.refreshData();
+
+    });
   }
 
   deleteRow = (rowMap, rowKey) => {
-    //console.log('This row opened', rowKey);
+    let arr = this.state.myData;
+
+    Alert.alert("Konfirmasi!", "Hapus Tagihan '" + arr[rowKey]["no_nota_intern"] + "'?", [
+      {
+        text: "Batal",
+        onPress: () => null,
+        style: "cancel"
+      },
+      {
+        text: "Ya", onPress: () => {
+          fetch(MyServerSettings.getPhp("delete_tagihan.php") + '?id=' + arr[rowKey]["id_tagihan"])
+            .then((response) => response.json())
+            .then((responseJson) => {
+              var res = responseJson[0];
+              console.log(res);
+              if (res["succeed"] == "1") {
+                alert("Tagihan '" + arr[rowKey]["no_nota_intern"] + "' telah dihapus.");
+              } else {
+                if (res["error"] == "EXIST") {
+                  alert("Maaf, Tagihan '" + arr[rowKey]["no_nota_intern"] + "' tidak bisa dihapus karena sedang dalam proses pencairan.");
+                } else {
+                  alert("Error Koneksi");
+                }
+              }
+            }).then(this.refreshData)
+            .catch((error) => {
+              console.log('Error selecting random data: ' + error)
+              alert("Error Koneksi Jaringan");
+            });
+        }
+      }
+    ]);
 
   };
   progressRow = (rowMap, rowKey) => {
@@ -162,17 +201,21 @@ class ScreenTagihan extends Component {
         />
         <Text style={{ color: '#101417' }}>Progress</Text>
       </TouchableOpacity>
-      <TouchableOpacity
-        style={[Global.customStyles.backRightBtn, Global.customStyles.backRightBtnRight]}
-        onPress={() => this.deleteRow(rowMap, data.index)}
-      >
-        <MaterialCommunityIcons
-          name="delete"
-          size={30}
-          color='#101417'
-        />
-        <Text style={{ color: '#101417' }}>Hapus</Text>
-      </TouchableOpacity>
+      {
+        Global.getIdFungsi() == "FUNGSI_001" ? (
+          <TouchableOpacity
+            style={[Global.customStyles.backRightBtn, Global.customStyles.backRightBtnRight]}
+            onPress={() => this.deleteRow(rowMap, data.index)}
+          >
+            <MaterialCommunityIcons
+              name="delete"
+              size={30}
+              color='#101417'
+            />
+            <Text style={{ color: '#101417' }}>Hapus</Text>
+          </TouchableOpacity>
+        ) : (null)
+      }
     </View>
   );
 
@@ -187,7 +230,7 @@ class ScreenTagihan extends Component {
       </TouchableOpacity>
     )*/
     return (
-      <TouchableOpacity style={Global.customStyles.ListItem} onPress={() => this.props.navigation.navigate('Edit Tagihan', {
+      <TouchableOpacity style={Global.customStyles.ListItem} onPress={() => this.props.navigation.navigate('Disposisi Tagihan', {
         idTagihan: item.id_tagihan
       })}>
         <View style={{ flexDirection: 'row' }}>
