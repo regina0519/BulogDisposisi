@@ -30,6 +30,19 @@
       "favicon": "./app/assets/favicon.png"
     },
     "description": "Aplikasi Disposisi dan e-Verify Keuangan",
-    "githubUrl": "https://github.com/regina0519/BulogDisposisi.git"
+    "githubUrl": "https://github.com/regina0519/BulogDisposisi.git",
+    "notification": {
+      "icon": "./app/assets/notif-icon.png",
+      "color": "#002C56"
+    },
+    "plugins": [
+      [
+        "expo-notifications",
+        {
+          "icon": "./app/assets/notif-icon.png",
+          "color": "#ffffff"
+        }
+      ]
+    ]
   }
 }

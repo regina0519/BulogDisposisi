@@ -33,7 +33,8 @@
     "react-native-svg": "^12.1.1",
     "react-native-swipe-list-view": "^3.2.9",
     "react-native-vector-icons": "^9.0.0",
-    "react-native-web": "~0.13.12"
+    "react-native-web": "~0.13.12",
+    "react-native-webview": "11.6.2"
   },
   "devDependencies": {
     "@babel/core": "^7.9.0"

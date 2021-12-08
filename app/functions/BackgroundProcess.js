@@ -1,19 +1,20 @@
 import * as BackgroundFetch from 'expo-background-fetch';
 import * as TaskManager from 'expo-task-manager';
+import Global from './Global';
 
 const BACKGROUND_FETCH_TASK = 'background-fetch';
 class BackgroundProcess {
     constructor() {
         console.log("background");
         TaskManager.defineTask(BACKGROUND_FETCH_TASK, async () => {
-            const now = Date.now();
-
-            console.log(`Got background fetch call at date: ${new Date(now).toISOString()}`);
+            console.log("BG Trying");
+            Global.doBackground();
 
             return BackgroundFetch.BackgroundFetchResult.NewData;
             //return BackgroundFetch.Result.NewData;
         });
-        this.registerBackgroundFetchAsync();
+        Global.setNotif();
+        //this.registerBackgroundFetchAsync();
 
     }
     registerBackgroundFetchAsync = async () => {

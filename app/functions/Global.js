@@ -1,5 +1,8 @@
+import Constants from 'expo-constants';
 import { Dimensions, StyleSheet } from "react-native";
 import { DefaultTheme } from '@react-navigation/native';
+import MyServerSettings from "./MyServerSettings";
+import * as Notifications from 'expo-notifications';
 class Global {
     static #arrColor = {
         "FUNGSI_001": "#101417",
@@ -27,6 +30,8 @@ class Global {
 
     static #userKey = "";
     static #passKey = "";
+
+    static #expoPushToken;
 
     static getScreenWidth() {
         return Dimensions.get('window').width;
@@ -114,6 +119,132 @@ class Global {
         this.#nmBidang = data['nm_bidang'];
         this.#kdBidang = data['kode_bidang'];
     }
+
+    static doBackground() {
+        Global.loadNotif();
+    }
+
+    static loadNotif = () => {
+        if (Global.#expoPushToken == null) return;
+        let url = MyServerSettings.getPhp("get_list_notif_new.php");
+        fetch(url)
+            .then((response) => response.json())
+            .then((responseJson) => {
+                let res = responseJson;
+                if (res.length > 0) {
+                    for (var i = 0; i < res.length; i++) {
+                        //console.log("NEW NOTIF: " + res[0]["notif_desc"]);
+                        res[0]["sent"] = "1";
+                        let f = async () => {
+                            await Global.sendPushNotification(Global.#expoPushToken, res[0]["notif_title"], res[0]["notif_desc"], null);
+                        }
+                        f();
+                    }
+                    Global.saveNotif(res);
+                }
+            })
+            .catch((error) => {
+                console.log('Get Notif New Failed: ' + error)
+            });
+    }
+
+    static saveNotif = (arr) => {
+        //console.log("[" + JSON.stringify(arr) + "]");
+        fetch(
+            MyServerSettings.getPhp("post_notif_sent.php"),
+            {
+                method: 'POST',
+                headers: {
+                    Accept: 'application/json',
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(arr),
+            }
+        )
+            .then((response) => response.json())
+            .then((responseJson) => {
+
+            })
+            .catch((error) => {
+                console.log('Error saving new notif: ' + error)
+            });
+
+    }
+
+    static setNotif = () => {
+        Notifications.setNotificationHandler({
+            handleNotification: async () => {
+
+                return {
+                    shouldShowAlert: true,
+                    shouldPlaySound: true,
+                    shouldSetBadge: true,
+                }
+            },
+
+        });
+        Global.registerForPushNotificationsAsync()
+            .then(token => {
+                Global.#expoPushToken = token;
+            })
+            .catch((error) => {
+                console.log('Error Token: ' + error)
+            });
+    }
+
+    static registerForPushNotificationsAsync = async () => {
+        let token;
+        if (Constants.isDevice) {
+            const { status: existingStatus } = await Notifications.getPermissionsAsync();
+            let finalStatus = existingStatus;
+            if (existingStatus !== 'granted') {
+                const { status } = await Notifications.requestPermissionsAsync();
+                finalStatus = status;
+            }
+            if (finalStatus !== 'granted') {
+                alert('Failed to get push token for push notification!');
+                return;
+            }
+            token = (await Notifications.getExpoPushTokenAsync()).data;
+            console.log(token);
+        } else {
+            alert('Must use physical device for Push Notifications');
+        }
+
+        if (Platform.OS === 'android') {
+            Notifications.setNotificationChannelAsync('default', {
+                name: 'default',
+                importance: Notifications.AndroidImportance.MAX,
+                vibrationPattern: [0, 250, 250, 250],
+                lightColor: '#FF231F7C',
+            });
+        }
+
+        return token;
+    }
+    static sendPushNotification = async (expoPushToken, title, body, data) => {
+        const message = {
+            to: expoPushToken,
+            sound: 'default',
+            title: title,
+            body: body,
+            data: { someData: 'goes here' },
+        };
+
+        await fetch('https://exp.host/--/api/v2/push/send', {
+            method: 'POST',
+            headers: {
+                Accept: 'application/json',
+                'Accept-encoding': 'gzip, deflate',
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(message),
+        });
+    }
+
+
+
+
 
 
     static customStyles = StyleSheet.create({

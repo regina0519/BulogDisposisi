@@ -71,6 +71,8 @@ export default function App() {
         <Stack.Screen name="Test Notif" component={TestNotif} />
         <Stack.Screen name="Test Notif Screen" component={TestNotifScreen} />
         <Stack.Screen name="Test Service" component={TestService} />
+        <Stack.Screen name="Tes Tmp" component={TestTmp} />
+
       </Stack.Navigator>
 
     </NavigationContainer>

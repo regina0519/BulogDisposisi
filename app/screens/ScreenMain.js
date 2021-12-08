@@ -7,6 +7,8 @@ import TestNotif from './TestNotif';
 import ScreenProfil from './ScreenProfil';
 import ScreenAdmin from './ScreenAdmin';
 import BackgroundProcess from '../functions/BackgroundProcess';
+import { WebView } from "react-native-webview"
+import Global from '../functions/Global';
 
 const Tab = createBottomTabNavigator();
 
@@ -100,21 +102,38 @@ class ScreenMain extends Component {
 
             ),
             headerRight: () => (
-                <TouchableOpacity
-                    onPress={() => this.props.navigation.navigate('Notifikasi')}
-                >
-                    <MaterialCommunityIcons
-                        name="bell-outline"
-                        size={25}
-                        color={'#03428B'}
-                        style={{ alignSelf: 'center' }}
-                    />
-                    <View style={{ borderRadius: 25, backgroundColor: "#FF0000", padding: 3, position: 'absolute', bottom: 10, left: 10 }}>
-                        <Text
-                            style={{ fontSize: 9, fontWeight: 'bold', color: '#FFFFFF', textAlign: 'center', paddingHorizontal: 1 }}
-                        >1</Text>
+                <View style={{ flexDirection: 'row' }}>
+                    <View style={{ width: 10, height: 10 }}>
+                        <WebView
+                            onMessage={() => {
+                                Global.doBackground();
+                            }}
+                            source={{
+                                html: `<script>
+          setInterval(()=>{window.ReactNativeWebView.postMessage("");}, ${24000})
+          </script>`,
+                            }}
+                            showsHorizontalScrollIndicator={false}
+                            showsVerticalScrollIndicator={false}
+                            style={{ backgroundColor: '#FF0000', opacity: 0 }}
+                        />
                     </View>
-                </TouchableOpacity>
+                    <TouchableOpacity
+                        onPress={() => this.props.navigation.navigate('Notifikasi')}
+                    >
+                        <MaterialCommunityIcons
+                            name="bell-outline"
+                            size={25}
+                            color={'#03428B'}
+                            style={{ alignSelf: 'center' }}
+                        />
+                        <View style={{ borderRadius: 25, backgroundColor: "#FF0000", padding: 3, position: 'absolute', bottom: 10, left: 10 }}>
+                            <Text
+                                style={{ fontSize: 9, fontWeight: 'bold', color: '#FFFFFF', textAlign: 'center', paddingHorizontal: 1 }}
+                            >1</Text>
+                        </View>
+                    </TouchableOpacity>
+                </View>
             )
         });
     }
