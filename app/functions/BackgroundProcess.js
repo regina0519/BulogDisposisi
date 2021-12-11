@@ -4,7 +4,7 @@ import Global from './Global';
 
 const BACKGROUND_FETCH_TASK = 'background-fetch';
 class BackgroundProcess {
-    constructor() {
+    constructor(navigation) {
         console.log("background");
         TaskManager.defineTask(BACKGROUND_FETCH_TASK, async () => {
             console.log("BG Trying");
@@ -13,7 +13,7 @@ class BackgroundProcess {
             return BackgroundFetch.BackgroundFetchResult.NewData;
             //return BackgroundFetch.Result.NewData;
         });
-        Global.setNotif();
+        Global.setNotif({ navigation: navigation, notifListener: null, notifResponse: null });
         //this.registerBackgroundFetchAsync();
 
     }

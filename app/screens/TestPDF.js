@@ -1,22 +1,41 @@
 import React, { Component } from 'react';
 import * as Print from 'expo-print';
 import { shareAsync } from 'expo-sharing';
-import { AppRegistry, StyleSheet, Button, Text, View, Platform, Alert} from 'react-native';
+import { AppRegistry, StyleSheet, Button, Text, View, Platform, Alert } from 'react-native';
+import MyServerSettings from '../functions/MyServerSettings';
 
 
 
 class TestPDF extends Component {
-  
 
-  constructor(props){
+
+  constructor(props) {
 
     super(props);
 
-    this.state = { 
+    this.state = {
       loading: true,
-      myHTML:'kosong',
+      myHTML: 'test',
       selectedPrinter: null
     }
+  }
+
+  loadData = () => {
+    this.setState({ loading: true })
+    let url = MyServerSettings.getPhp("report_ni.php");
+    fetch(url)
+      .then((response) => response.text())
+      .then((responseText) => {
+        this.setState({
+          loading: false,
+          myHTML: responseText
+        })
+        console.log(responseText);
+      })
+      .catch((error) => {
+        console.log('Error selecting random data: ' + error)
+        this.setState({ loading: false })
+      });
   }
 
   print = async () => {
@@ -38,19 +57,19 @@ class TestPDF extends Component {
 
   selectPrinter = async () => {
     const printer = await Print.selectPrinterAsync(); // iOS only
-    this.setState({selectedPrinter:printer});
+    this.setState({ selectedPrinter: printer });
   }
 
-  render(){
-    return(
+  render() {
+    return (
       <View style={styles.container}>
-        <Button title='Print' onPress={this.print}  />
+        <Button title='Print' onPress={this.print} />
         <View style={styles.spacer} />
-        <Button title='Print to PDF file' onPress={this.printToFile}/>
+        <Button title='Print to PDF file' onPress={this.printToFile} />
         {Platform.OS === 'ios' &&
           <>
             <View style={styles.spacer} />
-            <Button title='Select printer' onPress={this.selectPrinter}/>
+            <Button title='Select printer' onPress={this.selectPrinter} />
             <View style={styles.spacer} />
             {this.state.selectedPrinter ? <Text style={styles.printer}>{`Selected printer: ${this.state.selectedPrinter.name}`}</Text> : undefined}
           </>
@@ -59,37 +78,20 @@ class TestPDF extends Component {
     )
   }
 
-  loadData=()=>{
-    
-    this.setState({loading: true})
-    fetch('http://34.101.240.1/bulog/mobile/php_json/test.php?res=10&pg=2')
-      .then((response) => response.text())
-      .then((responseText) => {
-        this.setState({
-          loading: false,
-          myHTML: responseText
-        })
-      })
-      .catch((error) => {
-        console.log('Error selecting random data: '+ error)
-        this.setState({loading:false})
-      });
-      
-  }
 
   componentDidMount() {
     this.loadData()
   }
 
-  
+
 }
 
-  
+
 
 const styles = StyleSheet.create({
-  ActivityIndicator:{
-    position:'absolute',
-    width:'100%'
+  ActivityIndicator: {
+    position: 'absolute',
+    width: '100%'
   },
   container: {
     flex: 1,

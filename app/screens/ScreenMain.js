@@ -9,6 +9,8 @@ import ScreenAdmin from './ScreenAdmin';
 import BackgroundProcess from '../functions/BackgroundProcess';
 import { WebView } from "react-native-webview"
 import Global from '../functions/Global';
+import MyServerSettings from '../functions/MyServerSettings';
+import ScreenTagihanCompleted from './ScreenTagihanCompleted';
 
 const Tab = createBottomTabNavigator();
 
@@ -20,9 +22,7 @@ class ScreenMain extends Component {
 
         this.state = {
             loading: false,
-            myData: [],
-            user: '',
-            password: ''
+            myNotif: []
         }
     }
 
@@ -51,18 +51,35 @@ class ScreenMain extends Component {
                         ),
                     }} />
                 <Tab.Screen
-                    name="TabAdmin"
-                    component={ScreenAdmin}
+                    name="TabHistory"
+                    component={ScreenTagihanCompleted}
                     options={{
-                        tabBarLabel: 'Pengaturan',
+                        tabBarLabel: 'Riwayat',
                         tabBarIcon: ({ color, size }) => (
                             <MaterialCommunityIcons
-                                name="tools"
+                                name="history"
                                 color={color}
                                 size={size}
                             />
                         ),
                     }} />
+                {
+                    Global.getTipeUser() == "Admin" ? (
+                        <Tab.Screen
+                            name="TabAdmin"
+                            component={ScreenAdmin}
+                            options={{
+                                tabBarLabel: 'Pengaturan',
+                                tabBarIcon: ({ color, size }) => (
+                                    <MaterialCommunityIcons
+                                        name="tools"
+                                        color={color}
+                                        size={size}
+                                    />
+                                ),
+                            }} />
+                    ) : (null)
+                }
                 <Tab.Screen
                     name="TabProfile"
                     component={ScreenProfil}
@@ -80,14 +97,41 @@ class ScreenMain extends Component {
         );
     }
 
+    refreshNotif = () => {
+        this.setState({
+            loading: true,
+            myNotif: []
+        });
+        this.loadNotif();
+    }
+
+    loadNotif = () => {
+        this.setState({ loading: true })
+        let url = MyServerSettings.getPhp("get_list_notif.php?id=" + Global.getCurUserId() + "&seen=0");
+        fetch(url)
+            .then((response) => response.json())
+            .then((responseJson) => {
+                this.setState({
+                    loading: false,
+                    myNotif: responseJson
+                })
+            })
+            .then(() => this.setHeader())
+            .catch((error) => {
+                console.log('Error selecting random data: ' + error)
+                this.setState({ loading: false })
+                this.setHeader();
+            });
+    }
+
+
     componentDidMount() {
-        let b = new BackgroundProcess();
+        let b = new BackgroundProcess(this.props.navigation);
         b.checkStatusAsync().then((status) => {
             console.log("Status: " + status["status"]);
             console.log("Regitered: " + status["isRegistered"]);
         });
-
-
+        this.loadNotif();
         this.props.navigation.setOptions({
             headerTitle: () => (
                 <View style={{ flexDirection: 'row', alignItems: 'center' }}>
@@ -96,17 +140,25 @@ class ScreenMain extends Component {
                         style={{ width: 30, height: 30 }}
                     />
                     <Text style={{ fontWeight: 'bold', color: '#03428B', fontSize: 25, paddingLeft: 5 }}>Bulog</Text>
-                    <Text style={{ fontWeight: 'bold', color: '#03428B', fontSize: 12, paddingLeft: 3, paddingBottom: 5, alignSelf: 'flex-end' }}>Disposisi & e-Verify</Text>
+                    <Text style={{ fontWeight: 'bold', color: '#03428B', fontSize: 12, paddingLeft: 3, paddingBottom: 5, alignSelf: 'flex-end' }}>Disposisi & Verifikasi Keuangan</Text>
 
                 </View>
 
-            ),
+            )
+        });
+
+        //this.refreshNotif();
+    }
+
+    setHeader = () => {
+        this.props.navigation.setOptions({
             headerRight: () => (
                 <View style={{ flexDirection: 'row' }}>
                     <View style={{ width: 10, height: 10 }}>
                         <WebView
                             onMessage={() => {
                                 Global.doBackground();
+                                this.refreshNotif();
                             }}
                             source={{
                                 html: `<script>
@@ -127,11 +179,15 @@ class ScreenMain extends Component {
                             color={'#03428B'}
                             style={{ alignSelf: 'center' }}
                         />
-                        <View style={{ borderRadius: 25, backgroundColor: "#FF0000", padding: 3, position: 'absolute', bottom: 10, left: 10 }}>
-                            <Text
-                                style={{ fontSize: 9, fontWeight: 'bold', color: '#FFFFFF', textAlign: 'center', paddingHorizontal: 1 }}
-                            >1</Text>
-                        </View>
+                        {
+                            this.state.myNotif.length > 0 ? (
+                                <View style={{ borderRadius: 25, backgroundColor: "#FF0000", padding: 3, position: 'absolute', bottom: 10, left: 10 }}>
+                                    <Text
+                                        style={{ fontSize: 9, fontWeight: 'bold', color: '#FFFFFF', textAlign: 'center', paddingHorizontal: 1 }}
+                                    >{this.state.myNotif.length > 99 ? "99+" : this.state.myNotif.length}</Text>
+                                </View>
+                            ) : (null)
+                        }
                     </TouchableOpacity>
                 </View>
             )

@@ -34,6 +34,7 @@ import ScreenAdminPegawaiEdit from './app/screens/ScreenAdminPegawaiEdit';
 import ScreenNotif from './app/screens/ScreenNotif';
 import ScreenProgress from './app/screens/ScreenProgress';
 import ScreenTagihanAction from './app/screens/ScreenTagihanAction';
+import ScreenTagihanCompleted from './app/screens/ScreenTagihanCompleted';
 
 const Stack = createNativeStackNavigator();
 
@@ -54,6 +55,7 @@ export default function App() {
         <Stack.Screen name="Pegawai" component={ScreenAdminPegawai} />
         <Stack.Screen name="Edit Pegawai" component={ScreenAdminPegawaiEdit} />
         <Stack.Screen name="Tagihan" component={ScreenTagihan} />
+        <Stack.Screen name="Riwayat" component={ScreenTagihanCompleted} />
         <Stack.Screen name="Profil" component={ScreenProfil} />
         <Stack.Screen name="Ganti Password" component={ScreenChangePass} />
         <Stack.Screen name="Edit Tagihan" component={ScreenTagihanEdit} />
@@ -67,11 +69,11 @@ export default function App() {
         <Stack.Screen name="Progres Tagihan" component={ScreenProgress} />
         <Stack.Screen name="Test List" component={TestListScreen} />
         <Stack.Screen name="Detail" component={TestDetail} />
-        <Stack.Screen name="Test PDF" component={TestPDF} />
         <Stack.Screen name="Test Notif" component={TestNotif} />
         <Stack.Screen name="Test Notif Screen" component={TestNotifScreen} />
         <Stack.Screen name="Test Service" component={TestService} />
         <Stack.Screen name="Tes Tmp" component={TestTmp} />
+        <Stack.Screen name="Test PDF" component={TestPDF} />
 
       </Stack.Navigator>
 

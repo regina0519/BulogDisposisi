@@ -63,7 +63,7 @@ class ScreenTagihan extends Component {
                 renderItem={this.renderDataItem}
                 renderHiddenItem={this.renderHiddenItem}
                 leftOpenValue={75}
-                rightOpenValue={-75}
+                rightOpenValue={-150}
                 previewRowKey={'0'}
                 previewOpenValue={-40}
                 previewOpenDelay={3000}
@@ -120,7 +120,7 @@ class ScreenTagihan extends Component {
 
   loadData = (more = false) => {
     this.setState({ loading: true })
-    let url = MyServerSettings.getPhp("get_list_ongoing.php") + '?res=10&pg=' + this.state.page;
+    let url = MyServerSettings.getPhp("get_list_ongoing.php") + '?res=10&pg=' + this.state.page + "&fungsi=" + Global.getIdFungsi() + "&person=" + Global.getCurUserId() + "&bid=" + Global.getIdBidang();
     //let url = MyServerSettings.getPhp("test.php") + '?res=10&pg=' + this.state.page;
     //console.log(url);
     fetch(url)
@@ -199,21 +199,38 @@ class ScreenTagihan extends Component {
           size={30}
           color='#101417'
         />
-        <Text style={{ color: '#101417' }}>Progress</Text>
+        <Text style={{ color: '#101417' }}>Progres</Text>
       </TouchableOpacity>
       {
         Global.getIdFungsi() == "FUNGSI_001" ? (
-          <TouchableOpacity
-            style={[Global.customStyles.backRightBtn, Global.customStyles.backRightBtnRight]}
-            onPress={() => this.deleteRow(rowMap, data.index)}
-          >
-            <MaterialCommunityIcons
-              name="delete"
-              size={30}
-              color='#101417'
-            />
-            <Text style={{ color: '#101417' }}>Hapus</Text>
-          </TouchableOpacity>
+          <View style={[Global.customStyles.backRightBtn, Global.customStyles.backRightBtnRight, { flexDirection: 'row', width: 150, justifyContent: 'space-evenly' }]}>
+            <TouchableOpacity
+              onPress={() => this.deleteRow(rowMap, data.index)}
+              style={{ marginHorizontal: 5, alignItems: 'center' }}
+              disabled={this.state.myData[data.index]["status_pembuatan"] == "0" ? false : true}
+            >
+              <MaterialCommunityIcons
+                name="delete"
+                size={30}
+                color={this.state.myData[data.index]["status_pembuatan"] == "0" ? '#101417' : '#AAAAAA'}
+              />
+              <Text style={{ color: this.state.myData[data.index]["status_pembuatan"] == "0" ? '#101417' : '#AAAAAA' }}>Hapus</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              onPress={() => this.props.navigation.navigate('Edit Tagihan', {
+                idTagihan: this.state.myData[data.index]["id_tagihan"]
+              })}
+              style={{ marginHorizontal: 5, alignItems: 'center' }}
+              disabled={this.state.myData[data.index]["status_pembuatan"] == "0" ? false : true}
+            >
+              <MaterialCommunityIcons
+                name="file-document-edit-outline"
+                size={30}
+                color={this.state.myData[data.index]["status_pembuatan"] == "0" ? '#101417' : '#AAAAAA'}
+              />
+              <Text style={{ color: this.state.myData[data.index]["status_pembuatan"] == "0" ? '#101417' : '#AAAAAA' }}>Ubah</Text>
+            </TouchableOpacity>
+          </View>
         ) : (null)
       }
     </View>
@@ -277,6 +294,7 @@ class ScreenTagihan extends Component {
           </View>
           <View style={{ width: '80%' }}>
             <Text style={{ textAlign: 'right', fontSize: 10 }}>{moment(item.tgl_pembuatan).locale("id").format("llll")}</Text>
+            <Text style={{ textAlign: 'right', fontSize: 10, fontWeight: 'bold' }}>{item.no_nota_intern}</Text>
             <Text style={{ fontWeight: 'bold', color: this.getPercentage(item).status == 2 ? "#FF0000" : "#000000" }}>{item.ket_tagihan}</Text>
             <Text style={{ textAlign: 'left' }}>Bidang {item.nm_bidang}</Text>
             <Text style={{ fontSize: 10 }}>{MyFunctions.stringTruncateIndo(item.ketdet, 2, '\n', 'item')}</Text>

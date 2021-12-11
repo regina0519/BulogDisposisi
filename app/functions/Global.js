@@ -3,6 +3,7 @@ import { Dimensions, StyleSheet } from "react-native";
 import { DefaultTheme } from '@react-navigation/native';
 import MyServerSettings from "./MyServerSettings";
 import * as Notifications from 'expo-notifications';
+import moment from 'moment';
 class Global {
     static #arrColor = {
         "FUNGSI_001": "#101417",
@@ -31,7 +32,8 @@ class Global {
     static #userKey = "";
     static #passKey = "";
 
-    static #expoPushToken;
+    static #expoPushToken = "";
+    static #notifParam = { navigation: null, notifListener: null, notifResponse: null };
 
     static getScreenWidth() {
         return Dimensions.get('window').width;
@@ -120,25 +122,34 @@ class Global {
         this.#kdBidang = data['kode_bidang'];
     }
 
-    static doBackground() {
-        Global.loadNotif();
+    static doBackground(navigation) {
+        Global.loadNotif(navigation);
     }
 
-    static loadNotif = () => {
+    static loadNotif = (navigation) => {
         if (Global.#expoPushToken == null) return;
-        let url = MyServerSettings.getPhp("get_list_notif_new.php");
+        let url = MyServerSettings.getPhp("get_list_notif_new.php") + "?id=" + Global.getCurUserId();
+        //console.log(url);
         fetch(url)
             .then((response) => response.json())
             .then((responseJson) => {
                 let res = responseJson;
                 if (res.length > 0) {
+                    var l = [];
                     for (var i = 0; i < res.length; i++) {
-                        //console.log("NEW NOTIF: " + res[0]["notif_desc"]);
-                        res[0]["sent"] = "1";
+                        res[i]["sent"] = "1";
+                        Notifications.addNotificationResponseReceivedListener(response => {
+                            //alert("jadi")
+                            //console.log("NEW NOTIF: " + res[0]["id_tagihan"]);
+                            var data = response["notification"]["request"]["content"]["data"];
+                            Global.#notifParam["navigation"].navigate('Disposisi Tagihan', { idTagihan: data["idTagihan"] })
+                        });
                         let f = async () => {
-                            await Global.sendPushNotification(Global.#expoPushToken, res[0]["notif_title"], res[0]["notif_desc"], null);
+                            await Global.sendPushNotification(Global.#expoPushToken, res[i]["notif_title"], res[i]["notif_desc"], { idTagihan: res[i]["id_tagihan"] });
                         }
                         f();
+
+
                     }
                     Global.saveNotif(res);
                 }
@@ -146,6 +157,13 @@ class Global {
             .catch((error) => {
                 console.log('Get Notif New Failed: ' + error)
             });
+
+    }
+
+    static loadTimer = () => {
+        this.setState({ loading: true })
+
+
     }
 
     static saveNotif = (arr) => {
@@ -171,7 +189,8 @@ class Global {
 
     }
 
-    static setNotif = () => {
+    static setNotif = (notifParam) => {
+        Global.#notifParam = notifParam;
         Notifications.setNotificationHandler({
             handleNotification: async () => {
 
@@ -228,7 +247,7 @@ class Global {
             sound: 'default',
             title: title,
             body: body,
-            data: { someData: 'goes here' },
+            data: data,
         };
 
         await fetch('https://exp.host/--/api/v2/push/send', {
@@ -276,9 +295,10 @@ class Global {
         PickerContainer: {
             borderRadius: 25,
             borderWidth: 2,
-            padding: 5,
+            padding: 1,
             flexDirection: 'column',
             maxHeight: 35,
+            justifyContent: 'center'
 
         },
         rowBack: {

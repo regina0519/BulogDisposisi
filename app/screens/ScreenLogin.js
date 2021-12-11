@@ -75,8 +75,8 @@ class ScreenLogin extends Component {
 
                     </View>
                     <View style={styles.LoadingContainer}>
-                        <ActivityIndicator style={styles.ActivityIndicator} size='large' color="red" animating={this.state.loading} />
-                        {this.state.loading ? <Text style={styles.ActivityIndicatorText}>Loading... Mohon Tunggu</Text> : null}
+                        <ActivityIndicator style={[styles.ActivityIndicator, { elevation: this.state.loading ? 3 : 0 }]} size='large' color="red" animating={this.state.loading} />
+                        {this.state.loading ? <Text style={[styles.ActivityIndicatorText, { elevation: this.state.loading ? 3 : 0 }]}>Loading... Mohon Tunggu</Text> : null}
                     </View>
 
                 </View>
@@ -118,6 +118,7 @@ class ScreenLogin extends Component {
             .then(this.gotoTagihan)
             .catch((error) => {
                 console.log('Error selecting random data: ' + error)
+                alert("Mohon periksa kembali user/password anda.")
                 this.setState({ loading: false })
             });
     }

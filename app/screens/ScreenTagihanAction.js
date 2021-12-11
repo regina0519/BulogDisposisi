@@ -13,10 +13,12 @@ import { SwipeListView } from 'react-native-swipe-list-view';
 import CurrentDisposisi from '../functions/CurrentDisposisi';
 
 
-
+const unknownCode = "KU.04.02";
 class ScreenTagihanAction extends Component {
     keyExtractor = (data, index) => index + "";
     person = new CurrentDisposisi();
+    arrNotif = [];
+    deleteAllNotifs = false;
 
     constructor(props) {
 
@@ -26,7 +28,10 @@ class ScreenTagihanAction extends Component {
             idTagihan: props.route.params.idTagihan,
             myData: [],
             myTimer: [],
+            myNewNoVeri: [],
+            myNewNoBayar: [],
             myResult: [],
+            myResultNotif: [],
             actionChosen: "NONE",
             allowSave: false
         }
@@ -295,6 +300,7 @@ class ScreenTagihanAction extends Component {
         } else return null;
     }
 
+
     renderAction = () => {
         if (this.state.actionChosen == "NONE") return null;
         return (
@@ -302,6 +308,25 @@ class ScreenTagihanAction extends Component {
                 {
                     Global.getIdFungsi() == "FUNGSI_005" ? (
                         <View>
+                            <Text style={Global.customStyles.Label}>Nomor Verifikasi</Text>
+                            <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 10, marginHorizontal: 10 }}>
+                                <TextInput
+                                    value={this.extractNoVeri(this.state.myData["no_verifikasi"])}
+                                    multiline={false}
+                                    onChangeText={(no_verifikasi) => {
+                                        no_verifikasi = MyFunctions.validateInputNumbersOnly(no_verifikasi);
+                                        let arr = this.state.myData;
+                                        arr['no_verifikasi'] = this.injectNoVeri(this.state.myData['no_verifikasi'], no_verifikasi);
+                                        this.setState({ myData: arr });
+                                    }}
+                                    placeholder={'Nomor Verifikasi'}
+                                    keyboardType="numeric"
+                                    numeric
+                                    //secureTextEntry={true}
+                                    style={[Global.customStyles.Input, { width: 80, marginBottom: 0 }]}
+                                />
+                                <Text style={Global.customStyles.Label}> {this.extractNoVeriLast(this.state.myData["no_verifikasi"])}</Text>
+                            </View>
                             <View style={{ flexDirection: 'row', justifyContent: 'flex-end' }}>
                                 <Text style={{ fontWeight: 'bold', alignSelf: 'center' }}>Kesesuaian Data</Text>
                                 <Switch
@@ -338,20 +363,25 @@ class ScreenTagihanAction extends Component {
                 {
                     Global.getIdFungsi() == "FUNGSI_006" ? (
                         <View>
-                            <Text style={Global.customStyles.Label}>No. Bukti Pembayaran</Text>
-                            <TextInput
-                                value={this.state.myData["no_bukti_pembayaran"]}
-                                multiline={true}
-                                onChangeText={(no_bukti_pembayaran) => {
-                                    no_bukti_pembayaran = MyFunctions.validateString(no_bukti_pembayaran);
-                                    let arr = this.state.myData;
-                                    arr["no_bukti_pembayaran"] = no_bukti_pembayaran;
-                                    this.setState({ myData: arr });
-                                }}
-                                placeholder={'No. Bukti Pembayaran'}
-                                //secureTextEntry={true}
-                                style={Global.customStyles.Input}
-                            />
+                            <Text style={Global.customStyles.Label}>Nomor Bukti Pembayaran</Text>
+                            <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 10, marginHorizontal: 10 }}>
+                                <TextInput
+                                    value={this.extractNoBayar(this.state.myData["no_bukti_pembayaran"])}
+                                    multiline={false}
+                                    onChangeText={(no_bukti_pembayaran) => {
+                                        no_bukti_pembayaran = MyFunctions.validateInputNumbersOnly(no_bukti_pembayaran);
+                                        let arr = this.state.myData;
+                                        arr['no_bukti_pembayaran'] = this.injectNoBayar(this.state.myData['no_bukti_pembayaran'], no_bukti_pembayaran);
+                                        this.setState({ myData: arr });
+                                    }}
+                                    placeholder={'Nomor Bukti Pembayaran'}
+                                    keyboardType="numeric"
+                                    numeric
+                                    //secureTextEntry={true}
+                                    style={[Global.customStyles.Input, { width: 80, marginBottom: 0 }]}
+                                />
+                                <Text style={Global.customStyles.Label}> {this.extractNoBayarLast(this.state.myData["no_bukti_pembayaran"])}</Text>
+                            </View>
                         </View>
                     ) : (null)
                 }
@@ -463,7 +493,7 @@ class ScreenTagihanAction extends Component {
         var veriOk = true;
         if (Global.getIdFungsi() == "FUNGSI_005") {
             if (this.state.actionChosen == "APPROVE") {
-                veriOk = (this.state.myData["kesesuaian_data"] == "1") && (this.state.myData["kesesuaian_perhitungan"] == "1");
+                veriOk = (this.state.myData["kesesuaian_data"] == "1") && (this.state.myData["kesesuaian_perhitungan"] == "1") && (this.state.myData["no_verifikasi"] != "");
             }
         }
         var bayarOk = true;
@@ -473,6 +503,100 @@ class ScreenTagihanAction extends Component {
             }
         }
         return !(val != "" && veriOk && !this.state.loading && bayarOk);
+    }
+
+    getIdByFungsi = (fungsi, arr) => {
+        if (fungsi == "FUNGSI_001") {
+            return arr["id_pembuat"];
+        }
+        if (fungsi == "FUNGSI_002") {
+            return arr["id_pengaju"];
+        }
+        if (fungsi == "FUNGSI_003") {
+            return arr["id_kakanwil"];
+        }
+        if (fungsi == "FUNGSI_004") {
+            return arr["id_minkeu"];
+        }
+        if (fungsi == "FUNGSI_005") {
+            return arr["id_verifikator"];
+        }
+        return arr["id_bag_keu"];
+    }
+
+    getNmByFungsi = (fungsi) => {
+        if (fungsi == "FUNGSI_001") {
+            return arr["nm_pembuat"];
+        }
+        if (fungsi == "FUNGSI_002") {
+            return arr["nm_pengaju"];
+        }
+        if (fungsi == "FUNGSI_003") {
+            return arr["nm_kakanwil"];
+        }
+        if (fungsi == "FUNGSI_004") {
+            return arr["nm_minkeu"];
+        }
+        if (fungsi == "FUNGSI_005") {
+            return arr["nm_verifikator"];
+        }
+        return arr["nm_bag_keu"];
+    }
+
+    getProsesByFungsi = (fungsi) => {
+        if (fungsi == "FUNGSI_001") {
+            return "diproses";
+        }
+        if (fungsi == "FUNGSI_002") {
+            return "diajukan";
+        }
+        if (fungsi == "FUNGSI_003") {
+            return "disetujui";
+        }
+        if (fungsi == "FUNGSI_004") {
+            return "diproses";
+        }
+        if (fungsi == "FUNGSI_005") {
+            return "diverifikasi";
+        }
+        return "disetujui bayar";
+    }
+
+    getCatByFungsi = (fungsi) => {
+        if (fungsi == "FUNGSI_001") {
+            return arr["cat_pembuat"];
+        }
+        if (fungsi == "FUNGSI_002") {
+            return arr["cat_pengaju"];
+        }
+        if (fungsi == "FUNGSI_003") {
+            return arr["cat_kakanwil"];
+        }
+        if (fungsi == "FUNGSI_004") {
+            return arr["cat_minkeu"];
+        }
+        if (fungsi == "FUNGSI_005") {
+            return arr["cat_verifikator"];
+        }
+        return arr["cat_bag_keu"];
+    }
+    getStatusByFungsi = (fungsi, arr) => {
+        if (fungsi == "FUNGSI_001") {
+            return arr["status_pembuatan"];
+        }
+        if (fungsi == "FUNGSI_002") {
+            return arr["status_pengajuan"];
+        }
+        if (fungsi == "FUNGSI_003") {
+            return arr["status_approval_kakanwil"];
+        }
+        if (fungsi == "FUNGSI_004") {
+            return arr["status_approval_minkeu"];
+        }
+        if (fungsi == "FUNGSI_005") {
+            return arr["status_verifikasi"];
+        }
+        return arr["status_approval_bagkeu"];
     }
 
     setSaveAction = () => {
@@ -486,6 +610,8 @@ class ScreenTagihanAction extends Component {
         let cat = "cat_pembuat";
         let tgl = "tgl_pembuatan";
         let status = "status_pembuatan";
+
+
 
         if (me.getFungsi() == "FUNGSI_001") {
             id = "id_pembuat";
@@ -530,11 +656,61 @@ class ScreenTagihanAction extends Component {
             tgl = "tgl_bayar";
             status = "status_approval_bagkeu";
         }
+        if (me.getFungsi() != "FUNGSI_001") {
+            arr[id] = Global.getCurUserId();
+            arr[nm] = Global.getNmPeg();
+            arr[jab] = Global.getNmJab();
+            arr[tgl] = this.state.myTimer["now"];
+        }
         if (this.state.actionChosen == "APPROVE") {
             if (me.getRow()["status"] == 0) {
                 arr[status] = "1";
                 if (me.getFungsi() == "FUNGSI_006") {
                     arr["status_tagihan"] = "COMPLETED";
+                    this.deleteAllNotifs = true;
+                    let wlk = me;
+                    while (wlk.getPrev() != null) {
+                        wlk = wlk.getPrev();
+                        let arrTmp = {
+                            "id_notifikasi": "",
+                            "id_pegawai": this.getIdByFungsi(wlk.getFungsi(), arr),
+                            "id_tagihan": arr["id_tagihan"],
+                            "notif_title": "Tagihan selesai",
+                            "notif_desc":
+                                arr["no_nota_intern"]
+                                + " telah selesai diproses.",
+                            "sent": "0",
+                            "tgl_kirim": this.state.myTimer["now"],
+                            "seen": "0"
+                        };
+                        this.arrNotif.push(arrTmp);
+
+                    }
+                } else {
+                    let wlk = me;
+                    while (wlk.getPrev() != null) {
+                        wlk = wlk.getPrev();
+                        let arrTmp = {
+                            "id_notifikasi": "",
+                            "id_pegawai": this.getIdByFungsi(wlk.getFungsi(), arr),
+                            "id_tagihan": arr["id_tagihan"],
+                            "notif_title": "Progres Tagihan",
+                            "notif_desc":
+                                arr["no_nota_intern"]
+                                + " telah "
+                                + this.getProsesByFungsi(me.getFungsi())
+                                + " oleh "
+                                + me.getNmFungsi()
+                                + "(" + this.getNmByFungsi(me.getFungsi(), arr) + ")\n\n"
+                                + "Catatan:\n"
+                                + this.getCatByFungsi(me.getFungsi(), arr),
+                            "sent": "0",
+                            "tgl_kirim": this.state.myTimer["now"],
+                            "seen": "0"
+                        };
+                        this.arrNotif.push(arrTmp);
+
+                    }
                 }
             } else if (me.getRow()["status"] == 3) {
                 if (me.getFungsi() == "FUNGSI_001") {
@@ -546,6 +722,32 @@ class ScreenTagihanAction extends Component {
                     arr["status_approval_bagkeu"] = "0";
                 } else {
                     arr[status] = "4";
+                    let wlk = me.getFirst();
+                    while (wlk.getNext() != null) {
+                        if (wlk != me) {
+                            if (this.getStatusByFungsi(wlk.getFungsi()) == "3" || this.getStatusByFungsi(wlk.getFungsi()) == "4") {
+                                let arrTmp = {
+                                    "id_notifikasi": "",
+                                    "id_pegawai": this.getIdByFungsi(wlk.getFungsi(), arr),
+                                    "id_tagihan": arr["id_tagihan"],
+                                    "notif_title": "Progres Tagihan",
+                                    "notif_desc":
+                                        me.getNmFungsi()
+                                        + "(" + this.getNmByFungsi(me.getFungsi(), arr) + ")"
+                                        + " menyetujui revisi tagihan "
+                                        + arr["no_nota_intern"]
+                                        + "\n\n"
+                                        + "Catatan:\n"
+                                        + this.getCatByFungsi(me.getFungsi(), arr),
+                                    "sent": "0",
+                                    "tgl_kirim": this.state.myTimer["now"],
+                                    "seen": "0"
+                                };
+                                this.arrNotif.push(arrTmp);
+                            }
+                        }
+                        wlk = wlk.getNext();
+                    }
                 }
                 arr["status_tagihan"] = "EDITING";
             }
@@ -569,21 +771,157 @@ class ScreenTagihanAction extends Component {
                     arr["status_approval_bagkeu"] = "3";
                 }
             }
+            let wlk = me;
+            while (wlk.getPrev() != null) {
+                wlk = wlk.getPrev();
+                let arrTmp = {
+                    "id_notifikasi": "",
+                    "id_pegawai": this.getIdByFungsi(wlk.getFungsi(), arr),
+                    "id_tagihan": arr["id_tagihan"],
+                    "notif_title": "Permintaan Revisi Tagihan",
+                    "notif_desc":
+                        me.getNmFungsi()
+                        + "(" + this.getNmByFungsi(me.getFungsi(), arr) + ")"
+                        + " meminta revisi tagihan "
+                        + arr["no_nota_intern"] + "\n\n"
+                        + "Catatan:\n"
+                        + this.getCatByFungsi(me.getFungsi(), arr),
+                    "sent": "0",
+                    "tgl_kirim": this.state.myTimer["now"],
+                    "seen": "0"
+                };
+                this.arrNotif.push(arrTmp);
+
+            }
         } else if (this.state.actionChosen == "REJECT") {
+            this.deleteAllNotifs = true;
             if (arr[status] == "0") {
                 arr[status] = "2";
+                let wlk = me;
+                while (wlk.getPrev() != null) {
+                    wlk = wlk.getPrev();
+                    let arrTmp = {
+                        "id_notifikasi": "",
+                        "id_pegawai": this.getIdByFungsi(wlk.getFungsi(), arr),
+                        "id_tagihan": arr["id_tagihan"],
+                        "notif_title": "Tagihan Ditolak",
+                        "notif_desc":
+                            arr["no_nota_intern"]
+                            + " tidak "
+                            + this.getProsesByFungsi(me.getFungsi())
+                            + " oleh "
+                            + me.getNmFungsi()
+                            + "(" + this.getNmByFungsi(me.getFungsi(), arr) + ")\n\n"
+                            + "Catatan:\n"
+                            + this.getCatByFungsi(me.getFungsi(), arr),
+                        "sent": "0",
+                        "tgl_kirim": this.state.myTimer["now"],
+                        "seen": "0"
+                    };
+                    this.arrNotif.push(arrTmp);
+
+                }
             } else {
                 arr[status] = "5";
+                let wlk = me.getFirst();
+                while (wlk.getNext() != null) {
+                    if (wlk != me) {
+                        if (this.getStatusByFungsi(wlk.getFungsi()) == "3" || this.getStatusByFungsi(wlk.getFungsi()) == "4") {
+                            let arrTmp = {
+                                "id_notifikasi": "",
+                                "id_pegawai": this.getIdByFungsi(wlk.getFungsi(), arr),
+                                "id_tagihan": arr["id_tagihan"],
+                                "notif_title": "Tagihan Ditolak",
+                                "notif_desc":
+                                    me.getNmFungsi()
+                                    + "(" + this.getNmByFungsi(me.getFungsi(), arr) + ")"
+                                    + " menolak revisi tagihan "
+                                    + arr["no_nota_intern"]
+                                    + "\n\n"
+                                    + "Catatan:\n"
+                                    + this.getCatByFungsi(me.getFungsi(), arr),
+                                "sent": "0",
+                                "tgl_kirim": this.state.myTimer["now"],
+                                "seen": "0"
+                            }
+                            this.arrNotif.push(arrTmp);
+                        }
+                    }
+                    wlk = wlk.getNext();
+                }
             }
             arr["status_tagihan"] = "FAILED";
         }
-        if (me.getFungsi() != "FUNGSI_001") {
-            arr[id] = Global.getCurUserId();
-            arr[nm] = Global.getNmPeg();
-            arr[jab] = Global.getNmJab();
-            arr[tgl] = this.state.myTimer["now"];
+
+        let updPerson = new CurrentDisposisi();
+        updPerson.fillData(arr);
+        let nxtPerson = this.getCurrentStatusPerson(updPerson.getFirst());
+        if (nxtPerson != null && this.getIdByFungsi(nxtPerson.getFungsi(), arr) != this.getIdByFungsi(me.getFungsi(), arr)) {
+            let arrTmp = {
+                "id_notifikasi": "",
+                "id_pegawai": this.getIdByFungsi(nxtPerson.getFungsi(), arr),
+                "id_tagihan": arr["id_tagihan"],
+                "notif_title": "Tagihan untuk diproses",
+                "notif_desc":
+                    arr["no_nota_intern"]
+                    + " butuh diproses oleh anda.",
+                "sent": "0",
+                "tgl_kirim": this.state.myTimer["now"],
+                "seen": "0"
+            }
+            this.arrNotif.push(arrTmp);
         }
+
         this.setState({ myData: arr });
+    }
+
+    delNotifs = () => {
+        if (this.deleteAllNotifs) {
+            fetch(MyServerSettings.getPhp("delete_notifs.php") + '?id=' + this.state.myData["id_tagihan"])
+                .then((response) => response.json())
+                .then((responseJson) => {
+                    var res = responseJson[0];
+                    if (res["succeed"] == "1") {
+                        this.saveNotif();
+                    } else {
+                        alert("Error Koneksi");
+                    }
+                })
+                .catch((error) => {
+                    console.log('Error selecting random data: ' + error)
+                });
+        } else {
+            this.saveNotif();
+        }
+
+    }
+
+    saveNotif = () => {
+        console.log(JSON.stringify(this.arrNotif));
+        this.setState({ loading: true })
+        fetch(
+            MyServerSettings.getPhp("post_new_notifs.php"),
+            {
+                method: 'POST',
+                headers: {
+                    Accept: 'application/json',
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(this.arrNotif),
+            }
+        )
+            .then((response) => response.json())
+            .then((responseJson) => {
+                this.setState({
+                    loading: false,
+                    myResultNotif: responseJson
+                })
+            })
+            .then(this.processResultNotif)
+            .catch((error) => {
+                console.log('Error selecting random data NOTIF: ' + error)
+                this.setState({ loading: false })
+            });
     }
 
     saveData = () => {
@@ -620,10 +958,18 @@ class ScreenTagihanAction extends Component {
             });
     }
 
-    processResult = () => {
-        if (this.state.myResult[0]['succeed']) {
+    processResultNotif = () => {
+        if (this.state.myResultNotif[0]['succeed']) {
             alert("Data tersimpan");
             this.props.navigation.goBack();
+        } else {
+            alert("Gagal menyimpan\n" + this.state.myResultNotif[0]['error']);
+        }
+        //return true;
+    }
+    processResult = () => {
+        if (this.state.myResult[0]['succeed']) {
+            this.delNotifs();
         } else {
             alert("Gagal menyimpan\n" + this.state.myResult[0]['error']);
         }
@@ -724,6 +1070,7 @@ class ScreenTagihanAction extends Component {
     }
 
 
+
     loadData = () => {
         if (this.state.myData.length === 0) {
             this.setState({ loading: true })
@@ -736,6 +1083,22 @@ class ScreenTagihanAction extends Component {
                     })
                     this.person = new CurrentDisposisi();
                     this.person.fillData(this.state.myData);
+                    if (this.state.myData["no_verifikasi"] == "" && Global.getIdFungsi() == "FUNGSI_005") {
+                        let arr = this.state.myData;
+                        arr["no_verifikasi"] = this.injectNoVeri("", MyFunctions.leadingZero(this.state.myNewNoVeri["no"], 3));
+                        this.setState({
+                            myData: arr
+                        });
+                        //console.log(this.extractNoVeri("001/18020/KU.04.02/12/2021"));
+                    }
+                    if (this.state.myData["no_bukti_pembayaran"] == "" && Global.getIdFungsi() == "FUNGSI_006") {
+                        console.log(this.injectNoBayar("", MyFunctions.leadingZero(this.state.myNewNoBayar["no"], 3)));
+                        let arr = this.state.myData;
+                        arr["no_bukti_pembayaran"] = this.injectNoBayar("", MyFunctions.leadingZero(this.state.myNewNoBayar["no"], 3));
+                        this.setState({
+                            myData: arr
+                        });
+                    }
                     //console.log(this.person.findMe(Global.getIdFungsi()).getRow()["nm"]);
 
                 })
@@ -764,13 +1127,92 @@ class ScreenTagihanAction extends Component {
                     myTimer: responseJson[0]
                 })
             })
-            .then(this.loadData())
+            .then(this.loadNewNoVeri())
             .catch((error) => {
                 alert("Maaf, terjadi kesalahan pada koneksi jaringan.");
                 console.log('Error selecting random data TIMER: ' + error)
                 this.setState({ loading: false })
             });
 
+    }
+
+    extractNoVeri = (str) => {
+        if (str == "" || str == undefined) return "000";
+        var el = str.split("/");
+        if (el.length === 0) return "000";
+        return el[0] == "" ? "000" : el[0];
+    }
+    extractNoVeriLast = (str) => {
+        if (str == "" || str == undefined) return "";
+        var el = str.split("/");
+        if (el.length < 5) return "";
+        return "/" + el[1] + "/" + el[2] + "/" + el[3] + "/" + el[4];
+    }
+    injectNoVeri = (str, toInject) => {
+        if (str == "" || str == undefined) str = "001/" + this.state.myData["kode_bidang"] + "/" + unknownCode + "/" + moment(this.state.myTimer["now"]).format('MM') + "/" + moment(this.state.myTimer["now"]).format('YYYY');
+
+        let el = str.split("/");
+        if (el.length < 5) return "001/" + this.state.myData["kode_bidang"] + "/" + unknownCode + "/" + moment(this.state.myData["tgl_verifikasi"]).format('MM') + "/" + moment(this.state.myData["tgl_verifikasi"]).format('YYYY');
+
+        return toInject + "/" + el[1] + "/" + el[2] + "/" + el[3] + "/" + el[4];
+    }
+    loadNewNoVeri = () => {
+        this.setState({ loading: true })
+        let url = MyServerSettings.getPhp("get_new_no_veri.php");
+        fetch(url)
+            .then((response) => response.json())
+            .then((responseJson) => {
+                this.setState({
+                    loading: false,
+                    myNewNoVeri: responseJson[0]
+                })
+            })
+            .then(this.loadNewNoBayar())
+            .catch((error) => {
+                alert("Maaf, terjadi kesalahan pada koneksi jaringan.");
+                console.log('Error selecting random data No Veri: ' + error)
+                this.setState({ loading: false })
+            });
+    }
+
+
+    extractNoBayar = (str) => {
+        if (str == "" || str == undefined) return "000";
+        var el = str.split("/");
+        if (el.length === 0) return "000";
+        return el[0] == "" ? "000" : el[0];
+    }
+    extractNoBayarLast = (str) => {
+        if (str == "" || str == undefined) return "";
+        var el = str.split("/");
+        if (el.length < 3) return "";
+        return "/" + el[1] + "/" + el[2];
+    }
+    injectNoBayar = (str, toInject) => {
+        if (str == "" || str == undefined) str = "001/" + moment(this.state.myTimer["now"]).format('MM') + "/" + moment(this.state.myTimer["now"]).format('YYYY');
+
+        let el = str.split("/");
+        if (el.length < 3) return "001/" + moment(this.state.myData["tgl_bayar"]).format('MM') + "/" + moment(this.state.myData["tgl_bayar"]).format('YYYY');
+
+        return toInject + "/" + el[1] + "/" + el[2];
+    }
+    loadNewNoBayar = () => {
+        this.setState({ loading: true })
+        let url = MyServerSettings.getPhp("get_new_no_bayar.php");
+        fetch(url)
+            .then((response) => response.json())
+            .then((responseJson) => {
+                this.setState({
+                    loading: false,
+                    myNewNoBayar: responseJson[0]
+                })
+            })
+            .then(this.loadData())
+            .catch((error) => {
+                alert("Maaf, terjadi kesalahan pada koneksi jaringan.");
+                console.log('Error selecting random data No Veri: ' + error)
+                this.setState({ loading: false })
+            });
     }
 
 
