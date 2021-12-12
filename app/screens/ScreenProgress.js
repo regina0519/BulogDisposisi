@@ -21,7 +21,11 @@ class ScreenProgress extends Component {
         this.state = {
             loading: false,
             myData: props.route.params.myData,
-            myFungsi: []
+            myFungsi: [],
+            catatan: "",
+            renderCat: false,
+            catX: 0,
+            catY: 0
         }
     }
 
@@ -40,7 +44,7 @@ class ScreenProgress extends Component {
                         </View>
                         <View style={{ margin: 5, flexGrow: 1, flexShrink: 1, justifyContent: 'center' }}>
                             <View style={[styles.ContentContainer, { height: 'auto', padding: 10 }]}>
-                                <ScrollView style={{ width: '100%', paddingHorizontal: 10 }}>
+                                <ScrollView style={{ width: '100%', paddingHorizontal: 10, minHeight: 200 }}>
                                     <View style={{ flexDirection: 'row', justifyContent: 'space-evenly' }}>
                                         <View style={{ width: '40%' }}>
                                             {
@@ -78,6 +82,7 @@ class ScreenProgress extends Component {
                         <ActivityIndicator style={styles.ActivityIndicator} size='large' color="red" animating={this.state.loading} />
                         {this.state.loading ? <Text style={styles.ActivityIndicatorText}>Loading... Mohon Tunggu</Text> : null}
                     </View>
+                    {this.renderAction()}
 
                 </View>
             </ImageBackground>
@@ -87,6 +92,15 @@ class ScreenProgress extends Component {
 
         )
 
+    }
+
+    renderAction = () => {
+        if (!this.state.renderCat) return null;
+        return (
+            <View style={[styles.LoadingContainer, { padding: 20, borderRadius: 10, backgroundColor: '#EEEEEE', borderWidth: 1, height: 'auto', elevation: 3, width: 150, top: this.state.catY - 100, left: this.state.catX > 200 ? this.state.catX - 170 : this.state.catX }]}>
+                <Text>{this.state.catatan}</Text>
+            </View>
+        );
     }
 
     getArrowType = (cur, reverse = false) => {
@@ -149,6 +163,69 @@ class ScreenProgress extends Component {
         return arrowType;
     }
 
+    getCatByFungsi = (fungsi, arr) => {
+        if (fungsi == "FUNGSI_001") {
+            return arr["cat_pembuat"];
+        }
+        if (fungsi == "FUNGSI_002") {
+            return arr["cat_pengaju"];
+        }
+        if (fungsi == "FUNGSI_003") {
+            return arr["cat_kakanwil"];
+        }
+        if (fungsi == "FUNGSI_004") {
+            return arr["cat_minkeu"];
+        }
+        if (fungsi == "FUNGSI_005") {
+            return arr["cat_verifikator"];
+        }
+        return arr["cat_bag_keu"];
+    }
+    showCat = (person, reverse = false, evt) => {
+        var cat = "";
+        if (reverse) {
+            if (person.getRow()["status"] == "4" || person.getRow()["status"] == "5") {
+                cat = this.getCatByFungsi(person.getFungsi(), this.state.myData);
+            } else {
+                cat = "";
+            }
+        } else {
+            if (person.getRow()["status"] == "1" || person.getRow()["status"] == "2" || person.getRow()["status"] == "3") {
+                cat = this.getCatByFungsi(person.getFungsi(), this.state.myData);
+            } else {
+                if (person.getRow()["status"] == "4") {
+                    var nxt = person.getNext();
+                    if (nxt != null) {
+                        if (nxt.getRow()["status"] == "0") {
+                            cat = this.getCatByFungsi(person.getFungsi(), this.state.myData);
+                        } else {
+                            alert("Maaf, catatan ini tidak lagi tersedia, karena " + person.getNmFungsi() + " telah menyetujui revisi.");
+                            cat = "";
+                        }
+                    } else {
+                        alert("Maaf, catatan ini tidak lagi tersedia, karena " + person.getNmFungsi() + " telah menyetujui revisi.");
+                        cat = "";
+                    }
+                } else {
+                    cat = "";
+                }
+            }
+        }
+        if (cat != "") {
+            this.setState({
+                catatan: cat,
+                renderCat: true,
+                catX: evt.nativeEvent.pageX,
+                catY: evt.nativeEvent.pageY
+            });
+            //console.log(Number.parseInt(evt.nativeEvent.pageX) + " , " + Number.parseInt(evt.nativeEvent.pageY));
+        } else {
+            this.setState({
+                renderCat: false
+            });
+        }
+    }
+
     renderState = (item, reverse = false) => {
         let cur = this.person.findMe(item.id_fungsi);
         var row = cur.getRow();
@@ -165,35 +242,38 @@ class ScreenProgress extends Component {
                         }
                     </View>
                     <View style={{ height: 50, justifyContent: 'center' }}>
-                        <MaterialCommunityIcons
-                            name={
-                                //arrowType=="NORMAL" ? "arrow-down-bold" : "dots-vertical"
-                                arrowType == "NORMAL" ? (
-                                    "arrow-down-bold"
-                                ) : (
-                                    arrowType == "DOT" ? (
-                                        "dots-vertical"
+                        <TouchableOpacity onPress={(evt) => this.showCat(cur, reverse, evt)}>
+                            <MaterialCommunityIcons
+                                name={
+                                    //arrowType=="NORMAL" ? "arrow-down-bold" : "dots-vertical"
+                                    arrowType == "NORMAL" ? (
+                                        "arrow-down-bold"
                                     ) : (
-                                        arrowType == "NO" ? (
-                                            "close-circle"
+                                        arrowType == "DOT" ? (
+                                            "dots-vertical"
                                         ) : (
-                                            arrowType == "RIGHT" ? (
-                                                "arrow-right-bold"
+                                            arrowType == "NO" ? (
+                                                "close-circle"
                                             ) : (
-                                                arrowType == "SUCCESS" ? (
-                                                    "check-circle"
+                                                arrowType == "RIGHT" ? (
+                                                    "arrow-right-bold"
                                                 ) : (
-                                                    ""
+                                                    arrowType == "SUCCESS" ? (
+                                                        "check-circle"
+                                                    ) : (
+                                                        ""
+                                                    )
                                                 )
                                             )
                                         )
                                     )
-                                )
-                            }
-                            size={50}
-                            color={row["status"] != 0 ? row["status"] == 2 ? "#FF0000" : Global.getFungsiColor(cur.getFungsi()) : "#aaaaaa"}
-                            style={{ alignSelf: 'center', height: '100%' }}
-                        />
+                                }
+                                size={50}
+                                color={row["status"] != 0 ? row["status"] == 2 ? "#FF0000" : Global.getFungsiColor(cur.getFungsi()) : "#aaaaaa"}
+                                style={{ alignSelf: 'center', height: '100%' }}
+                            />
+                        </TouchableOpacity>
+
 
                     </View>
                 </View>
@@ -208,27 +288,29 @@ class ScreenProgress extends Component {
             return (
                 <View style={{ height: 100 }} key={cur.getFungsi()}>
                     <View style={{ height: 50, justifyContent: 'center' }}>
-                        <MaterialCommunityIcons
-                            name={
-                                //arrowType=="NORMAL" ? "arrow-down-bold" : "dots-vertical"
-                                arrowType == "NORMAL" ? (
-                                    "arrow-up-bold"
-                                ) : (
-                                    arrowType == "DOT" ? (
-                                        "dots-vertical"
+                        <TouchableOpacity onPress={(evt) => this.showCat(cur, reverse, evt)}>
+                            <MaterialCommunityIcons
+                                name={
+                                    //arrowType=="NORMAL" ? "arrow-down-bold" : "dots-vertical"
+                                    arrowType == "NORMAL" ? (
+                                        "arrow-up-bold"
                                     ) : (
-                                        arrowType == "NO" ? (
-                                            "close-circle"
+                                        arrowType == "DOT" ? (
+                                            "dots-vertical"
                                         ) : (
-                                            ""
+                                            arrowType == "NO" ? (
+                                                "close-circle"
+                                            ) : (
+                                                ""
+                                            )
                                         )
                                     )
-                                )
-                            }
-                            size={50}
-                            color={row["status"] != 3 ? row["status"] == 5 ? "#FF0000" : Global.getFungsiColor(cur.getFungsi()) : "#aaaaaa"}
-                            style={{ alignSelf: 'center', height: '100%' }}
-                        />
+                                }
+                                size={50}
+                                color={row["status"] != 3 ? row["status"] == 5 ? "#FF0000" : Global.getFungsiColor(cur.getFungsi()) : "#aaaaaa"}
+                                style={{ alignSelf: 'center', height: '100%' }}
+                            />
+                        </TouchableOpacity>
 
                     </View>
                     <View style={{ borderRadius: 5, elevation: 3, height: 44, margin: 3, justifyContent: 'center', backgroundColor: row["status"] != 3 ? Global.getFungsiColor(cur.getFungsi()) : "#aaaaaa" }}>

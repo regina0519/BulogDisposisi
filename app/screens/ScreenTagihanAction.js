@@ -461,7 +461,7 @@ class ScreenTagihanAction extends Component {
                         />
                         <Text style={{ textAlign: 'center', fontWeight: 'bold' }}>Batal</Text>
                     </TouchableOpacity>
-                    <TouchableOpacity onPress={this.saveData} disabled={this.disableActionOk()}>
+                    <TouchableOpacity onPress={this.setSaveAction} disabled={this.disableActionOk()}>
                         <MaterialCommunityIcons
                             name="check"
                             size={30}
@@ -856,23 +856,75 @@ class ScreenTagihanAction extends Component {
         let updPerson = new CurrentDisposisi();
         updPerson.fillData(arr);
         let nxtPerson = this.getCurrentStatusPerson(updPerson.getFirst());
-        if (nxtPerson != null && this.getIdByFungsi(nxtPerson.getFungsi(), arr) != this.getIdByFungsi(me.getFungsi(), arr)) {
-            let arrTmp = {
-                "id_notifikasi": "",
-                "id_pegawai": this.getIdByFungsi(nxtPerson.getFungsi(), arr),
-                "id_tagihan": arr["id_tagihan"],
-                "notif_title": "Tagihan untuk diproses",
-                "notif_desc":
-                    arr["no_nota_intern"]
-                    + " butuh diproses oleh anda.",
-                "sent": "0",
-                "tgl_kirim": this.state.myTimer["now"],
-                "seen": "0"
+        if (nxtPerson == null) {
+            console.log("NEXT PERSON NULL");
+            this.setState({ myData: arr });
+            //SAVE
+            this.saveData();
+        } else {
+            console.log("NEXT PERSON NOT NULL");
+            var idNxt = this.getIdByFungsi(nxtPerson.getFungsi(), arr);
+            if (idNxt != "") {
+                console.log("NEXT PERSON NOT NULL: " + idNxt);
+                let arrTmp = {
+                    "id_notifikasi": "",
+                    "id_pegawai": idNxt,
+                    "id_tagihan": arr["id_tagihan"],
+                    "notif_title": "Tagihan untuk diproses",
+                    "notif_desc":
+                        arr["no_nota_intern"]
+                        + " butuh diproses oleh anda.",
+                    "sent": "0",
+                    "tgl_kirim": this.state.myTimer["now"],
+                    "seen": "0"
+                }
+                this.arrNotif.push(arrTmp);
+                this.setState({ myData: arr });
+                //SAVE
+                this.saveData();
+            } else {
+                console.log("NEXT PERSON ID NULL");
+                this.setState({ loading: true })
+                let url = MyServerSettings.getPhp("get_pegawai_by_fungsi.php") + "?bid=" + arr["id_bidang"] + "&f=" + nxtPerson.getFungsi();
+                //let url = MyServerSettings.getPhp("test.php") + '?res=10&pg=' + this.state.page;
+                console.log(url);
+                fetch(url)
+                    .then((response) => response.json())
+                    .then((responseJson) => {
+                        idNxt = responseJson[0]["id_pegawai"];
+                        if (this.getIdByFungsi(me.getFungsi(), arr) == idNxt) {
+                            this.setState({ loading: false, myData: arr });
+                            //SAVE
+                            this.saveData();
+                        } else {
+                            let arrTmp = {
+                                "id_notifikasi": "",
+                                "id_pegawai": idNxt,
+                                "id_tagihan": arr["id_tagihan"],
+                                "notif_title": "Tagihan untuk diproses",
+                                "notif_desc":
+                                    arr["no_nota_intern"]
+                                    + " butuh diproses oleh anda.",
+                                "sent": "0",
+                                "tgl_kirim": this.state.myTimer["now"],
+                                "seen": "0"
+                            }
+                            this.arrNotif.push(arrTmp);
+                            this.setState({ loading: false, myData: arr });
+                            //SAVE
+                            this.saveData();
+                        }
+                    })
+                    .catch((error) => {
+                        console.log('Error selecting random data: ' + error);
+                        this.setState({ loading: false, myData: arr });
+                        //SAVE
+                        this.saveData();
+                    });
             }
-            this.arrNotif.push(arrTmp);
-        }
 
-        this.setState({ myData: arr });
+
+        }
     }
 
     delNotifs = () => {
@@ -925,7 +977,7 @@ class ScreenTagihanAction extends Component {
     }
 
     saveData = () => {
-        this.setSaveAction();
+
         let arr = [];
         arr.push([]);
         let tmp = [];

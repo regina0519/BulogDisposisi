@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import MyFunctions from './../functions/MyFunctions';
-import { AppRegistry, ImageBackground, StyleSheet, Alert, Text, View, ActivityIndicator, Platform, TouchableOpacity, TouchableHighlightComponent, RefreshControl, Image } from 'react-native';
+import { AppRegistry, ImageBackground, StyleSheet, Alert, Text, View, ActivityIndicator, Platform, TouchableOpacity, TouchableHighlightComponent, RefreshControl, Image, ToastAndroid, BackHandler } from 'react-native';
 import moment from 'moment/min/moment-with-locales';
 import MyServerSettings from '../functions/MyServerSettings';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
@@ -22,6 +22,7 @@ class ScreenTagihan extends Component {
     this.state = {
       loading: true,
       myData: [],
+      exiting: false,
       page: 1
     }
   }
@@ -137,12 +138,26 @@ class ScreenTagihan extends Component {
         if (more) this.setState({ page: this.state.page - 1 })
       });
   }
-
+  backAction = () => {
+    if (!this.props.navigation.canGoBack()) {
+      if (this.state.exiting)
+        return false;
+      this.setState({ exiting: true });
+      setTimeout(() => {
+        this.setState({ exiting: false });
+      }, 3000);
+      ToastAndroid.show("Tekan sekali lagi untuk keluar!", ToastAndroid.SHORT);
+      return true;
+    }
+  };
   componentDidMount() {
     this.loadData();
     this.focusListener = this.props.navigation.addListener("focus", () => {
       this.refreshData();
-
+      this.backHandler = BackHandler.addEventListener(
+        "hardwareBackPress",
+        this.backAction
+      );
     });
   }
 
@@ -207,14 +222,14 @@ class ScreenTagihan extends Component {
             <TouchableOpacity
               onPress={() => this.deleteRow(rowMap, data.index)}
               style={{ marginHorizontal: 5, alignItems: 'center' }}
-              disabled={this.state.myData[data.index]["status_pembuatan"] == "0" ? false : true}
+              disabled={this.state.myData[data.index]["status_pembuatan"] == "0" && this.state.myData[data.index]["status_tagihan"] == "" ? false : true}
             >
               <MaterialCommunityIcons
                 name="delete"
                 size={30}
                 color={this.state.myData[data.index]["status_pembuatan"] == "0" ? '#101417' : '#AAAAAA'}
               />
-              <Text style={{ color: this.state.myData[data.index]["status_pembuatan"] == "0" ? '#101417' : '#AAAAAA' }}>Hapus</Text>
+              <Text style={{ color: this.state.myData[data.index]["status_pembuatan"] == "0" && this.state.myData[data.index]["status_tagihan"] == "" ? '#101417' : '#AAAAAA' }}>Hapus</Text>
             </TouchableOpacity>
             <TouchableOpacity
               onPress={() => this.props.navigation.navigate('Edit Tagihan', {

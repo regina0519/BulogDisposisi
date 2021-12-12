@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import MyFunctions from './../functions/MyFunctions';
-import { AppRegistry, ImageBackground, StyleSheet, Alert, Text, View, ActivityIndicator, Platform, TouchableOpacity, TouchableHighlightComponent, RefreshControl, Image } from 'react-native';
+import { AppRegistry, ImageBackground, BackHandler, StyleSheet, Alert, Text, View, ActivityIndicator, Platform, TouchableOpacity, TouchableHighlightComponent, RefreshControl, Image } from 'react-native';
 import moment from 'moment/min/moment-with-locales';
 import MyServerSettings from '../functions/MyServerSettings';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
@@ -11,6 +11,8 @@ import { SwipeListView } from 'react-native-swipe-list-view';
 import { AnimatedCircularProgress } from 'react-native-circular-progress';
 import * as Print from 'expo-print';
 import { shareAsync } from 'expo-sharing';
+import { Picker } from '@react-native-picker/picker';
+import DatePicker from 'react-native-datepicker';
 
 
 
@@ -24,6 +26,11 @@ class ScreenTagihanCompleted extends Component {
         this.state = {
             loading: true,
             myData: [],
+            myBidang: [],
+            repBidang: "all",
+            repTgl0: moment().format("YYYY-MM-DD") + " 00:00:00",
+            repTgl1: moment().format("YYYY-MM-DD") + " 23:59:59",
+            showFilter: false,
             page: 1
         }
     }
@@ -69,7 +76,11 @@ class ScreenTagihanCompleted extends Component {
                             />
                             {
                                 Global.getIdFungsi() == "FUNGSI_001" ? (
-                                    <TouchableOpacity style={styles.AddButton} onPress={null} disabled={this.state.loading}>
+                                    <TouchableOpacity style={styles.AddButton} onPress={
+                                        () => {
+                                            this.setState({ showFilter: true });
+                                        }
+                                    } disabled={this.state.loading}>
                                         <MaterialCommunityIcons
                                             name="printer"
                                             size={50}
@@ -92,19 +103,149 @@ class ScreenTagihanCompleted extends Component {
                         <ActivityIndicator style={styles.ActivityIndicator} size='large' color="red" animating={this.state.loading} />
                         {this.state.loading ? <Text style={styles.ActivityIndicatorText}>Loading... Mohon Tunggu</Text> : null}
                     </View>
+                    {this.renderFilter()}
 
+                </View>
+                <View>
+                    <View>
+
+                    </View>
                 </View>
             </ImageBackground>
         )
+    }
+
+    renderFilter = () => {
+        if (!this.state.showFilter) return null;
+        return (
+            <View style={[styles.LoadingContainer, { padding: 20, borderRadius: 10, backgroundColor: '#EEEEEE', borderWidth: 1, height: 'auto', bottom: 0, elevation: 3 }]}>
+                <Text style={{ fontWeight: 'bold', textAlign: 'center', padding: 10 }}>Print Rekapitulasi Pembayaran</Text>
+                <View style={{ flexDirection: 'row', padding: 2, alignItems: 'center' }}>
+                    <Text style={{ width: '20%', fontWeight: 'bold' }}>Bidang </Text>
+                    <View style={[Global.customStyles.PickerContainer, { width: '80%' }]}>
+                        <Picker
+                            style={{ borderWidth: 1 }}
+                            selectedValue={this.state.repBidang}
+                            onValueChange={(itemValue, itemIndex) => {
+                                this.setState({ repBidang: itemValue })
+                            }
+                            }>
+                            {
+                                this.state.myBidang.map((item) => {
+                                    return (<Picker.Item label={item.nm_bidang} value={item.id_bidang} key={item.id_bidang} />);
+                                })
+                            }
+
+                        </Picker>
+                    </View>
+                </View>
+                <View style={{ flexDirection: 'row', justifyContent: 'space-evenly', padding: 10, alignItems: 'center' }}>
+                    <DatePicker
+                        style={{ width: '40%' }}
+                        showIcon={false}
+                        androidMode="spinner"
+                        date={moment(this.state.repTgl0).format("DD/MM/YYYY")}
+                        mode="date"
+                        placeholder="DD/MM/YYYY"
+                        format="DD-MM-YYYY"
+                        confirmBtnText="Chọn"
+                        cancelBtnText="Hủy"
+                        customStyles={{
+                            dateInput: {
+                                backgroundColor: 'white',
+                                borderWidth: 1,
+                                borderColor: 'black',
+                            },
+                        }}
+                        onDateChange={(date) => {
+
+                            this.setState({ repTgl0: moment(date, "DD-MM-YYYY").format("YYYY-MM-DD") + " 00:00:00" });
+                            //console.log(date + "     " + this.state.repTgl0);
+                        }}
+                    />
+                    <Text>s/d</Text>
+                    <DatePicker
+                        style={{ width: '40%' }}
+                        showIcon={false}
+                        androidMode="spinner"
+                        date={moment(this.state.repTgl1).format("DD/MM/YYYY")}
+                        mode="date"
+                        placeholder="DD/MM/YYYY"
+                        format="DD-MM-YYYY"
+                        confirmBtnText="Chọn"
+                        cancelBtnText="Hủy"
+                        customStyles={{
+                            dateInput: {
+                                backgroundColor: 'white',
+                                borderWidth: 1,
+                                borderColor: 'black',
+                            },
+                        }}
+                        onDateChange={(date) => {
+                            this.setState({ repTgl1: moment(date, "DD-MM-YYYY").format("YYYY-MM-DD") + " 00:00:00" });
+                        }}
+                    />
+                </View>
+
+                <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+                    <TouchableOpacity onPress={
+                        () => {
+                            this.setState({ showFilter: false });
+                        }
+                    } disabled={this.state.loading}>
+                        <MaterialCommunityIcons
+                            name="cancel"
+                            size={30}
+                            color={'#FF0000'}
+                        />
+                        <Text style={{ textAlign: 'center', fontWeight: 'bold' }}>Batal</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity onPress={this.loadHtmlRekap} disabled={this.state.loading}>
+                        <MaterialCommunityIcons
+                            name="check"
+                            size={30}
+                            color={'#00FF00'}
+                        />
+                        <Text style={{ textAlign: 'center', fontWeight: 'bold' }}>Ok</Text>
+                    </TouchableOpacity>
+                </View>
+            </View>
+        );
     }
 
     refreshData = () => {
         this.setState({
             loading: true,
             myData: [],
+            repBidang: "all",
+            repTgl0: moment().format("YYYY-MM-DD") + " 00:00:00",
+            repTgl1: moment().format("YYYY-MM-DD") + " 23:59:59",
             page: 1
         });
-        this.loadData();
+        //this.loadData();
+        this.loadDataBidang();
+    }
+    loadDataBidang = () => {
+        this.setState({ loading: true })
+        let url = MyServerSettings.getPhp("get_list_bidang.php");
+        fetch(url)
+            .then((response) => response.json())
+            .then((responseJson) => {
+                var arr = [{ "id_bidang": "all", "nm_bidang": "(semua)" }];
+                responseJson.forEach((item, index) => {
+                    arr.push(item);
+                });
+
+                this.setState({
+                    loading: false,
+                    myBidang: arr
+                })
+            })
+            .then(this.loadData())
+            .catch((error) => {
+                console.log('Error selecting random data: ' + error)
+                this.setState({ loading: false })
+            });
     }
 
     loadData = (more = false) => {
@@ -128,14 +269,61 @@ class ScreenTagihanCompleted extends Component {
             });
     }
 
+    backAction = () => {
+        //this.validData();
+        if (this.state.showFilter) {
+            this.setState({ showFilter: false });
+        } else {
+            this.props.navigation.goBack();
+            this.backHandler.remove();
+        }
+        return true;
+    };
     componentDidMount() {
-        this.loadData();
+        console.log("MOUNT");
+        //console.log(moment("02-01-2021", "DD-MM-YYYY").format("YYYY-MMM-DD") + " 00:00:00");
+        this.props.navigation.setOptions({
+            headerLeft: () => (
+                <TouchableOpacity
+                    onPress={this.backAction}
+                >
+                    <MaterialCommunityIcons
+                        name="menu-left"
+                        size={40}
+                        color='#101417'
+                    />
+                </TouchableOpacity>
+            ),
+        });
+
+        //this.loadData();
+        this.loadDataBidang();
         this.focusListener = this.props.navigation.addListener("focus", () => {
             this.refreshData();
-
+            this.backHandler = BackHandler.addEventListener(
+                "hardwareBackPress",
+                this.backAction
+            );
         });
     }
 
+    loadHtmlRekap = () => {
+        //console.log("XXXXXX");
+        this.setState({ loading: true })
+        let url = MyServerSettings.getPhp("report_rekap.php") + "?bid=" + this.state.repBidang + "&t0=" + this.state.repTgl0 + "&t1=" + this.state.repTgl1;
+        console.log(url);
+        fetch(url)
+            .then((response) => response.text())
+            .then((responseText) => {
+                this.print(responseText);
+                //console.log(responseText);
+                this.setState({ loading: false })
+            })
+            .catch((error) => {
+                console.log('Error selecting random data: ' + error)
+                this.setState({ loading: false })
+            });
+    }
     loadHtmlNI = (idTagihan) => {
         //console.log("XXXXXX");
         this.setState({ loading: true })
@@ -145,6 +333,7 @@ class ScreenTagihanCompleted extends Component {
             .then((responseText) => {
                 this.print(responseText);
                 //console.log(responseText);
+                this.setState({ loading: false })
             })
             .catch((error) => {
                 console.log('Error selecting random data: ' + error)
@@ -161,6 +350,7 @@ class ScreenTagihanCompleted extends Component {
             .then((responseText) => {
                 this.print(responseText);
                 //console.log(responseText);
+                this.setState({ loading: false })
             })
             .catch((error) => {
                 console.log('Error selecting random data: ' + error)
