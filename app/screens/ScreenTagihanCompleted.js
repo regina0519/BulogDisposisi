@@ -75,7 +75,7 @@ class ScreenTagihanCompleted extends Component {
                                 }
                             />
                             {
-                                Global.getIdFungsi() == "FUNGSI_001" ? (
+                                this.canPrintRekap() ? (
                                     <TouchableOpacity style={styles.AddButton} onPress={
                                         () => {
                                             this.setState({ showFilter: true });
@@ -378,6 +378,15 @@ class ScreenTagihanCompleted extends Component {
         //console.log('This row opened', rowKey);
     };
 
+    canPrintRow = (row) => {
+        if (Global.getIdFungsi() == "FUNGSI_001" || Global.getIdFungsi() == "FUNGSI_006") return true;
+        return false;
+    }
+    canPrintRekap = () => {
+        if (Global.getIdFungsi() != "FUNGSI_001" && Global.getIdFungsi() != "FUNGSI_002") return true;
+        return false;
+    }
+
     renderHiddenItem = (data, rowMap) => (
         <View style={Global.customStyles.rowBack}>
             <TouchableOpacity
@@ -392,7 +401,7 @@ class ScreenTagihanCompleted extends Component {
                 <Text style={{ color: '#101417' }}>Alur Proses</Text>
             </TouchableOpacity>
             {
-                Global.getIdFungsi() == "FUNGSI_001" ? (
+                this.canPrintRow(this.state.myData[data.index]) ? (
                     <View style={[Global.customStyles.backRightBtn, Global.customStyles.backRightBtnRight, { flexDirection: 'row', width: 150, justifyContent: 'space-evenly' }]}>
                         <TouchableOpacity
                             onPress={() => this.printNI(rowMap, data.index)}

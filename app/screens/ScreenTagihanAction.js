@@ -524,7 +524,7 @@ class ScreenTagihanAction extends Component {
         return arr["id_bag_keu"];
     }
 
-    getNmByFungsi = (fungsi) => {
+    getNmByFungsi = (fungsi, arr) => {
         if (fungsi == "FUNGSI_001") {
             return arr["nm_pembuat"];
         }
@@ -562,7 +562,7 @@ class ScreenTagihanAction extends Component {
         return "disetujui bayar";
     }
 
-    getCatByFungsi = (fungsi) => {
+    getCatByFungsi = (fungsi, arr) => {
         if (fungsi == "FUNGSI_001") {
             return arr["cat_pembuat"];
         }
