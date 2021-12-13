@@ -118,7 +118,7 @@ class ScreenMain extends Component {
             })
             .then(() => this.setHeader())
             .catch((error) => {
-                console.log('Error selecting random data: ' + error)
+                //console.log('Error selecting random data: ' + error)
                 this.setState({ loading: false })
                 this.setHeader();
             });

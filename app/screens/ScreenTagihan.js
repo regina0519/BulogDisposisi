@@ -275,7 +275,7 @@ class ScreenTagihan extends Component {
                     width={10}
                     fill={this.getPercentage(item).percent}
                     tintColor="#03428B"
-                    onAnimationComplete={() => console.log('onAnimationComplete')}
+                    onAnimationComplete={null}
                     backgroundColor="#aaaaaa">
                     {
                       () => (

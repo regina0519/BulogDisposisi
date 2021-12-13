@@ -461,7 +461,7 @@ class ScreenTagihanAction extends Component {
                         />
                         <Text style={{ textAlign: 'center', fontWeight: 'bold' }}>Batal</Text>
                     </TouchableOpacity>
-                    <TouchableOpacity onPress={this.setSaveAction} disabled={this.disableActionOk()}>
+                    <TouchableOpacity onPress={() => this.setSaveAction()} disabled={this.disableActionOk()}>
                         <MaterialCommunityIcons
                             name="check"
                             size={30}
@@ -725,7 +725,7 @@ class ScreenTagihanAction extends Component {
                     let wlk = me.getFirst();
                     while (wlk.getNext() != null) {
                         if (wlk != me) {
-                            if (this.getStatusByFungsi(wlk.getFungsi()) == "3" || this.getStatusByFungsi(wlk.getFungsi()) == "4") {
+                            if (this.getStatusByFungsi(wlk.getFungsi(), arr) == "3" || this.getStatusByFungsi(wlk.getFungsi(), arr) == "4") {
                                 let arrTmp = {
                                     "id_notifikasi": "",
                                     "id_pegawai": this.getIdByFungsi(wlk.getFungsi(), arr),
@@ -826,7 +826,7 @@ class ScreenTagihanAction extends Component {
                 let wlk = me.getFirst();
                 while (wlk.getNext() != null) {
                     if (wlk != me) {
-                        if (this.getStatusByFungsi(wlk.getFungsi()) == "3" || this.getStatusByFungsi(wlk.getFungsi()) == "4") {
+                        if (this.getStatusByFungsi(wlk.getFungsi(), arr) == "3" || this.getStatusByFungsi(wlk.getFungsi(), arr) == "4") {
                             let arrTmp = {
                                 "id_notifikasi": "",
                                 "id_pegawai": this.getIdByFungsi(wlk.getFungsi(), arr),
@@ -892,6 +892,12 @@ class ScreenTagihanAction extends Component {
                     .then((response) => response.json())
                     .then((responseJson) => {
                         idNxt = responseJson[0]["id_pegawai"];
+                        for (var i = 0; i < responseJson.length; i++) {
+                            if (responseJson[i]["id_bidang"] == arr["id_bidang"]) {
+                                idNxt = responseJson[i]["id_pegawai"];
+                                break;
+                            }
+                        }
                         if (this.getIdByFungsi(me.getFungsi(), arr) == idNxt) {
                             this.setState({ loading: false, myData: arr });
                             //SAVE

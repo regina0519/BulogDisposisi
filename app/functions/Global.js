@@ -155,7 +155,7 @@ class Global {
                 }
             })
             .catch((error) => {
-                console.log('Get Notif New Failed: ' + error)
+                //console.log('Get Notif New Failed: ' + error)
             });
 
     }

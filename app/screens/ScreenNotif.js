@@ -204,7 +204,7 @@ class ScreenNotif extends Component {
 
     renderDataItem = ({ item, index }) => {
         return (
-            <TouchableOpacity style={[Global.customStyles.ListItem, { backgroundColor: item.seen == 1 ? ("#FFFFFF") : ("#D3DCE3") }]} onPress={() => { this.save(index) }}>
+            <TouchableOpacity style={[Global.customStyles.ListItem, { backgroundColor: item.seen == 1 ? ("#FFFFFF") : ("#D3DCE3") }]} onPress={() => this.save(index)}>
                 <Text style={{ fontWeight: 'bold', paddingHorizontal: 5, fontSize: 16 }}>{item.notif_title}</Text>
                 <Text style={{ paddingHorizontal: 5 }}>{item.notif_desc}</Text>
                 <Text style={{ paddingHorizontal: 5, fontSize: 10, alignSelf: 'flex-end' }}>{this.getNotifTime(item.tgl_kirim, this.state.myTimer)}</Text>
@@ -219,7 +219,7 @@ class ScreenNotif extends Component {
         this.setState({ loading: true, myData: arr });
         //this.tmpPass = this.state.txtPass;
         fetch(
-            MyServerSettings.getPhp("post_notif_sent.php"),
+            MyServerSettings.getPhp("post_notif_seen.php"),
             {
                 method: 'POST',
                 headers: {
