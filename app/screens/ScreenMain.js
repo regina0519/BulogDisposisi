@@ -1,15 +1,15 @@
-import React, { Component } from 'react';
-import { AppRegistry, ImageBackground, ScrollView, StyleSheet, TextInput, Text, View, Button, ActivityIndicator, Platform, TouchableOpacity, Image } from 'react-native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import React, { Component } from 'react';
+import { AppRegistry, Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
-import ScreenTagihan from './ScreenTagihan';
-import TestNotif from './TestNotif';
-import ScreenProfil from './ScreenProfil';
-import ScreenAdmin from './ScreenAdmin';
+import { WebView } from "react-native-webview";
 import BackgroundProcess from '../functions/BackgroundProcess';
-import { WebView } from "react-native-webview"
 import Global from '../functions/Global';
+import MyFunctions from '../functions/MyFunctions';
 import MyServerSettings from '../functions/MyServerSettings';
+import ScreenAdmin from './ScreenAdmin';
+import ScreenProfil from './ScreenProfil';
+import ScreenTagihan from './ScreenTagihan';
 import ScreenTagihanCompleted from './ScreenTagihanCompleted';
 
 const Tab = createBottomTabNavigator();
@@ -118,7 +118,6 @@ class ScreenMain extends Component {
             })
             .then(() => this.setHeader())
             .catch((error) => {
-                //console.log('Error selecting random data: ' + error)
                 this.setState({ loading: false })
                 this.setHeader();
             });
@@ -147,7 +146,6 @@ class ScreenMain extends Component {
             )
         });
 
-        //this.refreshNotif();
     }
 
     setHeader = () => {
@@ -200,11 +198,7 @@ class ScreenMain extends Component {
 const styles = StyleSheet.create({
 
     MainContainer: {
-        //justifyContent: 'center',
-        //flex: 1,
-        //alignContent: 'flex-start',
         margin: 1,
-        //paddingTop: (Platform.OS === 'ios') ? 20 : 0,
         padding: 5,
 
     },
@@ -222,7 +216,6 @@ const styles = StyleSheet.create({
         width: '100%',
         height: '100%',
         justifyContent: 'center',
-        //borderWidth: 5
     },
 
     ActivityIndicator: {

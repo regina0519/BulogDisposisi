@@ -1,14 +1,12 @@
-import React, { Component } from 'react';
-import MyFunctions from './../functions/MyFunctions';
-import { AppRegistry, ImageBackground, StyleSheet, Alert, Text, View, ActivityIndicator, Platform, TouchableOpacity, TouchableHighlightComponent, RefreshControl, Image, ToastAndroid, BackHandler } from 'react-native';
 import moment from 'moment/min/moment-with-locales';
-import MyServerSettings from '../functions/MyServerSettings';
-import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
-import { DefaultTheme } from '@react-navigation/native';
-import { StackActions } from '@react-navigation/routers';
-import Global from '../functions/Global';
-import { SwipeListView } from 'react-native-swipe-list-view';
+import React, { Component } from 'react';
+import { ActivityIndicator, Alert, AppRegistry, BackHandler, Image, ImageBackground, RefreshControl, StyleSheet, Text, ToastAndroid, TouchableOpacity, View } from 'react-native';
 import { AnimatedCircularProgress } from 'react-native-circular-progress';
+import { SwipeListView } from 'react-native-swipe-list-view';
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import Global from '../functions/Global';
+import MyServerSettings from '../functions/MyServerSettings';
+import MyFunctions from './../functions/MyFunctions';
 
 
 
@@ -52,7 +50,7 @@ class ScreenTagihan extends Component {
   render() {
 
     return (
-      <ImageBackground style={Global.customStyles.BGImage} source={require('../assets/invoice.jpeg')}>
+      <ImageBackground style={Global.customStyles.BGImage} source={require('../assets/wp_default_main.jpg')}>
         <View style={styles.MainContainer}>
           <View style={styles.ContentContainer}>
             <View style={{ margin: 5 }}>
@@ -122,8 +120,6 @@ class ScreenTagihan extends Component {
   loadData = (more = false) => {
     this.setState({ loading: true })
     let url = MyServerSettings.getPhp("get_list_ongoing.php") + '?res=10&pg=' + this.state.page + "&fungsi=" + Global.getIdFungsi() + "&person=" + Global.getCurUserId() + "&bid=" + Global.getIdBidang();
-    //let url = MyServerSettings.getPhp("test.php") + '?res=10&pg=' + this.state.page;
-    //console.log(url);
     fetch(url)
       .then((response) => response.json())
       .then((responseJson) => {
@@ -151,7 +147,7 @@ class ScreenTagihan extends Component {
     }
   };
   componentDidMount() {
-    this.loadData();
+    //this.loadData();
     this.focusListener = this.props.navigation.addListener("focus", () => {
       this.refreshData();
       this.backHandler = BackHandler.addEventListener(
@@ -178,18 +174,18 @@ class ScreenTagihan extends Component {
               var res = responseJson[0];
               console.log(res);
               if (res["succeed"] == "1") {
-                alert("Tagihan '" + arr[rowKey]["no_nota_intern"] + "' telah dihapus.");
+                MyFunctions.msgBox("Tagihan '" + arr[rowKey]["no_nota_intern"] + "' telah dihapus.");
               } else {
                 if (res["error"] == "EXIST") {
-                  alert("Maaf, Tagihan '" + arr[rowKey]["no_nota_intern"] + "' tidak bisa dihapus karena sedang dalam proses pencairan.");
+                  MyFunctions.msgBox("Maaf, Tagihan '" + arr[rowKey]["no_nota_intern"] + "' tidak bisa dihapus karena sedang dalam proses pencairan.");
                 } else {
-                  alert("Error Koneksi");
+                  MyFunctions.msgBox("Error Koneksi");
                 }
               }
             }).then(this.refreshData)
             .catch((error) => {
               console.log('Error selecting random data: ' + error)
-              alert("Error Koneksi Jaringan");
+              MyFunctions.msgBox("Error Koneksi Jaringan");
             });
         }
       }
@@ -200,7 +196,7 @@ class ScreenTagihan extends Component {
     this.props.navigation.navigate('Progres Tagihan', { myData: this.state.myData[rowKey] });
   };
   onRowDidOpen = rowKey => {
-    //console.log('This row opened', rowKey);
+
   };
 
   renderHiddenItem = (data, rowMap) => (
@@ -338,11 +334,7 @@ class ScreenTagihan extends Component {
 const styles = StyleSheet.create({
 
   MainContainer: {
-    //justifyContent: 'center',
-    //flex: 1,
-    //alignContent: 'flex-start',
     margin: 1,
-    //paddingTop: (Platform.OS === 'ios') ? 20 : 0,
     padding: 5,
 
   },
@@ -360,7 +352,6 @@ const styles = StyleSheet.create({
     width: '100%',
     height: '100%',
     justifyContent: 'center',
-    //borderWidth: 5
   },
 
   FlatListItemStyle: {

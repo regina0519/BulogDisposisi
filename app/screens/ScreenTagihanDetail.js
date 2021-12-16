@@ -1,11 +1,10 @@
-import React, { Component } from 'react';
-import MyFunctions from './../functions/MyFunctions';
-import { AppRegistry, StyleSheet, FlatList, Text, View, ActivityIndicator, Platform, TouchableOpacity, TouchableHighlightComponent, RefreshControl } from 'react-native';
-import moment from 'moment/min/moment-with-locales';
-import MyServerSettings from '../functions/MyServerSettings';
-import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import { DefaultTheme } from '@react-navigation/native';
-import { StackActions } from '@react-navigation/routers';
+import moment from 'moment/min/moment-with-locales';
+import React, { Component } from 'react';
+import { ActivityIndicator, AppRegistry, FlatList, Platform, RefreshControl, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import MyServerSettings from '../functions/MyServerSettings';
+import MyFunctions from './../functions/MyFunctions';
 
 
 

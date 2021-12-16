@@ -1,14 +1,11 @@
-import React, { Component } from 'react';
-import MyFunctions from './../functions/MyFunctions';
-import { AppRegistry, ImageBackground, StyleSheet, Alert, Text, View, ActivityIndicator, Platform, TouchableOpacity, TouchableHighlightComponent, RefreshControl } from 'react-native';
 import moment from 'moment/min/moment-with-locales';
-import MyServerSettings from '../functions/MyServerSettings';
-import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
-import { DefaultTheme } from '@react-navigation/native';
-import { StackActions } from '@react-navigation/routers';
-import Global from '../functions/Global';
+import React, { Component } from 'react';
+import { ActivityIndicator, AppRegistry, ImageBackground, RefreshControl, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { SwipeListView } from 'react-native-swipe-list-view';
 import { WebView } from "react-native-webview";
+import Global from '../functions/Global';
+import MyServerSettings from '../functions/MyServerSettings';
+import MyFunctions from '../functions/MyFunctions';
 
 
 
@@ -32,7 +29,7 @@ class ScreenNotif extends Component {
     render() {
 
         return (
-            <ImageBackground style={Global.customStyles.BGImage} source={require('../assets/invoice.jpeg')}>
+            <ImageBackground style={Global.customStyles.BGImage} source={require('../assets/wp_default.jpg')}>
                 <View style={styles.MainContainer}>
                     <View style={styles.ContentContainer}>
                         <View style={{ margin: 5 }}>
@@ -139,7 +136,6 @@ class ScreenNotif extends Component {
         var ket = "detik yang lalu";
 
         var t = moment(date).diff(timer["now"], 'seconds') * -1;
-        //console.log(date + "       " + t);
         if (t > 60) {
             ket = "menit yang lalu";
             t = moment(date).diff(timer["now"], 'minutes') * -1;
@@ -187,7 +183,7 @@ class ScreenNotif extends Component {
                 })
             })
             .catch((error) => {
-                alert("Maaf, terjadi kesalahan pada koneksi jaringan.");
+                MyFunctions.msgBox("Maaf, terjadi kesalahan pada koneksi jaringan.");
                 console.log('Error selecting random data TIMER: ' + error)
                 this.setState({ loading: false })
             });
@@ -195,7 +191,7 @@ class ScreenNotif extends Component {
     }
 
     onRowDidOpen = rowKey => {
-        //console.log('This row opened', rowKey);
+
     };
 
     renderHiddenItem = (data, rowMap) => (
@@ -214,20 +210,9 @@ class ScreenNotif extends Component {
 
     save = (index) => {
         let arr = this.state.myData;
-        arr[index]["seen"] = "1";
-        //console.log(JSON.stringify(arr[index]));
         this.setState({ loading: true, myData: arr });
-        //this.tmpPass = this.state.txtPass;
         fetch(
-            MyServerSettings.getPhp("post_notif_seen.php"),
-            {
-                method: 'POST',
-                headers: {
-                    Accept: 'application/json',
-                    'Content-Type': 'application/json',
-                },
-                body: "[" + JSON.stringify(arr[index]) + "]",
-            }
+            MyServerSettings.getPhp("post_notif_seen.php") + "?id=" + arr[index]["id_notifikasi"]
         )
             .then((response) => response.json())
             .then((responseJson) => {
@@ -243,10 +228,6 @@ class ScreenNotif extends Component {
             });
 
 
-
-
-
-        //this.props.navigation.dispatch(StackActions.replace('Item'))
     }
     processResult = (index) => {
         if (this.state.myResult[0]['succeed']) {
@@ -254,9 +235,8 @@ class ScreenNotif extends Component {
                 idTagihan: this.state.myData[index]["id_tagihan"]
             })
         } else {
-            alert("Gagal menyimpan\n" + this.state.myResult[0]['error']);
+            MyFunctions.msgBox("Gagal menyimpan\n" + this.state.myResult[0]['error']);
         }
-        //return true;
     }
 }
 
@@ -265,11 +245,7 @@ class ScreenNotif extends Component {
 const styles = StyleSheet.create({
 
     MainContainer: {
-        //justifyContent: 'center',
-        //flex: 1,
-        //alignContent: 'flex-start',
         margin: 1,
-        //paddingTop: (Platform.OS === 'ios') ? 20 : 0,
         padding: 5,
 
     },
@@ -287,7 +263,6 @@ const styles = StyleSheet.create({
         width: '100%',
         height: '100%',
         justifyContent: 'center',
-        //borderWidth: 5
     },
 
     FlatListItemStyle: {

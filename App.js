@@ -1,14 +1,8 @@
 
 import React from 'react';
 import { useColorScheme, Text, Image } from 'react-native'
-import TestListScreen from './app/screens/TestListScreen';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator, createStackNavigator } from '@react-navigation/native-stack';
-import TestDetail from './app/screens/TestDetail';
-import TestPDF from './app/screens/TestPDF';
-import TestNotif from './app/screens/TestNotif';
-import TestNotifScreen from './app/screens/TestNotifScreen';
-import TestService from './app/screens/TestService';
 
 import ScreenTagihan from './app/screens/ScreenTagihan';
 import ScreenInit from './app/screens/ScreenInit';
@@ -19,7 +13,6 @@ import ScreenItem from './app/screens/ScreenItem';
 import ScreenItemAdd from './app/screens/ScreenItemAdd';
 import ScreenTagihanEdit from './app/screens/ScreenTagihanEdit';
 import ScreenTagihanDetailEdit from './app/screens/ScreenTagihanDetailEdit';
-import TestTmp from './app/screens/TestTmp';
 import ScreenProfil from './app/screens/ScreenProfil';
 import ScreenChangePass from './app/screens/ScreenChangePass';
 import ScreenAdmin from './app/screens/ScreenAdmin';
@@ -67,13 +60,6 @@ export default function App() {
         <Stack.Screen name="Bulog" component={ScreenMain} />
         <Stack.Screen name="Notifikasi" component={ScreenNotif} />
         <Stack.Screen name="Progres Tagihan" component={ScreenProgress} />
-        <Stack.Screen name="Test List" component={TestListScreen} />
-        <Stack.Screen name="Detail" component={TestDetail} />
-        <Stack.Screen name="Test Notif" component={TestNotif} />
-        <Stack.Screen name="Test Notif Screen" component={TestNotifScreen} />
-        <Stack.Screen name="Test Service" component={TestService} />
-        <Stack.Screen name="Tes Tmp" component={TestTmp} />
-        <Stack.Screen name="Test PDF" component={TestPDF} />
 
       </Stack.Navigator>
 

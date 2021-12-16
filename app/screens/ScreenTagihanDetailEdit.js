@@ -1,14 +1,10 @@
-import { StackActions } from '@react-navigation/routers';
 import React, { Component } from 'react';
-
-import { AppRegistry, ImageBackground, Alert, StyleSheet, BackHandler, TextInput, Text, View, Button, ActivityIndicator, Platform, TouchableOpacity, ScrollView } from 'react-native';
-import Global from '../functions/Global';
-import MyServerSettings from '../functions/MyServerSettings';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import { ActivityIndicator, Alert, AppRegistry, BackHandler, Button, ImageBackground, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import PagerView from 'react-native-pager-view';
-import MyFunctions from '../functions/MyFunctions';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
-import { DefaultTheme } from '@react-navigation/native';
+import Global from '../functions/Global';
+import MyFunctions from '../functions/MyFunctions';
+
 
 
 
@@ -20,10 +16,8 @@ class ScreenTagihanDetailEdit extends Component {
     constructor(props) {
 
         super(props);
-        //alert(props.route.params.mode);
         let ind = props.route.params.myDataDetIndex;
         let data = props.route.params.myData;
-        //console.log(data["det_array"].length);
         if (ind >= data["det_array"].length) {
             data["det_array"].push(this.newRecord());
             ind = data["det_array"].length - 1;
@@ -59,11 +53,9 @@ class ScreenTagihanDetailEdit extends Component {
 
 
     render() {
-        //console.log(JSON.stringify(this.state.myData));
-        //console.log(this.state.myData["det_array"].length);
         return (
 
-            <ImageBackground style={Global.customStyles.BGImage} source={require('../assets/invoice.jpeg')}>
+            <ImageBackground style={Global.customStyles.BGImage} source={require('../assets/wp_default.jpg')}>
                 <View style={styles.MainContainer}>
                     <View style={styles.ContentContainer}>
                         <View style={{ margin: 5 }}>
@@ -148,7 +140,6 @@ class ScreenTagihanDetailEdit extends Component {
         this.initNewItem().then(() => {
             this.state.pagerView.current.setPage(this.state.myDataDetIndex);
         }).catch((err) => { console.log(err) });
-        //this.state.pagerView.current.setPage(this.state.myDataDetIndex);
     }
     initDelItem = async () => {
         let data = this.state.myData;
@@ -187,7 +178,6 @@ class ScreenTagihanDetailEdit extends Component {
     checkDetValid = (data) => {
         var invalid = -1;
         data["det_array"].forEach((item, index) => {
-            //console.log("HAHAHAH :" + Number.parseFloat(item.qty * item.harga));
             var subTot = Number.parseFloat(item.qty * item.harga);
             if (isNaN(subTot) || subTot <= 0) {
                 invalid = invalid == -1 ? index : invalid;
@@ -197,7 +187,7 @@ class ScreenTagihanDetailEdit extends Component {
         if (invalid == -1) {
             this.props.navigation.goBack();
         } else {
-            alert("Jumlah/Harga pada item '" + data["det_array"][invalid]["nm_item"] + "' tidak valid");
+            MyFunctions.msgBox("Jumlah/Harga pada item '" + data["det_array"][invalid]["nm_item"] + "' tidak valid");
             this.state.pagerView.current.setPage(invalid);
         }
     }
@@ -271,7 +261,6 @@ class ScreenTagihanDetailEdit extends Component {
     }
 
     refreshData = () => {
-        //console.log(this.state.myData["nm_item"]);
         this.setState({ myData: this.state.myData });
     }
     renderSwipeView = (data, index, me) => {
@@ -296,7 +285,6 @@ class ScreenTagihanDetailEdit extends Component {
                             this.setState({ myData: arr });
                         }}
                         placeholder={'Jumlah'}
-                        //secureTextEntry={true}
                         style={Global.customStyles.Input}
                         keyboardType="numeric"
                         numeric
@@ -311,7 +299,6 @@ class ScreenTagihanDetailEdit extends Component {
                             this.setState({ myData: arr });
                         }}
                         placeholder={'Harga'}
-                        //secureTextEntry={true}
                         style={Global.customStyles.Input}
                         keyboardType="numeric"
                         numeric
@@ -326,7 +313,6 @@ class ScreenTagihanDetailEdit extends Component {
                             this.setState({ myData: arr });
                         }}
                         placeholder={'Keterangan'}
-                        //secureTextEntry={true}
                         style={Global.customStyles.Input}
                     />
                     <View style={{ width: '100%', alignItems: 'center' }}>
@@ -360,11 +346,7 @@ class ScreenTagihanDetailEdit extends Component {
 const styles = StyleSheet.create({
 
     MainContainer: {
-        //justifyContent: 'center',
-        //flex: 1,
-        //alignContent: 'flex-start',
         margin: 1,
-        //paddingTop: (Platform.OS === 'ios') ? 20 : 0,
         padding: 5,
 
     },
@@ -380,7 +362,6 @@ const styles = StyleSheet.create({
         width: '100%',
         height: '100%',
         justifyContent: 'center',
-        //borderWidth: 5
     },
 
     ActivityIndicator: {

@@ -1,11 +1,9 @@
-import { StackActions } from '@react-navigation/routers';
 import React, { Component } from 'react';
-
-import { AppRegistry, ImageBackground, ScrollView, StyleSheet, TextInput, Text, View, Button, ActivityIndicator, Platform, TouchableOpacity } from 'react-native';
+import { ActivityIndicator, AppRegistry, Button, ImageBackground, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
 import Global from '../functions/Global';
-import MyServerSettings from '../functions/MyServerSettings';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import MyFunctions from '../functions/MyFunctions';
+import MyServerSettings from '../functions/MyServerSettings';
+
 
 
 
@@ -16,7 +14,6 @@ class ScreenItemAdd extends Component {
     constructor(props) {
 
         super(props);
-        //alert(props.route.params.mode);
         this.state = {
             loading: false,
             myParentData: props.route.params.myParentData,
@@ -36,10 +33,9 @@ class ScreenItemAdd extends Component {
 
 
     render() {
-        //console.log(JSON.stringify(this.state.myData));
         return (
 
-            <ImageBackground style={Global.customStyles.BGImage} source={require('../assets/invoice.jpeg')}>
+            <ImageBackground style={Global.customStyles.BGImage} source={require('../assets/wp_default.jpg')}>
                 <View style={styles.MainContainer}>
                     <View style={{ width: '100%', height: '100%' }}>
                         <View style={{ margin: 5 }}>
@@ -58,7 +54,6 @@ class ScreenItemAdd extends Component {
                                             this.setState({ myData: arr });
                                         }}
                                         placeholder={'Item'}
-                                        //secureTextEntry={true}
                                         style={Global.customStyles.Input}
                                     />
                                     <Text style={Global.customStyles.Label}>Satuan</Text>
@@ -71,7 +66,6 @@ class ScreenItemAdd extends Component {
                                             this.setState({ myData: arr });
                                         }}
                                         placeholder={'Satuan'}
-                                        //secureTextEntry={true}
                                         style={Global.customStyles.Input}
                                     />
                                     <Text style={Global.customStyles.Label}>Standar Harga</Text>
@@ -84,7 +78,6 @@ class ScreenItemAdd extends Component {
                                             this.setState({ myData: arr });
                                         }}
                                         placeholder={'Standar Harga'}
-                                        //secureTextEntry={true}
                                         style={Global.customStyles.Input}
                                         keyboardType="numeric"
                                         numeric
@@ -99,7 +92,6 @@ class ScreenItemAdd extends Component {
                                             this.setState({ myData: arr });
                                         }}
                                         placeholder={'Keterangan'}
-                                        //secureTextEntry={true}
                                         style={Global.customStyles.Input}
                                     />
                                 </ScrollView>
@@ -134,16 +126,16 @@ class ScreenItemAdd extends Component {
     validData = () => {
         if (this.state.myData.length == 0) return false;
         if (this.state.myData[0]['nm_item'] == "") {
-            alert("Nama item tidak valid");
+            MyFunctions.msgBox("Nama item tidak valid");
             return false;
         }
         if (this.state.myData[0]['satuan'] == "") {
-            alert("Satuan tidak valid");
+            MyFunctions.msgBox("Satuan tidak valid");
             return false;
         }
         let hrg = Number.parseFloat(this.state.myData[0]['harga_patokan']);
         if (isNaN(hrg) || hrg <= 0) {
-            alert("Standar harga tidak valid");
+            MyFunctions.msgBox("Standar harga tidak valid");
             return false;
         }
         return true;
@@ -151,8 +143,8 @@ class ScreenItemAdd extends Component {
 
     saveItem = () => {
         if (!this.validData()) return;
+        console.log(JSON.stringify(this.state.myData[0]));
         this.setState({ loading: true })
-        //this.tmpPass = this.state.txtPass;
         fetch(
             MyServerSettings.getPhp("add_item.php"),
             {
@@ -178,17 +170,14 @@ class ScreenItemAdd extends Component {
             });
 
 
-
-
-
-        //this.props.navigation.dispatch(StackActions.replace('Item'))
     }
     processResult = () => {
+        console.log(this.state.myResult);
         if (this.state.myResult[0]['succeed']) {
-            alert("Data tersimpan");
+            MyFunctions.msgBox("Data tersimpan");
             this.props.navigation.goBack();
         } else {
-            alert("Gagal menyimpan\n" + this.state.myResult[0]['error']);
+            MyFunctions.msgBox("Gagal menyimpan\n" + this.state.myResult[0]['error']);
         }
     }
     componentDidMount() {
@@ -209,11 +198,7 @@ class ScreenItemAdd extends Component {
 const styles = StyleSheet.create({
 
     MainContainer: {
-        //justifyContent: 'center',
-        //flex: 1,
-        //alignContent: 'flex-start',
         margin: 1,
-        //paddingTop: (Platform.OS === 'ios') ? 20 : 0,
         padding: 5,
 
     },
@@ -231,7 +216,6 @@ const styles = StyleSheet.create({
         width: '100%',
         height: '100%',
         justifyContent: 'center',
-        //borderWidth: 5
     },
 
     ActivityIndicator: {

@@ -1,11 +1,8 @@
-import { StackActions } from '@react-navigation/routers';
 import React, { Component } from 'react';
-
-import { AppRegistry, ImageBackground, ScrollView, StyleSheet, TextInput, Text, View, Button, ActivityIndicator, Platform, TouchableOpacity } from 'react-native';
-import Global from '../functions/Global';
-import MyServerSettings from '../functions/MyServerSettings';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import { ActivityIndicator, AppRegistry, ImageBackground, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import Global from '../functions/Global';
+
 
 
 
@@ -30,7 +27,7 @@ class ScreenAdmin extends Component {
     render() {
         return (
 
-            <ImageBackground style={Global.customStyles.BGImage} source={require('../assets/invoice.jpeg')}>
+            <ImageBackground style={Global.customStyles.BGImage} source={require('../assets/wp_default_main.jpg')}>
                 <View style={[styles.MainContainer, { paddingTop: '20%' }]}>
                     <View style={{ width: '100%', height: '100%' }}>
                         <View style={{ margin: 5, padding: 10 }}>
@@ -112,7 +109,7 @@ class ScreenAdmin extends Component {
     }
 
     componentDidMount() {
-        //this.loadData();
+
     }
 
 }
@@ -121,11 +118,7 @@ class ScreenAdmin extends Component {
 const styles = StyleSheet.create({
 
     MainContainer: {
-        //justifyContent: 'center',
-        //flex: 1,
-        //alignContent: 'flex-start',
         margin: 1,
-        //paddingTop: (Platform.OS === 'ios') ? 20 : 0,
         padding: 5,
 
     },
@@ -143,7 +136,6 @@ const styles = StyleSheet.create({
         width: '100%',
         height: '100%',
         justifyContent: 'center',
-        //borderWidth: 5
     },
 
     ActivityIndicator: {

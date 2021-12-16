@@ -1,5 +1,10 @@
+import { Alert } from "react-native";
 
 class MyFunctions {
+    static msgBox = (msg) => Alert.alert('BULOG', msg, [
+        { text: 'Ok' }
+    ]);
+
     static leadingZero(number, zero = 2) {
         return String(number).padStart(zero, '0');
     }
@@ -39,15 +44,11 @@ class MyFunctions {
         } else {
             ret = min == undefined ? ret : (ret < min ? min : ret);
         }
-        //console.log(Number.isNaN(ret));
         return ret + '';
     }
     static validateInputDouble2(str, min = undefined) {
         var ret = parseFloat(str);
-        //console.log(Number.isNaN(ret));
         if (Number.isNaN(ret)) {
-            //console.log("======NaN");
-            //ret = min == undefined ? 0 : min;
             if (str == "" || str == "-") {
                 if (min == undefined) {
                     return str;
@@ -68,7 +69,6 @@ class MyFunctions {
                         return "";
                     }
                 }
-                //ret = min == undefined ? 0 : min;
             }
         } else {
             if (str.charAt(str.length - 1) === '.') {
@@ -108,19 +108,13 @@ class MyFunctions {
         return ret + '';
     }
     static validateInputDouble(str) {
-        //str = str.match(/^-?(([1-9]\d*)|0)(.0*[1-9](0*[1-9])*)?$/g);
         var ret = parseFloat(str);
         if (Number.isNaN(ret)) {
-            //console.log("Nan");
             str = str.match(/^-|^\.|^/g);
-            //console.log(str);
             return str[0];
-            //return min == undefined ? '0' : min + '';
         } else {
-            //str = str.match(/^-?(([1-9]\d*)|0)(.(0*[1-9](0*[1-9])*)?)?$/g);
             str = str.match(/^-?[0-9]*\.?[0-9]*/g);
             return str[0];
-            //return str == null ? min == undefined ? '0' : ret < min ? min + '' : ret + '' : str;
         }
     }
     static stringTruncateIndo(str, min, char, name) {

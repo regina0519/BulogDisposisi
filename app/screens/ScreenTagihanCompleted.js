@@ -1,18 +1,14 @@
-import React, { Component } from 'react';
-import MyFunctions from './../functions/MyFunctions';
-import { AppRegistry, ImageBackground, BackHandler, StyleSheet, Alert, Text, View, ActivityIndicator, Platform, TouchableOpacity, TouchableHighlightComponent, RefreshControl, Image } from 'react-native';
-import moment from 'moment/min/moment-with-locales';
-import MyServerSettings from '../functions/MyServerSettings';
-import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
-import { DefaultTheme } from '@react-navigation/native';
-import { StackActions } from '@react-navigation/routers';
-import Global from '../functions/Global';
-import { SwipeListView } from 'react-native-swipe-list-view';
-import { AnimatedCircularProgress } from 'react-native-circular-progress';
-import * as Print from 'expo-print';
-import { shareAsync } from 'expo-sharing';
 import { Picker } from '@react-native-picker/picker';
+import * as Print from 'expo-print';
+import moment from 'moment/min/moment-with-locales';
+import React, { Component } from 'react';
+import { ActivityIndicator, AppRegistry, BackHandler, ImageBackground, RefreshControl, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import DatePicker from 'react-native-datepicker';
+import { SwipeListView } from 'react-native-swipe-list-view';
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import Global from '../functions/Global';
+import MyServerSettings from '../functions/MyServerSettings';
+import MyFunctions from './../functions/MyFunctions';
 
 
 
@@ -49,7 +45,7 @@ class ScreenTagihanCompleted extends Component {
     render() {
 
         return (
-            <ImageBackground style={Global.customStyles.BGImage} source={require('../assets/invoice.jpeg')}>
+            <ImageBackground style={Global.customStyles.BGImage} source={require('../assets/wp_default_main.jpg')}>
                 <View style={styles.MainContainer}>
                     <View style={styles.ContentContainer}>
                         <View style={{ margin: 5 }}>
@@ -160,7 +156,6 @@ class ScreenTagihanCompleted extends Component {
                         onDateChange={(date) => {
 
                             this.setState({ repTgl0: moment(date, "DD-MM-YYYY").format("YYYY-MM-DD") + " 00:00:00" });
-                            //console.log(date + "     " + this.state.repTgl0);
                         }}
                     />
                     <Text>s/d</Text>
@@ -222,7 +217,6 @@ class ScreenTagihanCompleted extends Component {
             repTgl1: moment().format("YYYY-MM-DD") + " 23:59:59",
             page: 1
         });
-        //this.loadData();
         this.loadDataBidang();
     }
     loadDataBidang = () => {
@@ -251,9 +245,6 @@ class ScreenTagihanCompleted extends Component {
     loadData = (more = false) => {
         this.setState({ loading: true })
         let url = MyServerSettings.getPhp("get_list_riwayat.php") + '?res=10&pg=' + this.state.page + "&fungsi=" + Global.getIdFungsi() + "&person=" + Global.getCurUserId() + "&bid=" + Global.getIdBidang();
-        //console.log(url);
-        //let url = MyServerSettings.getPhp("test.php") + '?res=10&pg=' + this.state.page;
-        //console.log(url);
         fetch(url)
             .then((response) => response.json())
             .then((responseJson) => {
@@ -270,7 +261,6 @@ class ScreenTagihanCompleted extends Component {
     }
 
     backAction = () => {
-        //this.validData();
         if (this.state.showFilter) {
             this.setState({ showFilter: false });
         } else {
@@ -281,7 +271,6 @@ class ScreenTagihanCompleted extends Component {
     };
     componentDidMount() {
         console.log("MOUNT");
-        //console.log(moment("02-01-2021", "DD-MM-YYYY").format("YYYY-MMM-DD") + " 00:00:00");
         this.props.navigation.setOptions({
             headerLeft: () => (
                 <TouchableOpacity
@@ -296,7 +285,6 @@ class ScreenTagihanCompleted extends Component {
             ),
         });
 
-        //this.loadData();
         this.loadDataBidang();
         this.focusListener = this.props.navigation.addListener("focus", () => {
             this.refreshData();
@@ -308,7 +296,6 @@ class ScreenTagihanCompleted extends Component {
     }
 
     loadHtmlRekap = () => {
-        //console.log("XXXXXX");
         this.setState({ loading: true })
         let url = MyServerSettings.getPhp("report_rekap.php") + "?bid=" + this.state.repBidang + "&t0=" + this.state.repTgl0 + "&t1=" + this.state.repTgl1;
         console.log(url);
@@ -316,7 +303,6 @@ class ScreenTagihanCompleted extends Component {
             .then((response) => response.text())
             .then((responseText) => {
                 this.print(responseText);
-                //console.log(responseText);
                 this.setState({ loading: false })
             })
             .catch((error) => {
@@ -325,14 +311,12 @@ class ScreenTagihanCompleted extends Component {
             });
     }
     loadHtmlNI = (idTagihan) => {
-        //console.log("XXXXXX");
         this.setState({ loading: true })
         let url = MyServerSettings.getPhp("report_ni.php") + "?id=" + idTagihan;
         fetch(url)
             .then((response) => response.text())
             .then((responseText) => {
                 this.print(responseText);
-                //console.log(responseText);
                 this.setState({ loading: false })
             })
             .catch((error) => {
@@ -342,14 +326,12 @@ class ScreenTagihanCompleted extends Component {
     }
 
     loadHtmlBayar = (idTagihan) => {
-        //console.log("XXXXXX");
         this.setState({ loading: true })
         let url = MyServerSettings.getPhp("report_bayar.php") + "?id=" + idTagihan;
         fetch(url)
             .then((response) => response.text())
             .then((responseText) => {
                 this.print(responseText);
-                //console.log(responseText);
                 this.setState({ loading: false })
             })
             .catch((error) => {
@@ -375,7 +357,7 @@ class ScreenTagihanCompleted extends Component {
         this.props.navigation.navigate('Progres Tagihan', { myData: this.state.myData[rowKey] });
     };
     onRowDidOpen = rowKey => {
-        //console.log('This row opened', rowKey);
+
     };
 
     canPrintRow = (row) => {
@@ -497,11 +479,7 @@ class ScreenTagihanCompleted extends Component {
 const styles = StyleSheet.create({
 
     MainContainer: {
-        //justifyContent: 'center',
-        //flex: 1,
-        //alignContent: 'flex-start',
         margin: 1,
-        //paddingTop: (Platform.OS === 'ios') ? 20 : 0,
         padding: 5,
 
     },
@@ -519,7 +497,6 @@ const styles = StyleSheet.create({
         width: '100%',
         height: '100%',
         justifyContent: 'center',
-        //borderWidth: 5
     },
 
     FlatListItemStyle: {

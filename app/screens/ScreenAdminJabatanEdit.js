@@ -1,12 +1,10 @@
-import { StackActions } from '@react-navigation/routers';
-import React, { Component } from 'react';
-
-import { AppRegistry, Switch, ImageBackground, BackHandler, Alert, ScrollView, StyleSheet, TextInput, Text, View, Button, ActivityIndicator, Platform, TouchableOpacity } from 'react-native';
-import Global from '../functions/Global';
-import MyServerSettings from '../functions/MyServerSettings';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import MyFunctions from '../functions/MyFunctions';
 import { Picker } from '@react-native-picker/picker';
+import React, { Component } from 'react';
+import { ActivityIndicator, Alert, AppRegistry, BackHandler, Button, ImageBackground, ScrollView, StyleSheet, Switch, Text, TextInput, View } from 'react-native';
+import Global from '../functions/Global';
+import MyFunctions from '../functions/MyFunctions';
+import MyServerSettings from '../functions/MyServerSettings';
+
 
 
 
@@ -47,10 +45,9 @@ class ScreenAdminJabatanEdit extends Component {
     }
 
     render() {
-        //console.log(JSON.stringify(this.state.myData));
         return (
 
-            <ImageBackground style={Global.customStyles.BGImage} source={require('../assets/invoice.jpeg')}>
+            <ImageBackground style={Global.customStyles.BGImage} source={require('../assets/wp_default.jpg')}>
                 <View style={styles.MainContainer}>
                     <View style={{ width: '100%', height: '100%' }}>
                         <View style={{ margin: 5 }}>
@@ -70,7 +67,6 @@ class ScreenAdminJabatanEdit extends Component {
                                             this.setAllowSave();
                                         }}
                                         placeholder={'Jabatan'}
-                                        //secureTextEntry={true}
                                         style={Global.customStyles.Input}
                                     />
                                     <Text style={Global.customStyles.Label}>Singkatan</Text>
@@ -85,7 +81,6 @@ class ScreenAdminJabatanEdit extends Component {
                                         }}
                                         maxLength={10}
                                         placeholder={'Singkatan Jabatan'}
-                                        //secureTextEntry={true}
                                         style={Global.customStyles.Input}
                                     />
                                     <Text style={Global.customStyles.Label}>Bidang</Text>
@@ -121,7 +116,6 @@ class ScreenAdminJabatanEdit extends Component {
                                             }>
                                             {
                                                 this.state.myFungsi.map((item) => {
-                                                    //console.log(item.id_fungsi);
                                                     return (<Picker.Item label={item.fungsi_disposisi} value={item.id_fungsi} key={item.id_fungsi} style={{ fontSize: 15 }} />);
                                                 })
                                             }
@@ -180,8 +174,6 @@ class ScreenAdminJabatanEdit extends Component {
     loadDataBidang = () => {
         this.setState({ loading: true })
         let url = MyServerSettings.getPhp("get_list_bidang.php");
-        //let url = MyServerSettings.getPhp("test.php") + '?res=10&pg=' + this.state.page;
-        //console.log(url);
         fetch(url)
             .then((response) => response.json())
             .then((responseJson) => {
@@ -221,7 +213,6 @@ class ScreenAdminJabatanEdit extends Component {
     save = () => {
         console.log("[" + JSON.stringify(this.state.myData) + "]");
         this.setState({ loading: true })
-        //this.tmpPass = this.state.txtPass;
         fetch(
             MyServerSettings.getPhp("post_jabatan.php"),
             {
@@ -247,20 +238,14 @@ class ScreenAdminJabatanEdit extends Component {
             });
 
 
-
-
-
-        //this.props.navigation.dispatch(StackActions.replace('Item'))
-
     }
     processResult = () => {
         if (this.state.myResult[0]['succeed']) {
-            alert("Data tersimpan");
+            MyFunctions.msgBox("Data tersimpan");
             this.props.navigation.goBack();
         } else {
-            alert("Gagal menyimpan\n" + this.state.myResult[0]['error']);
+            MyFunctions.msgBox("Gagal menyimpan\n" + this.state.myResult[0]['error']);
         }
-        //return true;
     }
     componentDidMount() {
         this.loadDataBidang();
@@ -300,9 +285,7 @@ class ScreenAdminJabatanEdit extends Component {
         this.myDataBU = JSON.parse(JSON.stringify(this.state.myData));
     }
     setAllowSave = () => {
-        //console.log(JSON.stringify(this.state.myData));
         let edited = (JSON.stringify(this.state.myData) !== JSON.stringify(this.myDataBU));
-        //console.log(JSON.stringify(this.state.myData) + "\n\n\n\n\n" + JSON.stringify(this.myDataBU));
         this.setState({
             allowSave: edited && (this.state.myData["nm_jab"] !== "" && this.state.myData["singk_jab"] !== "")
         });
@@ -317,11 +300,7 @@ class ScreenAdminJabatanEdit extends Component {
 const styles = StyleSheet.create({
 
     MainContainer: {
-        //justifyContent: 'center',
-        //flex: 1,
-        //alignContent: 'flex-start',
         margin: 1,
-        //paddingTop: (Platform.OS === 'ios') ? 20 : 0,
         padding: 5,
 
     },
@@ -339,7 +318,6 @@ const styles = StyleSheet.create({
         width: '100%',
         height: '100%',
         justifyContent: 'center',
-        //borderWidth: 5
     },
 
     ActivityIndicator: {

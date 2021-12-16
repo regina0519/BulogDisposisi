@@ -1,14 +1,11 @@
-import React, { Component } from 'react';
-import MyFunctions from './../functions/MyFunctions';
-import { AppRegistry, ImageBackground, StyleSheet, Alert, Text, View, ActivityIndicator, Platform, TouchableOpacity, TouchableHighlightComponent, RefreshControl } from 'react-native';
-import moment from 'moment/min/moment-with-locales';
-import MyServerSettings from '../functions/MyServerSettings';
-import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
-import { DefaultTheme } from '@react-navigation/native';
-import { StackActions } from '@react-navigation/routers';
-import Global from '../functions/Global';
-import { SwipeListView } from 'react-native-swipe-list-view';
 import { Picker } from '@react-native-picker/picker';
+import React, { Component } from 'react';
+import { ActivityIndicator, Alert, AppRegistry, ImageBackground, RefreshControl, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { SwipeListView } from 'react-native-swipe-list-view';
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import Global from '../functions/Global';
+import MyServerSettings from '../functions/MyServerSettings';
+import MyFunctions from '../functions/MyFunctions';
 
 
 
@@ -54,7 +51,7 @@ class ScreenAdminJabatan extends Component {
     render() {
 
         return (
-            <ImageBackground style={Global.customStyles.BGImage} source={require('../assets/invoice.jpeg')}>
+            <ImageBackground style={Global.customStyles.BGImage} source={require('../assets/wp_default.jpg')}>
                 <View style={styles.MainContainer}>
                     <View style={styles.ContentContainer}>
                         <View style={{ margin: 5 }}>
@@ -143,8 +140,6 @@ class ScreenAdminJabatan extends Component {
     loadData = (more = false) => {
         this.setState({ loading: true })
         let url = MyServerSettings.getPhp("get_list_jabatan.php") + "?bid=" + this.state.curBidang;
-        //let url = MyServerSettings.getPhp("test.php") + '?res=10&pg=' + this.state.page;
-        //console.log(url);
         fetch(url)
             .then((response) => response.json())
             .then((responseJson) => {
@@ -163,8 +158,6 @@ class ScreenAdminJabatan extends Component {
     loadDataBidang = () => {
         this.setState({ loading: true })
         let url = MyServerSettings.getPhp("get_list_bidang.php");
-        //let url = MyServerSettings.getPhp("test.php") + '?res=10&pg=' + this.state.page;
-        //console.log(url);
         fetch(url)
             .then((response) => response.json())
             .then((responseJson) => {
@@ -217,15 +210,15 @@ class ScreenAdminJabatan extends Component {
                             console.log(res);
                             if (res["succeed"] == "1") {
                                 if (res["error"] != "") {
-                                    alert(res["error"]);
+                                    MyFunctions.msgBox(res["error"]);
                                 } else {
-                                    alert("Jabatan '" + arr[rowKey]["nm_jab"] + "' telah dihapus.");
+                                    MyFunctions.msgBox("Jabatan '" + arr[rowKey]["nm_jab"] + "' telah dihapus.");
                                 }
                             } else {
                                 if (res["error"] == "EXIST") {
-                                    alert("Maaf, Jabatan '" + arr[rowKey]["nm_jab"] + "' tidak bisa dihapus karena sudah digunakan.");
+                                    MyFunctions.msgBox("Maaf, Jabatan '" + arr[rowKey]["nm_jab"] + "' tidak bisa dihapus karena sudah digunakan.");
                                 } else {
-                                    alert("Error Koneksi");
+                                    MyFunctions.msgBox("Error Koneksi");
                                 }
                             }
                         }).then(this.refreshData)
@@ -246,7 +239,7 @@ class ScreenAdminJabatan extends Component {
 
 
     onRowDidOpen = rowKey => {
-        //console.log('This row opened', rowKey);
+
     };
 
     renderHiddenItem = (data, rowMap) => (
@@ -295,11 +288,7 @@ class ScreenAdminJabatan extends Component {
 const styles = StyleSheet.create({
 
     MainContainer: {
-        //justifyContent: 'center',
-        //flex: 1,
-        //alignContent: 'flex-start',
         margin: 1,
-        //paddingTop: (Platform.OS === 'ios') ? 20 : 0,
         padding: 5,
 
     },
@@ -317,7 +306,6 @@ const styles = StyleSheet.create({
         width: '100%',
         height: '100%',
         justifyContent: 'center',
-        //borderWidth: 5
     },
 
     FlatListItemStyle: {

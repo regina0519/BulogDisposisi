@@ -1,15 +1,12 @@
-import { StackActions } from '@react-navigation/routers';
-import React, { Component } from 'react';
-
-import { AppRegistry, StyleSheet, Alert, BackHandler, RefreshControl, TextInput, Text, View, Button, ActivityIndicator, Platform, TouchableOpacity, ImageBackground, TouchableHighlight, TouchableOpacityBase } from 'react-native';
-import Global from '../functions/Global';
-import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
-import { DefaultTheme } from '@react-navigation/native';
-import MyServerSettings from '../functions/MyServerSettings';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import MyFunctions from '../functions/MyFunctions';
 import moment from 'moment/min/moment-with-locales';
+import React, { Component } from 'react';
+import { ActivityIndicator, Alert, AppRegistry, BackHandler, Button, ImageBackground, RefreshControl, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { SwipeListView } from 'react-native-swipe-list-view';
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import Global from '../functions/Global';
+import MyFunctions from '../functions/MyFunctions';
+import MyServerSettings from '../functions/MyServerSettings';
+
 
 
 
@@ -22,8 +19,6 @@ class ScreenTagihanEdit extends Component {
     constructor(props) {
 
         super(props);
-        //console.log('jojojojojoj');
-        //alert(props.route.params.mode);
         this.state = {
             loading: false,
             idTagihan: props.route.params.idTagihan,
@@ -103,7 +98,7 @@ class ScreenTagihanEdit extends Component {
 
         return (
 
-            <ImageBackground style={Global.customStyles.BGImage} source={require('../assets/invoice.jpeg')}>
+            <ImageBackground style={Global.customStyles.BGImage} source={require('../assets/wp_default.jpg')}>
                 <View style={styles.MainContainer}>
                     <View style={styles.ContentContainer}>
                         <View style={{ margin: 5 }}>
@@ -125,7 +120,6 @@ class ScreenTagihanEdit extends Component {
                                     placeholder={'Nomor NI'}
                                     keyboardType="numeric"
                                     numeric
-                                    //secureTextEntry={true}
                                     style={[Global.customStyles.Input, { width: 80, marginBottom: 0 }]}
                                 />
                                 <Text style={Global.customStyles.Label}> {this.extractNILast(this.state.myData["no_nota_intern"])}</Text>
@@ -143,7 +137,6 @@ class ScreenTagihanEdit extends Component {
                                     this.setAllowSave();
                                 }}
                                 placeholder={'Uraian'}
-                                //secureTextEntry={true}
                                 style={Global.customStyles.Input}
                             />
                             <Text style={Global.customStyles.Label}>Keterangan</Text>
@@ -158,7 +151,6 @@ class ScreenTagihanEdit extends Component {
                                     this.setAllowSave();
                                 }}
                                 placeholder={'Catatan'}
-                                //secureTextEntry={true}
                                 style={Global.customStyles.Input}
                             />
                             <Text style={Global.customStyles.Label}>Total (bruto): Rp. {MyFunctions.formatMoney(this.countTotal())}</Text>
@@ -233,10 +225,8 @@ class ScreenTagihanEdit extends Component {
     }
     injectNI = (str, toInject) => {
         if (str == "" || str == undefined) str = "NI-001/" + Global.getKodeBidang() + "/" + unknownCode + "/" + moment(this.state.myTimer["now"]).format('MM') + "/" + moment(this.state.myTimer["now"]).format('YYYY');
-        //str = "jimi jeno judith";
 
         let arr = str.split("-");
-        //console.log(str + " - " + arr.length);
         if (arr.length < 2) return "NI-001/" + Global.getKodeBidang() + "/" + unknownCode + "/" + moment(this.state.myData["tgl_pembuatan"]).format('MM') + "/" + moment(this.state.myData["tgl_pembuatan"]).format('YYYY');
 
         let el = arr[1].split("/");
@@ -251,7 +241,6 @@ class ScreenTagihanEdit extends Component {
         let tmp = [];
         tmp.push(this.state.myData);
         arr.push(tmp);
-        //console.log(JSON.stringify(arr));
         this.setState({ loading: true })
         fetch(
             MyServerSettings.getPhp("post_tagihan.php"),
@@ -280,12 +269,11 @@ class ScreenTagihanEdit extends Component {
 
     processResult = () => {
         if (this.state.myResult[0]['succeed']) {
-            alert("Data tersimpan");
+            MyFunctions.msgBox("Data tersimpan");
             this.props.navigation.goBack();
         } else {
-            alert("Gagal menyimpan\n" + this.state.myResult[0]['error']);
+            MyFunctions.msgBox("Gagal menyimpan\n" + this.state.myResult[0]['error']);
         }
-        //return true;
     }
     deleteRow = (rowMap, rowKey) => {
         let arr = this.state.myData;
@@ -300,9 +288,7 @@ class ScreenTagihanEdit extends Component {
                 text: "Ya", onPress: () => {
                     let del = this.state.myDataDetToDelete;
                     if (arr["det_array"][rowKey]["id_det_item"] !== "") {
-                        //console.log("bef: " + del.length);
                         del.push(arr["det_array"][rowKey]["id_det_item"]);
-                        //console.log("aft: " + del.length);
                     }
                     arr["det_array"].splice(rowKey, 1);
                     this.setState({ myData: arr, myDataDetToDelete: del });
@@ -313,7 +299,7 @@ class ScreenTagihanEdit extends Component {
 
     };
     onRowDidOpen = rowKey => {
-        //console.log('This row opened', rowKey);
+
     };
     renderHiddenItem = (data, rowMap) => (
         <View style={Global.customStyles.rowBack}>
@@ -375,11 +361,6 @@ class ScreenTagihanEdit extends Component {
 
         this.loadTimer();
 
-        //let f = async () => { this.loadTimer() };
-        //let f2 = async () => { await f().then(this.loadNewNI()) };
-        //let f3 = async () => { await f2().then(this.loadData()) };
-        //f3();
-
         this.focusListener = this.props.navigation.addListener("focus", () => {
             // The screen is focused
             // Call any action
@@ -422,7 +403,6 @@ class ScreenTagihanEdit extends Component {
                         myData: responseJson[0]
                     })
                     this.backupData();
-                    //console.log(this.state.myData["det_array"])
                 })
                 .catch((error) => {
                     console.log('Error selecting random data TAGIHAN: ' + error)
@@ -454,7 +434,7 @@ class ScreenTagihanEdit extends Component {
             })
             .then(this.loadNewNI())
             .catch((error) => {
-                alert("Maaf, terjadi kesalahan pada koneksi jaringan.");
+                MyFunctions.msgBox("Maaf, terjadi kesalahan pada koneksi jaringan.");
                 console.log('Error selecting random data TIMER: ' + error)
                 this.setState({ loading: false })
             });
@@ -473,7 +453,7 @@ class ScreenTagihanEdit extends Component {
             })
             .then(this.loadData())
             .catch((error) => {
-                alert("Maaf, terjadi kesalahan pada koneksi jaringan.");
+                MyFunctions.msgBox("Maaf, terjadi kesalahan pada koneksi jaringan.");
                 console.log('Error selecting random data NI: ' + error)
                 this.setState({ loading: false })
             });
@@ -515,11 +495,7 @@ class ScreenTagihanEdit extends Component {
 const styles = StyleSheet.create({
 
     MainContainer: {
-        //justifyContent: 'center',
-        //flex: 1,
-        //alignContent: 'flex-start',
         margin: 1,
-        //paddingTop: (Platform.OS === 'ios') ? 20 : 0,
         padding: 5,
 
     },
@@ -537,7 +513,6 @@ const styles = StyleSheet.create({
         width: '100%',
         height: '100%',
         justifyContent: 'center',
-        //borderWidth: 5
     },
 
     ActivityIndicator: {

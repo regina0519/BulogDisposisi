@@ -1,9 +1,9 @@
-import Constants from 'expo-constants';
-import { Dimensions, StyleSheet } from "react-native";
 import { DefaultTheme } from '@react-navigation/native';
-import MyServerSettings from "./MyServerSettings";
+import Constants from 'expo-constants';
 import * as Notifications from 'expo-notifications';
-import moment from 'moment';
+import { Dimensions, StyleSheet } from "react-native";
+import MyServerSettings from "./MyServerSettings";
+import MyFunctions from '../functions/MyFunctions';
 class Global {
     static #arrColor = {
         "FUNGSI_001": "#101417",
@@ -129,7 +129,6 @@ class Global {
     static loadNotif = (navigation) => {
         if (Global.#expoPushToken == null) return;
         let url = MyServerSettings.getPhp("get_list_notif_new.php") + "?id=" + Global.getCurUserId();
-        //console.log(url);
         fetch(url)
             .then((response) => response.json())
             .then((responseJson) => {
@@ -137,10 +136,10 @@ class Global {
                 if (res.length > 0) {
                     var l = [];
                     for (var i = 0; i < res.length; i++) {
-                        res[i]["sent"] = "1";
+                        //res[i]["sent"] = "1";
+                        console.log(res[i]["id_notifikasi"]);
+                        Global.saveNotif(res[i]["id_notifikasi"]);
                         Notifications.addNotificationResponseReceivedListener(response => {
-                            //alert("jadi")
-                            //console.log("NEW NOTIF: " + res[0]["id_tagihan"]);
                             var data = response["notification"]["request"]["content"]["data"];
                             Global.#notifParam["navigation"].navigate('Disposisi Tagihan', { idTagihan: data["idTagihan"] })
                         });
@@ -149,9 +148,8 @@ class Global {
                         }
                         f();
 
-
                     }
-                    Global.saveNotif(res);
+
                 }
             })
             .catch((error) => {
@@ -166,18 +164,10 @@ class Global {
 
     }
 
-    static saveNotif = (arr) => {
-        //console.log("[" + JSON.stringify(arr) + "]");
+    static saveNotif = (id) => {
+
         fetch(
-            MyServerSettings.getPhp("post_notif_sent.php"),
-            {
-                method: 'POST',
-                headers: {
-                    Accept: 'application/json',
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(arr),
-            }
+            MyServerSettings.getPhp("post_notif_sent.php") + "?id=" + id
         )
             .then((response) => response.json())
             .then((responseJson) => {
@@ -221,13 +211,13 @@ class Global {
                 finalStatus = status;
             }
             if (finalStatus !== 'granted') {
-                alert('Failed to get push token for push notification!');
+                MyFunctions.msgBox('Failed to get push token for push notification!');
                 return;
             }
-            token = (await Notifications.getExpoPushTokenAsync()).data;
+            token = (await Notifications.getExpoPushTokenAsync({ experienceId: "@18013013regina/BulogDisposisi" })).data;
             console.log(token);
         } else {
-            alert('Must use physical device for Push Notifications');
+            MyFunctions.msgBox('Must use physical device for Push Notifications');
         }
 
         if (Platform.OS === 'android') {
@@ -303,7 +293,6 @@ class Global {
         },
         rowBack: {
             alignItems: 'center',
-            //backgroundColor: '#DDD',
             flex: 1,
             flexDirection: 'row',
             justifyContent: 'space-between',
@@ -318,11 +307,9 @@ class Global {
             width: 75,
         },
         backRightBtnLeft: {
-            //backgroundColor: 'blue',
             left: 0
         },
         backRightBtnRight: {
-            //backgroundColor: 'red',
             right: 0,
         }
     });

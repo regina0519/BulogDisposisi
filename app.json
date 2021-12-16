@@ -25,6 +25,7 @@
         "backgroundColor": "#FFFFFF"
       },
       "package": "com.reginamondow.bulog",
+      "googleServicesFile": "./google-services.json",
       "icon": "./app/assets/icon.png",
       "useNextNotificationsApi": true
     },

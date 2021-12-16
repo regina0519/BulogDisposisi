@@ -1,12 +1,11 @@
-import { StackActions } from '@react-navigation/routers';
 import React, { Component } from 'react';
-
-import { AppRegistry, ImageBackground, ScrollView, StyleSheet, TextInput, Text, View, Button, ActivityIndicator, Platform, TouchableOpacity } from 'react-native';
-import Global from '../functions/Global';
-import MyServerSettings from '../functions/MyServerSettings';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import { ActivityIndicator, AppRegistry, ImageBackground, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import CurrentDisposisi from '../functions/CurrentDisposisi';
+import Global from '../functions/Global';
+import MyServerSettings from '../functions/MyServerSettings';
+import MyFunctions from '../functions/MyFunctions';
+
 
 
 
@@ -36,7 +35,7 @@ class ScreenProgress extends Component {
         this.person.fillData(this.state.myData);
         return (
 
-            <ImageBackground style={Global.customStyles.BGImage} source={require('../assets/invoice.jpeg')}>
+            <ImageBackground style={Global.customStyles.BGImage} source={require('../assets/wp_default.jpg')}>
                 <View style={styles.MainContainer}>
                     <View style={{ width: '100%', height: '100%' }}>
                         <View style={{ margin: 5 }}>
@@ -199,11 +198,11 @@ class ScreenProgress extends Component {
                         if (nxt.getRow()["status"] == "0") {
                             cat = this.getCatByFungsi(person.getFungsi(), this.state.myData);
                         } else {
-                            alert("Maaf, catatan ini tidak lagi tersedia, karena " + person.getNmFungsi() + " telah menyetujui revisi.");
+                            MyFunctions.msgBox("Maaf, catatan ini tidak lagi tersedia, karena " + person.getNmFungsi() + " telah menyetujui revisi.");
                             cat = "";
                         }
                     } else {
-                        alert("Maaf, catatan ini tidak lagi tersedia, karena " + person.getNmFungsi() + " telah menyetujui revisi.");
+                        MyFunctions.msgBox("Maaf, catatan ini tidak lagi tersedia, karena " + person.getNmFungsi() + " telah menyetujui revisi.");
                         cat = "";
                     }
                 } else {
@@ -218,7 +217,6 @@ class ScreenProgress extends Component {
                 catX: evt.nativeEvent.pageX,
                 catY: evt.nativeEvent.pageY
             });
-            //console.log(Number.parseInt(evt.nativeEvent.pageX) + " , " + Number.parseInt(evt.nativeEvent.pageY));
         } else {
             this.setState({
                 renderCat: false
@@ -245,7 +243,6 @@ class ScreenProgress extends Component {
                         <TouchableOpacity onPress={(evt) => this.showCat(cur, reverse, evt)}>
                             <MaterialCommunityIcons
                                 name={
-                                    //arrowType=="NORMAL" ? "arrow-down-bold" : "dots-vertical"
                                     arrowType == "NORMAL" ? (
                                         "arrow-down-bold"
                                     ) : (
@@ -291,7 +288,6 @@ class ScreenProgress extends Component {
                         <TouchableOpacity onPress={(evt) => this.showCat(cur, reverse, evt)}>
                             <MaterialCommunityIcons
                                 name={
-                                    //arrowType=="NORMAL" ? "arrow-down-bold" : "dots-vertical"
                                     arrowType == "NORMAL" ? (
                                         "arrow-up-bold"
                                     ) : (
@@ -333,7 +329,6 @@ class ScreenProgress extends Component {
     }
 
     componentDidMount() {
-        //this.loadData();
         this.loadDataFungsi();
     }
 
@@ -360,11 +355,7 @@ class ScreenProgress extends Component {
 const styles = StyleSheet.create({
 
     MainContainer: {
-        //justifyContent: 'center',
-        //flex: 1,
-        //alignContent: 'flex-start',
         margin: 1,
-        //paddingTop: (Platform.OS === 'ios') ? 20 : 0,
         padding: 5,
 
     },
@@ -382,7 +373,6 @@ const styles = StyleSheet.create({
         width: '100%',
         height: '100%',
         justifyContent: 'center',
-        //borderWidth: 5
     },
 
     ActivityIndicator: {

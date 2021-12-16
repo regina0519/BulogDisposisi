@@ -1,12 +1,9 @@
 import React, { Component } from 'react';
-import MyFunctions from './../functions/MyFunctions';
-import { AppRegistry, StyleSheet, FlatList, ImageBackground, Text, View, ActivityIndicator, Platform, TouchableOpacity, TouchableHighlightComponent, RefreshControl, TextInput, Button } from 'react-native';
-import moment from 'moment/min/moment-with-locales';
-import MyServerSettings from '../functions/MyServerSettings';
+import { ActivityIndicator, AppRegistry, FlatList, ImageBackground, RefreshControl, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
-import { DefaultTheme, useFocusEffect } from '@react-navigation/native';
-import { StackActions } from '@react-navigation/routers';
 import Global from '../functions/Global';
+import MyServerSettings from '../functions/MyServerSettings';
+import MyFunctions from './../functions/MyFunctions';
 
 
 
@@ -23,7 +20,6 @@ class ScreenItem extends Component {
             loading: true,
             myParentData: props.route.params.myParentData,
             myParentDataDetIndex: props.route.params.myParentDataDetIndex,
-            //pagerView: props.route.params.pagerView,
             myData: [],
             loadingExtraData: false,
             page: 1,
@@ -55,7 +51,7 @@ class ScreenItem extends Component {
     render() {
 
         return (
-            <ImageBackground style={Global.customStyles.BGImage} source={require('../assets/invoice.jpeg')}>
+            <ImageBackground style={Global.customStyles.BGImage} source={require('../assets/wp_default.jpg')}>
                 <View style={styles.MainContainer}>
                     <View style={styles.ContentContainer}>
                         <View style={{ margin: 5 }}>
@@ -67,7 +63,6 @@ class ScreenItem extends Component {
                                     }}
                                     placeholder={'Cari...'}
                                     style={[Global.customStyles.Input, { width: '60%', margin: 2, marginBottom: 2 }]}
-                                //secureTextEntry={true}
                                 />
                                 <TouchableOpacity style={{ margin: 2 }} onPress={this.filterData}
                                     disabled={this.state.loading}
@@ -126,7 +121,6 @@ class ScreenItem extends Component {
             myData: [],
             loadingExtraData: false,
             page: 1,
-            //filter: ''
         });
         this.loadData();
     }
@@ -160,8 +154,6 @@ class ScreenItem extends Component {
     }
 
     componentDidMount() {
-        //alert("mounted");
-        //const { navigation } = this.props;
         this.loadData()
         this.focusListener = this.props.navigation.addListener("focus", () => {
             // The screen is focused
@@ -196,7 +188,7 @@ class ScreenItem extends Component {
                         arr["det_array"][this.state.myParentDataDetIndex]['ket_item'] = item.ket_item;
                         this.setState({ myParentData: arr });
                     } else {
-                        alert(item.nm_item + " sudah ada.");
+                        MyFunctions.msgBox(item.nm_item + " sudah ada.");
                         let arr = this.state.myParentData;
                         if (arr["det_array"][this.state.myParentDataDetIndex]["id_item"] === "") {
                             arr["det_array"].splice(this.state.myParentDataDetIndex, 1);
@@ -230,11 +222,7 @@ class ScreenItem extends Component {
 const styles = StyleSheet.create({
 
     MainContainer: {
-        //justifyContent: 'center',
-        //flex: 1,
-        //alignContent: 'flex-start',
         margin: 1,
-        //paddingTop: (Platform.OS === 'ios') ? 20 : 0,
         padding: 5,
 
     },
@@ -252,7 +240,6 @@ const styles = StyleSheet.create({
         width: '100%',
         height: '100%',
         justifyContent: 'center',
-        //borderWidth: 5
     },
 
     ActivityIndicator: {

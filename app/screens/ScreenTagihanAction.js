@@ -1,16 +1,13 @@
-import { StackActions } from '@react-navigation/routers';
-import React, { Component } from 'react';
-
-import { AppRegistry, StyleSheet, Alert, Switch, BackHandler, RefreshControl, TextInput, Text, View, Button, ActivityIndicator, Platform, TouchableOpacity, ImageBackground, TouchableHighlight, TouchableOpacityBase } from 'react-native';
-import Global from '../functions/Global';
-import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
-import { DefaultTheme } from '@react-navigation/native';
-import MyServerSettings from '../functions/MyServerSettings';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import MyFunctions from '../functions/MyFunctions';
 import moment from 'moment/min/moment-with-locales';
+import React, { Component } from 'react';
+import { ActivityIndicator, Alert, AppRegistry, BackHandler, ImageBackground, RefreshControl, StyleSheet, Switch, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { SwipeListView } from 'react-native-swipe-list-view';
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import CurrentDisposisi from '../functions/CurrentDisposisi';
+import Global from '../functions/Global';
+import MyFunctions from '../functions/MyFunctions';
+import MyServerSettings from '../functions/MyServerSettings';
+
 
 
 const unknownCode = "KU.04.02";
@@ -51,7 +48,7 @@ class ScreenTagihanAction extends Component {
 
         return (
 
-            <ImageBackground style={Global.customStyles.BGImage} source={require('../assets/invoice.jpeg')}>
+            <ImageBackground style={Global.customStyles.BGImage} source={require('../assets/wp_default.jpg')}>
                 <View style={styles.MainContainer}>
                     <View style={styles.ContentContainer}>
                         <View style={{ margin: 5 }}>
@@ -322,7 +319,6 @@ class ScreenTagihanAction extends Component {
                                     placeholder={'Nomor Verifikasi'}
                                     keyboardType="numeric"
                                     numeric
-                                    //secureTextEntry={true}
                                     style={[Global.customStyles.Input, { width: 80, marginBottom: 0 }]}
                                 />
                                 <Text style={Global.customStyles.Label}> {this.extractNoVeriLast(this.state.myData["no_verifikasi"])}</Text>
@@ -377,7 +373,6 @@ class ScreenTagihanAction extends Component {
                                     placeholder={'Nomor Bukti Pembayaran'}
                                     keyboardType="numeric"
                                     numeric
-                                    //secureTextEntry={true}
                                     style={[Global.customStyles.Input, { width: 80, marginBottom: 0 }]}
                                 />
                                 <Text style={Global.customStyles.Label}> {this.extractNoBayarLast(this.state.myData["no_bukti_pembayaran"])}</Text>
@@ -445,7 +440,6 @@ class ScreenTagihanAction extends Component {
                         this.setState({ myData: arr });
                     }}
                     placeholder={'Catatan'}
-                    //secureTextEntry={true}
                     style={Global.customStyles.Input}
                 />
                 <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
@@ -475,7 +469,6 @@ class ScreenTagihanAction extends Component {
     }
 
     disableActionOk = () => {
-        //this.state.loading
         var val = "";
         if (Global.getIdFungsi() == "FUNGSI_001") {
             val = this.state.myData["cat_pembuat"];
@@ -886,7 +879,6 @@ class ScreenTagihanAction extends Component {
                 console.log("NEXT PERSON ID NULL");
                 this.setState({ loading: true })
                 let url = MyServerSettings.getPhp("get_pegawai_by_fungsi.php") + "?bid=" + arr["id_bidang"] + "&f=" + nxtPerson.getFungsi();
-                //let url = MyServerSettings.getPhp("test.php") + '?res=10&pg=' + this.state.page;
                 console.log(url);
                 fetch(url)
                     .then((response) => response.json())
@@ -942,7 +934,7 @@ class ScreenTagihanAction extends Component {
                     if (res["succeed"] == "1") {
                         this.saveNotif();
                     } else {
-                        alert("Error Koneksi");
+                        MyFunctions.msgBox("Error Koneksi");
                     }
                 })
                 .catch((error) => {
@@ -989,7 +981,6 @@ class ScreenTagihanAction extends Component {
         let tmp = [];
         tmp.push(this.state.myData);
         arr.push(tmp);
-        //console.log(JSON.stringify(arr));
         this.setState({ loading: true })
         fetch(
             MyServerSettings.getPhp("post_tagihan.php"),
@@ -1018,24 +1009,22 @@ class ScreenTagihanAction extends Component {
 
     processResultNotif = () => {
         if (this.state.myResultNotif[0]['succeed']) {
-            alert("Data tersimpan");
+            MyFunctions.msgBox("Data tersimpan");
             this.props.navigation.goBack();
         } else {
-            alert("Gagal menyimpan\n" + this.state.myResultNotif[0]['error']);
+            MyFunctions.msgBox("Gagal menyimpan\n" + this.state.myResultNotif[0]['error']);
         }
-        //return true;
     }
     processResult = () => {
         if (this.state.myResult[0]['succeed']) {
             this.delNotifs();
         } else {
-            alert("Gagal menyimpan\n" + this.state.myResult[0]['error']);
+            MyFunctions.msgBox("Gagal menyimpan\n" + this.state.myResult[0]['error']);
         }
-        //return true;
     }
 
     onRowDidOpen = rowKey => {
-        //console.log('This row opened', rowKey);
+
     };
     renderHiddenItem = (data, rowMap) => (
         <View style={Global.customStyles.rowBack}>
@@ -1062,7 +1051,6 @@ class ScreenTagihanAction extends Component {
     }
 
     backAction = () => {
-        //this.validData();
         if (this.state.actionChosen != "NONE") {
             this.setState({ actionChosen: "NONE" });
         } else {
@@ -1091,11 +1079,6 @@ class ScreenTagihanAction extends Component {
         );
 
         this.loadTimer();
-
-        //let f = async () => { this.loadTimer() };
-        //let f2 = async () => { await f().then(this.loadNewNI()) };
-        //let f3 = async () => { await f2().then(this.loadData()) };
-        //f3();
 
         this.focusListener = this.props.navigation.addListener("focus", () => {
             // The screen is focused
@@ -1147,7 +1130,6 @@ class ScreenTagihanAction extends Component {
                         this.setState({
                             myData: arr
                         });
-                        //console.log(this.extractNoVeri("001/18020/KU.04.02/12/2021"));
                     }
                     if (this.state.myData["no_bukti_pembayaran"] == "" && Global.getIdFungsi() == "FUNGSI_006") {
                         console.log(this.injectNoBayar("", MyFunctions.leadingZero(this.state.myNewNoBayar["no"], 3)));
@@ -1157,7 +1139,6 @@ class ScreenTagihanAction extends Component {
                             myData: arr
                         });
                     }
-                    //console.log(this.person.findMe(Global.getIdFungsi()).getRow()["nm"]);
 
                 })
                 .catch((error) => {
@@ -1187,7 +1168,7 @@ class ScreenTagihanAction extends Component {
             })
             .then(this.loadNewNoVeri())
             .catch((error) => {
-                alert("Maaf, terjadi kesalahan pada koneksi jaringan.");
+                MyFunctions.msgBox("Maaf, terjadi kesalahan pada koneksi jaringan.");
                 console.log('Error selecting random data TIMER: ' + error)
                 this.setState({ loading: false })
             });
@@ -1227,7 +1208,7 @@ class ScreenTagihanAction extends Component {
             })
             .then(this.loadNewNoBayar())
             .catch((error) => {
-                alert("Maaf, terjadi kesalahan pada koneksi jaringan.");
+                MyFunctions.msgBox("Maaf, terjadi kesalahan pada koneksi jaringan.");
                 console.log('Error selecting random data No Veri: ' + error)
                 this.setState({ loading: false })
             });
@@ -1267,7 +1248,7 @@ class ScreenTagihanAction extends Component {
             })
             .then(this.loadData())
             .catch((error) => {
-                alert("Maaf, terjadi kesalahan pada koneksi jaringan.");
+                MyFunctions.msgBox("Maaf, terjadi kesalahan pada koneksi jaringan.");
                 console.log('Error selecting random data No Veri: ' + error)
                 this.setState({ loading: false })
             });
@@ -1300,11 +1281,7 @@ class ScreenTagihanAction extends Component {
 const styles = StyleSheet.create({
 
     MainContainer: {
-        //justifyContent: 'center',
-        //flex: 1,
-        //alignContent: 'flex-start',
         margin: 1,
-        //paddingTop: (Platform.OS === 'ios') ? 20 : 0,
         padding: 5,
 
     },
@@ -1323,7 +1300,6 @@ const styles = StyleSheet.create({
         height: '100%',
         justifyContent: 'center',
         margin: 5
-        //borderWidth: 5
     },
 
     ActivityIndicator: {

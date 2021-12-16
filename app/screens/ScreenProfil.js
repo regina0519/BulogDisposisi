@@ -1,13 +1,9 @@
-import { StackActions } from '@react-navigation/routers';
-import React, { Component } from 'react';
-
-import { AppRegistry, ImageBackground, Alert, StyleSheet, TextInput, Text, View, Button, ActivityIndicator, Platform, TouchableOpacity, BackHandler } from 'react-native';
-import Global from '../functions/Global';
-import MyServerSettings from '../functions/MyServerSettings';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import MyFunctions from '../functions/MyFunctions';
-import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import { Restart } from 'fiction-expo-restart';
+import React, { Component } from 'react';
+import { ActivityIndicator, Alert, AppRegistry, ImageBackground, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import Global from '../functions/Global';
 
 
 
@@ -19,7 +15,6 @@ class ScreenProfil extends Component {
     constructor(props) {
 
         super(props);
-        //alert(props.route.params.mode);
         this.state = {
             loading: false
         }
@@ -32,7 +27,7 @@ class ScreenProfil extends Component {
     render() {
         return (
 
-            <ImageBackground style={Global.customStyles.BGImage} source={require('../assets/invoice.jpeg')}>
+            <ImageBackground style={Global.customStyles.BGImage} source={require('../assets/wp_default_main.jpg')}>
                 <View style={styles.MainContainer}>
                     <View style={{ width: '100%', height: '100%' }}>
                         <View style={{ margin: 5, padding: 30 }}>
@@ -111,9 +106,7 @@ class ScreenProfil extends Component {
     }
     storeUser = async (value) => {
         try {
-            //await AsyncStorage.setItem(Global.getUserKey(), Global.getCurUserId())
             await AsyncStorage.setItem(Global.getUserKey(), value)
-            //this.setState({ user: value });
         } catch (e) {
             // saving error
             console.log("write error");
@@ -131,11 +124,7 @@ class ScreenProfil extends Component {
 const styles = StyleSheet.create({
 
     MainContainer: {
-        //justifyContent: 'center',
-        //flex: 1,
-        //alignContent: 'flex-start',
         margin: 1,
-        //paddingTop: (Platform.OS === 'ios') ? 20 : 0,
         padding: 5,
 
     },
@@ -153,7 +142,6 @@ const styles = StyleSheet.create({
         width: '100%',
         height: '100%',
         justifyContent: 'center',
-        //borderWidth: 5
     },
 
     ActivityIndicator: {

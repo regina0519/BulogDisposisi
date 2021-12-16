@@ -1,10 +1,11 @@
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { StackActions } from '@react-navigation/routers';
 import React, { Component } from 'react';
-
-import { AppRegistry, StyleSheet, TextInput, Text, View, Button, ActivityIndicator, Platform, TouchableOpacity } from 'react-native';
+import { ActivityIndicator, AppRegistry, Platform, StyleSheet, Text, View } from 'react-native';
 import Global from '../functions/Global';
 import MyServerSettings from '../functions/MyServerSettings';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import MyFunctions from '../functions/MyFunctions';
+
 
 
 
@@ -54,7 +55,6 @@ class ScreenInit extends Component {
       .then(this.readPass)
       .then(this.gotoLogin)
       .catch((error) => {
-        //alert(error);
         console.log('Error selecting random data: ' + error)
         this.setState({ loading: false })
       });
@@ -62,13 +62,10 @@ class ScreenInit extends Component {
   readCred = () => {
     Global.setUserKey(this.state.myData[0]['app_user_key']);
     Global.setPassKey(this.state.myData[0]['app_pass_key']);
-    //console.log(Global.getUserKey() + "         " + Global.getPassKey());
   }
   gotoLogin = () => {
-    //console.log(this.state.user + "         " + this.state.password);
     if (this.state.user === "" || this.state.password === "") {
       this.props.navigation.dispatch(StackActions.replace('Login'));
-      //this.props.navigation.dispatch(StackActions.replace('Home'));
 
     } else {
       this.uploadData();
@@ -77,7 +74,6 @@ class ScreenInit extends Component {
 
   uploadData = () => {
     this.setState({ loading: true })
-    //this.tmpPass = this.state.txtPass;
     fetch(
       MyServerSettings.getPhp("get_login_info.php"),
       {
@@ -103,7 +99,7 @@ class ScreenInit extends Component {
       .then(this.gotoTagihan)
       .catch((error) => {
         console.log('Error selecting random data: ' + error)
-        alert("Gagal login otomatis.");
+        MyFunctions.msgBox("Gagal login otomatis.");
         this.setState({ loading: false })
         this.props.navigation.dispatch(StackActions.replace('Login'));
       });
@@ -130,15 +126,12 @@ class ScreenInit extends Component {
       if (value !== null) {
         // value previously stored
         this.setState({ user: value });
-        //console.log("read value: " + value);
       } else {
         this.setState({ user: '' });
-        //console.log("read value null");
       }
     } catch (e) {
       // error reading value
       this.setState({ user: '' });
-      //console.log("read error");
     }
   }
   readPass = async () => {
@@ -147,15 +140,12 @@ class ScreenInit extends Component {
       if (value !== null) {
         // value previously stored
         this.setState({ password: value });
-        //console.log("read value: " + value);
       } else {
         this.setState({ password: '' });
-        //console.log("read value null");
       }
     } catch (e) {
       // error reading value
       this.setState({ password: '' });
-      //console.log("read error");
     }
   }
 

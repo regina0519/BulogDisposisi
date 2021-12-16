@@ -6,16 +6,14 @@ const BACKGROUND_FETCH_TASK = 'background-fetch';
 class BackgroundProcess {
     constructor(navigation) {
         console.log("background");
+        Global.setNotif({ navigation: navigation, notifListener: null, notifResponse: null });
         TaskManager.defineTask(BACKGROUND_FETCH_TASK, async () => {
             console.log("BG Trying");
             Global.doBackground();
 
             return BackgroundFetch.BackgroundFetchResult.NewData;
-            //return BackgroundFetch.Result.NewData;
         });
-        Global.setNotif({ navigation: navigation, notifListener: null, notifResponse: null });
-        //this.registerBackgroundFetchAsync();
-
+        this.registerBackgroundFetchAsync();
     }
     registerBackgroundFetchAsync = async () => {
         return BackgroundFetch.registerTaskAsync(BACKGROUND_FETCH_TASK, {
@@ -29,5 +27,6 @@ class BackgroundProcess {
         const isRegistered = await TaskManager.isTaskRegisteredAsync(BACKGROUND_FETCH_TASK);
         return { "status": status, "isRegistered": isRegistered };
     };
+
 }
 export default BackgroundProcess;

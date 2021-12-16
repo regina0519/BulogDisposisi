@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "394836860968",
+    "project_id": "bulogdisposisi",
+    "storage_bucket": "bulogdisposisi.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:394836860968:android:15ec46dd4b591d66bb951d",
+        "android_client_info": {
+          "package_name": "com.reginamondow.bulog"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "394836860968-g69u0efpp07498bq143s4fvenepgqr1a.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBbji88ajQ7oNGQCRoqCm5SsMh0O20DALs"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "394836860968-g69u0efpp07498bq143s4fvenepgqr1a.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

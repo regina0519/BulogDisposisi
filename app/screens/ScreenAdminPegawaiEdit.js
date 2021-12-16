@@ -1,13 +1,11 @@
-import { StackActions } from '@react-navigation/routers';
-import React, { Component } from 'react';
-
-import { AppRegistry, Switch, ImageBackground, BackHandler, Alert, ScrollView, StyleSheet, TextInput, Text, View, Button, ActivityIndicator, Platform, TouchableOpacity } from 'react-native';
-import Global from '../functions/Global';
-import MyServerSettings from '../functions/MyServerSettings';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import MyFunctions from '../functions/MyFunctions';
 import { Picker } from '@react-native-picker/picker';
+import React, { Component } from 'react';
+import { ActivityIndicator, Alert, AppRegistry, BackHandler, Button, ImageBackground, ScrollView, StyleSheet, Switch, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import Global from '../functions/Global';
+import MyFunctions from '../functions/MyFunctions';
+import MyServerSettings from '../functions/MyServerSettings';
+
 
 
 
@@ -54,10 +52,9 @@ class ScreenAdminPegawaiEdit extends Component {
     }
 
     render() {
-        //console.log(JSON.stringify(this.state.myData));
         return (
 
-            <ImageBackground style={Global.customStyles.BGImage} source={require('../assets/invoice.jpeg')}>
+            <ImageBackground style={Global.customStyles.BGImage} source={require('../assets/wp_default.jpg')}>
                 <View style={styles.MainContainer}>
                     <View style={{ width: '100%', height: '100%' }}>
                         <View style={{ margin: 5 }}>
@@ -94,7 +91,6 @@ class ScreenAdminPegawaiEdit extends Component {
                                             this.setAllowSave();
                                         }}
                                         placeholder={'ID Pegawai'}
-                                        //secureTextEntry={true}
                                         style={Global.customStyles.Input}
                                         maxLength={9}
                                         keyboardType="numeric"
@@ -111,7 +107,6 @@ class ScreenAdminPegawaiEdit extends Component {
                                             this.setAllowSave();
                                         }}
                                         placeholder={'Nama'}
-                                        //secureTextEntry={true}
                                         style={Global.customStyles.Input}
                                     />
 
@@ -260,9 +255,7 @@ class ScreenAdminPegawaiEdit extends Component {
 
 
     save = () => {
-        //console.log("[" + JSON.stringify(this.state.myData) + "]");
         this.setState({ loading: true })
-        //this.tmpPass = this.state.txtPass;
         fetch(
             this.adding ? MyServerSettings.getPhp("post_pegawai_add.php") : MyServerSettings.getPhp("post_pegawai.php"),
             {
@@ -288,20 +281,14 @@ class ScreenAdminPegawaiEdit extends Component {
             });
 
 
-
-
-
-        //this.props.navigation.dispatch(StackActions.replace('Item'))
-
     }
     processResult = () => {
         if (this.state.myResult[0]['succeed']) {
-            alert("Data tersimpan");
+            MyFunctions.msgBox("Data tersimpan");
             this.props.navigation.goBack();
         } else {
-            alert("Gagal menyimpan\n" + this.state.myResult[0]['error']);
+            MyFunctions.msgBox("Gagal menyimpan\n" + this.state.myResult[0]['error']);
         }
-        //return true;
     }
     componentDidMount() {
         this.loadDataJabatan();
@@ -342,7 +329,6 @@ class ScreenAdminPegawaiEdit extends Component {
     setAllowSave = () => {
         console.log(JSON.stringify(this.state.myData) + "\n\n\n\n\n");
         let edited = (JSON.stringify(this.state.myData) !== JSON.stringify(this.myDataBU));
-        //console.log(JSON.stringify(this.state.myData) + "\n\n\n\n\n" + JSON.stringify(this.myDataBU));
         this.setState({
             allowSave: edited &&
                 (
@@ -364,11 +350,7 @@ class ScreenAdminPegawaiEdit extends Component {
 const styles = StyleSheet.create({
 
     MainContainer: {
-        //justifyContent: 'center',
-        //flex: 1,
-        //alignContent: 'flex-start',
         margin: 1,
-        //paddingTop: (Platform.OS === 'ios') ? 20 : 0,
         padding: 5,
 
     },
@@ -386,7 +368,6 @@ const styles = StyleSheet.create({
         width: '100%',
         height: '100%',
         justifyContent: 'center',
-        //borderWidth: 5
     },
 
     ActivityIndicator: {

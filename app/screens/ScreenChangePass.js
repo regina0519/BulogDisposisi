@@ -1,13 +1,12 @@
-import { StackActions } from '@react-navigation/routers';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { Restart } from 'fiction-expo-restart';
 import React, { Component } from 'react';
-
-import { AppRegistry, ImageBackground, Alert, ScrollView, StyleSheet, TextInput, Text, View, Button, ActivityIndicator, Platform, TouchableOpacity } from 'react-native';
+import { ActivityIndicator, Alert, AppRegistry, Button, ImageBackground, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import Global from '../functions/Global';
 import MyServerSettings from '../functions/MyServerSettings';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import MyFunctions from '../functions/MyFunctions';
-import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
-import { Restart } from 'fiction-expo-restart';
+
 
 
 
@@ -17,7 +16,6 @@ class ScreenChangePass extends Component {
     constructor(props) {
 
         super(props);
-        //alert(props.route.params.mode);
         this.state = {
             loading: false,
             myData: [],
@@ -34,7 +32,7 @@ class ScreenChangePass extends Component {
     render() {
         return (
 
-            <ImageBackground style={Global.customStyles.BGImage} source={require('../assets/invoice.jpeg')}>
+            <ImageBackground style={Global.customStyles.BGImage} source={require('../assets/wp_default.jpg')}>
                 <View style={styles.MainContainer}>
                     <View style={{ width: '100%', height: '100%' }}>
                         <View style={{ margin: 5, padding: 10 }}>
@@ -106,19 +104,19 @@ class ScreenChangePass extends Component {
 
     validData = () => {
         if (this.state.txtPassCur === "") {
-            alert("Silahkan masukkan password saat ini");
+            MyFunctions.msgBox("Silahkan masukkan password saat ini");
             return false;
         }
         if (this.state.txtPassNew === "") {
-            alert("Silahkan masukkan password baru");
+            MyFunctions.msgBox("Silahkan masukkan password baru");
             return false;
         }
         if (this.state.txtPassConfirm === "") {
-            alert("Silahkan masukkan konfirmasi password baru");
+            MyFunctions.msgBox("Silahkan masukkan konfirmasi password baru");
             return false;
         }
         if (this.state.txtPassNew !== this.state.txtPassConfirm) {
-            alert("Konfirmasi password tidak sama");
+            MyFunctions.msgBox("Konfirmasi password tidak sama");
             return false;
         }
         return true;
@@ -142,7 +140,6 @@ class ScreenChangePass extends Component {
     }
     uploadData = () => {
         this.setState({ loading: true })
-        //this.tmpPass = this.state.txtPass;
         fetch(
             MyServerSettings.getPhp("post_change_pass.php"),
             {
@@ -173,10 +170,10 @@ class ScreenChangePass extends Component {
     }
     onSuccess = () => {
         if (this.state.myData[0]["succeed"] == 1) {
-            alert("Password telah diubah. Silahkan login kembali.")
+            MyFunctions.msgBox("Password telah diubah. Silahkan login kembali.")
             this.storePass("").then(this.reLogin);
         } else {
-            alert(this.state.myData[0]["error"]);
+            MyFunctions.msgBox(this.state.myData[0]["error"]);
         }
     }
     reLogin = () => {
@@ -186,11 +183,8 @@ class ScreenChangePass extends Component {
     }
     storePass = async (value) => {
         try {
-            //await AsyncStorage.setItem(Global.getUserKey(), Global.getCurUserId())
             await AsyncStorage.setItem(Global.getPassKey(), value)
-            //this.setState({ user: value });
         } catch (e) {
-            // saving error
             console.log("write error");
         }
     }
@@ -206,11 +200,7 @@ class ScreenChangePass extends Component {
 const styles = StyleSheet.create({
 
     MainContainer: {
-        //justifyContent: 'center',
-        //flex: 1,
-        //alignContent: 'flex-start',
         margin: 1,
-        //paddingTop: (Platform.OS === 'ios') ? 20 : 0,
         padding: 5,
 
     },
@@ -228,7 +218,6 @@ const styles = StyleSheet.create({
         width: '100%',
         height: '100%',
         justifyContent: 'center',
-        //borderWidth: 5
     },
 
     ActivityIndicator: {
