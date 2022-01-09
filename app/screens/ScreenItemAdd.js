@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { ActivityIndicator, AppRegistry, Button, ImageBackground, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
+import { ActivityIndicator, AppRegistry, Button, FlatList, ImageBackground, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import Global from '../functions/Global';
 import MyFunctions from '../functions/MyFunctions';
 import MyServerSettings from '../functions/MyServerSettings';
@@ -24,8 +24,12 @@ class ScreenItemAdd extends Component {
                 'harga_patokan': '0',
                 'ket_item': ''
             }],
-            myResult: []
+            myResult: [],
+            myItemSug: [],
+            showItemSug:false,
+            menuItemVisible:false
         }
+        
 
 
     }
@@ -43,7 +47,7 @@ class ScreenItemAdd extends Component {
                         </View>
                         <View style={{ margin: 5, flexGrow: 1, flexShrink: 1, justifyContent: 'center' }}>
                             <View style={[styles.ContentContainer, { height: 'auto', padding: 10 }]}>
-                                <ScrollView style={{ width: '100%', paddingHorizontal: 10 }}>
+                                <ScrollView style={{ width: '100%', paddingHorizontal: 10 }} keyboardShouldPersistTaps={'handled'}>
                                     <Text style={Global.customStyles.Label}>Item</Text>
                                     <TextInput
                                         value={this.state.myData[0]['nm_item']}
@@ -52,10 +56,23 @@ class ScreenItemAdd extends Component {
                                             let arr = this.state.myData;
                                             arr[0]['nm_item'] = nm_item;
                                             this.setState({ myData: arr });
+                                            if(this.state.showItemSug)this.loadSug(nm_item);
                                         }}
+                                        onFocus={()=>{if(this.state.myData[0]['nm_item']!="")this.setState({showItemSug:true})}}
+                                        onPressOut={()=>{if(this.state.myData[0]['nm_item']!="")this.setState({showItemSug:true})}}
+                                        onKeyPress={()=>{if(this.state.myData[0]['nm_item']!="")this.setState({showItemSug:true})}}
+                                        onEndEditing={()=>{this.setState({showItemSug:false})}}
                                         placeholder={'Item'}
                                         style={Global.customStyles.Input}
+                                        autoCapitalize='words'
+                                        autoCorrect={true}
                                     />
+                                    {this.state.myItemSug!=undefined && this.state.myItemSug.length>0 && this.state.showItemSug?
+                                    <View style={{borderWidth:3,padding:10}}>
+                                        {this.state.myItemSug.map(this.renderSug)}
+                                    </View>
+                                    :null}
+                                    
                                     <Text style={Global.customStyles.Label}>Satuan</Text>
                                     <TextInput
                                         value={this.state.myData[0]['satuan']}
@@ -65,8 +82,11 @@ class ScreenItemAdd extends Component {
                                             arr[0]['satuan'] = satuan;
                                             this.setState({ myData: arr });
                                         }}
+                                        //onFocus={()=>{this.setState({showItemSug:false})}}
                                         placeholder={'Satuan'}
                                         style={Global.customStyles.Input}
+                                        autoCapitalize='words'
+                                        autoCorrect={true}
                                     />
                                     <Text style={Global.customStyles.Label}>Standar Harga</Text>
                                     <TextInput
@@ -77,6 +97,7 @@ class ScreenItemAdd extends Component {
                                             arr[0]['harga_patokan'] = harga_patokan;
                                             this.setState({ myData: arr });
                                         }}
+                                        //onFocus={()=>{this.setState({showItemSug:false})}}
                                         placeholder={'Standar Harga'}
                                         style={Global.customStyles.Input}
                                         keyboardType="numeric"
@@ -91,6 +112,7 @@ class ScreenItemAdd extends Component {
                                             arr[0]['ket_item'] = ket_item;
                                             this.setState({ myData: arr });
                                         }}
+                                        //onFocus={()=>{this.setState({showItemSug:false})}}
                                         placeholder={'Keterangan'}
                                         style={Global.customStyles.Input}
                                     />
@@ -187,6 +209,35 @@ class ScreenItemAdd extends Component {
         this.setState = (state, callback) => {
             return;
         };
+    }
+
+    renderSug=(item,index)=>{
+        return(
+            <TouchableOpacity onPress={()=>{
+                var nm_item = MyFunctions.validateStringFirstCap(item.value);
+                let arr = this.state.myData;
+                arr[0]['nm_item'] = nm_item;
+                this.setState({ myData: arr, showItemSug:false });
+            }} key={index} >
+                <Text>{MyFunctions.validateStringFirstCap(item.value)}</Text>
+            </TouchableOpacity>
+        );
+    }
+
+    loadSug = (txt) => {
+        this.setState({ loading: true })
+        let url = "https://serpapi.com/search.json?engine=google_autocomplete&q="+txt+"&hl=id&gl=id&api_key=539e57609b8e5daa0072ce11423d4f6e97f22a6628d4753b8664a0a7151718ef";
+        fetch(url)
+            .then((response) => response.json())
+            .then((responseJson) => {
+                this.setState({
+                    loading: false,
+                    myItemSug: responseJson["suggestions"]
+                })
+            })
+            .catch((error) => {
+                this.setState({ loading: false, myItemSug: [] })
+            });
     }
 
 
