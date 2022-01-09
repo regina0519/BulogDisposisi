@@ -176,7 +176,7 @@ class ScreenAdminPegawaiEdit extends Component {
                                     </View>
                                     <TouchableOpacity
                                         onPress={() => {
-                                            Alert.alert("Konfirmasi?", "Password akan direset ke: 'ID-Pegawai'. Lanjutkan?", [
+                                            Alert.alert("Konfirmasi?", "Kata Sandi akan diatur ulang ke: 'ID-Pegawai'. Lanjutkan?", [
                                                 {
                                                     text: "Batal",
                                                     onPress: () => null,
@@ -200,7 +200,7 @@ class ScreenAdminPegawaiEdit extends Component {
                                                 color={'#101417'}
                                                 style={{ alignSelf: 'center' }}
                                             />
-                                            <Text style={{ alignSelf: 'center', paddingLeft: 5, fontWeight: 'bold' }}>Reset Password</Text>
+                                            <Text style={{ alignSelf: 'center', paddingLeft: 5, fontWeight: 'bold' }}>Atur Ulang Kata Sandi</Text>
                                         </View>
                                     </TouchableOpacity>
 

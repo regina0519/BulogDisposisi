@@ -52,11 +52,11 @@ class ScreenLogin extends Component {
                                         placeholder={'ID Pegawai'}
                                         style={Global.customStyles.Input}
                                     />
-                                    <Text style={Global.customStyles.Label}>Password</Text>
+                                    <Text style={Global.customStyles.Label}>Kata Sandi</Text>
                                     <TextInput
                                         value={this.state.password}
                                         onChangeText={(password) => this.setState({ password })}
-                                        placeholder={'Password'}
+                                        placeholder={'Kata Sandi'}
                                         secureTextEntry={true}
                                         style={Global.customStyles.Input}
                                     />
@@ -118,7 +118,7 @@ class ScreenLogin extends Component {
             .then(this.gotoTagihan)
             .catch((error) => {
                 console.log('Error selecting random data: ' + error)
-                MyFunctions.msgBox("Mohon periksa kembali user/password anda.")
+                MyFunctions.msgBox("Mohon periksa kembali ID Pegawai/Kata Sandi anda.")
                 this.setState({ loading: false })
             });
     }

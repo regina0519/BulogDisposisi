@@ -39,7 +39,7 @@ export default function App() {
     <NavigationContainer>
       <Stack.Navigator mode="modal" >
         <Stack.Screen name="Init" component={ScreenInit} options={{ headerShown: false }} />
-        <Stack.Screen name="Login" component={ScreenLogin} options={{ headerShown: false }} />
+        <Stack.Screen name="Masuk" component={ScreenLogin} options={{ headerShown: false }} />
         <Stack.Screen name="Admin" component={ScreenAdmin} />
         <Stack.Screen name="Bidang" component={ScreenAdminBidang} />
         <Stack.Screen name="Edit Bidang" component={ScreenAdminBidangEdit} />
@@ -52,7 +52,7 @@ export default function App() {
         <Stack.Screen name="Tagihan" component={ScreenTagihan} />
         <Stack.Screen name="Riwayat" component={ScreenTagihanCompleted} />
         <Stack.Screen name="Profil" component={ScreenProfil} />
-        <Stack.Screen name="Ganti Password" component={ScreenChangePass} />
+        <Stack.Screen name="Ganti Kata Sandi" component={ScreenChangePass} />
         <Stack.Screen name="Edit Tagihan" component={ScreenTagihanEdit} />
         <Stack.Screen name="Disposisi Tagihan" component={ScreenTagihanAction} />
         <Stack.Screen name="Detail Tagihan" component={ScreenTagihanDetail} />

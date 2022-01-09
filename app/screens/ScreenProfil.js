@@ -57,7 +57,7 @@ class ScreenProfil extends Component {
                                     color={Global.getFungsiColor(Global.getIdFungsi())}
                                     style={{ alignSelf: 'center' }}
                                 />
-                                <Text style={{ color: Global.getFungsiColor(Global.getIdFungsi()), fontSize: 10, textAlign: 'center' }} > Ganti Password</Text>
+                                <Text style={{ color: Global.getFungsiColor(Global.getIdFungsi()), fontSize: 10, textAlign: 'center' }} > Ganti Kata Sandi</Text>
                             </TouchableOpacity>
                             <TouchableOpacity style={{ margin: 2 }} onPress={this.logout}
                                 disabled={this.state.loading}
@@ -87,11 +87,11 @@ class ScreenProfil extends Component {
     }
 
     changePass = () => {
-        this.props.navigation.navigate('Ganti Password');
+        this.props.navigation.navigate('Ganti Kata Sandi');
     }
 
     logout = () => {
-        Alert.alert("Konfirmasi?", "Logout akun dan restart app?", [
+        Alert.alert("Konfirmasi?", "Keluar dan mengulang kembali aplikasi?", [
             {
                 text: "Batal",
                 onPress: null,

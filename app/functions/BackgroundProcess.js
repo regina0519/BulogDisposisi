@@ -21,7 +21,7 @@ class BackgroundProcess {
     }
     registerBackgroundFetchAsync = async () => {
         return BackgroundFetch.registerTaskAsync(BACKGROUND_FETCH_TASK, {
-            minimumInterval: 60 * 3, // 
+            minimumInterval: 60, // 
             stopOnTerminate: false, // android only,
             startOnBoot: true, // android only
         });

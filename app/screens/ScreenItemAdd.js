@@ -68,7 +68,7 @@ class ScreenItemAdd extends Component {
                                         autoCorrect={true}
                                     />
                                     {this.state.myItemSug!=undefined && this.state.myItemSug.length>0 && this.state.showItemSug?
-                                    <View style={{borderWidth:3,padding:10}}>
+                                    <View style={{borderWidth:1,padding:10}}>
                                         {this.state.myItemSug.map(this.renderSug)}
                                     </View>
                                     :null}
@@ -219,7 +219,7 @@ class ScreenItemAdd extends Component {
                 arr[0]['nm_item'] = nm_item;
                 this.setState({ myData: arr, showItemSug:false });
             }} key={index} >
-                <Text>{MyFunctions.validateStringFirstCap(item.value)}</Text>
+                <Text style={{padding:2}}>{MyFunctions.validateStringFirstCap(item.value)}</Text>
             </TouchableOpacity>
         );
     }

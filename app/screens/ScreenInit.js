@@ -65,7 +65,7 @@ class ScreenInit extends Component {
   }
   gotoLogin = () => {
     if (this.state.user === "" || this.state.password === "") {
-      this.props.navigation.dispatch(StackActions.replace('Login'));
+      this.props.navigation.dispatch(StackActions.replace('Masuk'));
 
     } else {
       this.uploadData();
@@ -99,9 +99,9 @@ class ScreenInit extends Component {
       .then(this.gotoTagihan)
       .catch((error) => {
         console.log('Error selecting random data: ' + error)
-        MyFunctions.msgBox("Gagal login otomatis.");
+        MyFunctions.msgBox("Gagal masuk otomatis.");
         this.setState({ loading: false })
-        this.props.navigation.dispatch(StackActions.replace('Login'));
+        this.props.navigation.dispatch(StackActions.replace('Masuk'));
       });
   }
 

@@ -46,33 +46,33 @@ class ScreenChangePass extends Component {
                         <View style={{ margin: 5, flexGrow: 1, flexShrink: 1, justifyContent: 'flex-start' }}>
                             <View style={[styles.ContentContainer, { height: 'auto', padding: 10, backgroundColor: '#FFFFFF' }]}>
                                 <ScrollView style={{ width: '100%', paddingHorizontal: 10 }}>
-                                    <Text style={Global.customStyles.Label}>Password saat ini</Text>
+                                    <Text style={Global.customStyles.Label}>Kata Sandi saat ini</Text>
                                     <TextInput
                                         value={this.state.txtPassCur}
                                         onChangeText={(passCur) => {
                                             this.setState({ txtPassCur: passCur });
                                         }}
-                                        placeholder={'Password saat ini'}
+                                        placeholder={'Kata Sandi saat ini'}
                                         secureTextEntry={true}
                                         style={Global.customStyles.Input}
                                     />
-                                    <Text style={Global.customStyles.Label}>Password baru</Text>
+                                    <Text style={Global.customStyles.Label}>Kata Sandi baru</Text>
                                     <TextInput
                                         value={this.state.txtPassNew}
                                         onChangeText={(passNew) => {
                                             this.setState({ txtPassNew: passNew });
                                         }}
-                                        placeholder={'Password baru'}
+                                        placeholder={'Kata Sandi baru'}
                                         secureTextEntry={true}
                                         style={Global.customStyles.Input}
                                     />
-                                    <Text style={Global.customStyles.Label}>Konfirmasi password baru</Text>
+                                    <Text style={Global.customStyles.Label}>Konfirmasi Kata Sandi baru</Text>
                                     <TextInput
                                         value={this.state.txtPassConfirm}
                                         onChangeText={(passConfirm) => {
                                             this.setState({ txtPassConfirm: passConfirm });
                                         }}
-                                        placeholder={'Konfirmasi password baru'}
+                                        placeholder={'Konfirmasi Kata Sandi baru'}
                                         secureTextEntry={true}
                                         style={Global.customStyles.Input}
                                     />
@@ -81,7 +81,7 @@ class ScreenChangePass extends Component {
                         </View>
                         <View style={{ width: '50%', alignSelf: 'center' }}>
                             <Button
-                                title={'Ganti Password'}
+                                title={'Ganti Kata Sandi'}
                                 color='#101417'
                                 style={styles.input}
                                 onPress={this.changePass}
@@ -104,19 +104,19 @@ class ScreenChangePass extends Component {
 
     validData = () => {
         if (this.state.txtPassCur === "") {
-            MyFunctions.msgBox("Silahkan masukkan password saat ini");
+            MyFunctions.msgBox("Silahkan masukkan Kata Sandi saat ini");
             return false;
         }
         if (this.state.txtPassNew === "") {
-            MyFunctions.msgBox("Silahkan masukkan password baru");
+            MyFunctions.msgBox("Silahkan masukkan Kata Sandi baru");
             return false;
         }
         if (this.state.txtPassConfirm === "") {
-            MyFunctions.msgBox("Silahkan masukkan konfirmasi password baru");
+            MyFunctions.msgBox("Silahkan masukkan konfirmasi Kata Sandi baru");
             return false;
         }
         if (this.state.txtPassNew !== this.state.txtPassConfirm) {
-            MyFunctions.msgBox("Konfirmasi password tidak sama");
+            MyFunctions.msgBox("Konfirmasi Kata Sandi tidak sama");
             return false;
         }
         return true;
@@ -125,7 +125,7 @@ class ScreenChangePass extends Component {
 
     changePass = () => {
         if (!this.validData()) return;
-        Alert.alert("Konfirmasi?", "App akan direstart setelah mengubah password. Lanjutkan?", [
+        Alert.alert("Konfirmasi?", "Aplikasi akan diulang kembali setelah mengubah kata sandi. Lanjutkan?", [
             {
                 text: "Batal",
                 onPress: null,
@@ -170,7 +170,7 @@ class ScreenChangePass extends Component {
     }
     onSuccess = () => {
         if (this.state.myData[0]["succeed"] == 1) {
-            MyFunctions.msgBox("Password telah diubah. Silahkan login kembali.")
+            MyFunctions.msgBox("Kata Sandi telah diubah. Silahkan masuk kembali.")
             this.storePass("").then(this.reLogin);
         } else {
             MyFunctions.msgBox(this.state.myData[0]["error"]);
