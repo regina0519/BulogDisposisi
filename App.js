@@ -28,11 +28,13 @@ import ScreenNotif from './app/screens/ScreenNotif';
 import ScreenProgress from './app/screens/ScreenProgress';
 import ScreenTagihanAction from './app/screens/ScreenTagihanAction';
 import ScreenTagihanCompleted from './app/screens/ScreenTagihanCompleted';
+import BackgroundProcess from './app/functions/BackgroundProcess';
 
 const Stack = createNativeStackNavigator();
 
 
 export default function App() {
+  new BackgroundProcess();
   return (
     <NavigationContainer>
       <Stack.Navigator mode="modal" >

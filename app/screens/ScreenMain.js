@@ -125,12 +125,13 @@ class ScreenMain extends Component {
 
 
     componentDidMount() {
-        let b = new BackgroundProcess(this.props.navigation);
+        /*let b = new BackgroundProcess(this.props.navigation);
         b.checkStatusAsync().then((status) => {
             console.log("Status: " + status["status"]);
             console.log("Regitered: " + status["isRegistered"]);
         });
-        this.loadNotif();
+        this.loadNotif();*/
+        this.refreshNotif();
         this.props.navigation.setOptions({
             headerTitle: () => (
                 <View style={{ flexDirection: 'row', alignItems: 'center' }}>
@@ -155,7 +156,7 @@ class ScreenMain extends Component {
                     <View style={{ width: 10, height: 10 }}>
                         <WebView
                             onMessage={() => {
-                                Global.doBackground();
+                                //Global.doBackground();
                                 this.refreshNotif();
                             }}
                             source={{

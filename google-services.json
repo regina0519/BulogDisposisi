@@ -1,33 +1,33 @@
 {
   "project_info": {
-    "project_number": "394836860968",
-    "project_id": "bulogdisposisi",
-    "storage_bucket": "bulogdisposisi.appspot.com"
+    "project_number": "543351216594",
+    "project_id": "bulogdisposisi-97b76",
+    "storage_bucket": "bulogdisposisi-97b76.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:394836860968:android:15ec46dd4b591d66bb951d",
+        "mobilesdk_app_id": "1:543351216594:android:94b8a16da30f4f455e900b",
         "android_client_info": {
           "package_name": "com.reginamondow.bulog"
         }
       },
       "oauth_client": [
         {
-          "client_id": "394836860968-g69u0efpp07498bq143s4fvenepgqr1a.apps.googleusercontent.com",
+          "client_id": "543351216594-scc9o6nu683phc3v75u0s6rv28on3e9g.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyBbji88ajQ7oNGQCRoqCm5SsMh0O20DALs"
+          "current_key": "AIzaSyCeSS0KLl53P_s8zH4lw3AUOJZVpUt5iUc"
         }
       ],
       "services": {
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "394836860968-g69u0efpp07498bq143s4fvenepgqr1a.apps.googleusercontent.com",
+              "client_id": "543351216594-scc9o6nu683phc3v75u0s6rv28on3e9g.apps.googleusercontent.com",
               "client_type": 3
             }
           ]
