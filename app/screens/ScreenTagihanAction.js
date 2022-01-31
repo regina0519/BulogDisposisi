@@ -982,6 +982,7 @@ class ScreenTagihanAction extends Component {
         tmp.push(this.state.myData);
         arr.push(tmp);
         this.setState({ loading: true })
+        //console.log("===================================          "+JSON.stringify(arr)+"                *****************************");
         fetch(
             MyServerSettings.getPhp("post_tagihan.php"),
             {

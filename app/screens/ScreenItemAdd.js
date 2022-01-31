@@ -226,7 +226,7 @@ class ScreenItemAdd extends Component {
 
     loadSug = (txt) => {
         this.setState({ loading: true })
-        let url = "https://serpapi.com/search.json?engine=google_autocomplete&q="+txt+"&hl=id&gl=id&api_key=539e57609b8e5daa0072ce11423d4f6e97f22a6628d4753b8664a0a7151718ef";
+        let url = "https://serpapi.com/search.json?engine=google_autocomplete&q="+txt+"&hl=id&gl=id&api_key=e30886bb7a1588e78063eca03072f02fd155c10efff53c2322a224af68056064";
         fetch(url)
             .then((response) => response.json())
             .then((responseJson) => {
